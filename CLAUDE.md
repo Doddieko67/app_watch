@@ -127,6 +127,10 @@ flutter run
 ### Comandos Frecuentes
 
 ```bash
+# Agregar nuevas dependencias (SIEMPRE usar esto en lugar de editar pubspec.yaml manualmente)
+flutter pub add nombre_libreria
+flutter pub add nombre_libreria --dev  # Para dev_dependencies
+
 # Watch mode para desarrollo (regenera automáticamente)
 flutter pub run build_runner watch
 
@@ -146,6 +150,8 @@ flutter analyze
 flutter build apk --release  # Android
 flutter build ios --release  # iOS
 ```
+
+> **⚠️ IMPORTANTE:** Para agregar nuevas librerías, **SIEMPRE** usa `flutter pub add` en lugar de editar `pubspec.yaml` manualmente. Esto garantiza compatibilidad de versiones automáticamente.
 
 ---
 
@@ -183,18 +189,26 @@ app_watch/
 
 ## 🎯 Estado Actual
 
-### Fase Actual: **Planeación Completa ✅**
+### Fase Actual: **Fase 1 Completada ✅ - Listo para Fase 2**
 
-Documentación técnica completa creada. Listo para comenzar implementación.
+**Implementado:**
+- ✅ Proyecto Flutter creado y compilando
+- ✅ 11 tablas Drift con DAOs básicos
+- ✅ Riverpod configurado (database + theme providers)
+- ✅ Material 3 Theme con colores personalizables
+- ✅ Navegación adaptativa (Bottom Nav + Rail)
+- ✅ Assets base (nutrition_database.json con 5 alimentos)
+- ✅ analysis_options.yaml con lints estrictos
+- ✅ Estructura completa de carpetas (Clean Architecture)
 
 ### Próximos Pasos
 
-**Fase 1: Configuración Inicial**
-1. Setup del proyecto Flutter
-2. Configurar Drift con todas las tablas
-3. Setup de Riverpod
-4. Tema Material 3 y navegación
-5. Preparar assets (nutrition_database.json)
+**Fase 2: Módulo de Recordatorios** (Semana 2)
+1. Implementar domain/data/presentation layers
+2. CRUD de recordatorios con recurrencias
+3. Sistema de notificaciones locales
+4. Prioridades, tags y filtros
+5. Tests unitarios y de integración
 
 Ver detalles completos en [Plan de Implementación](.claude/contexts/09_implementation_plan.md).
 
@@ -287,4 +301,4 @@ Ver [Roadmap](.claude/contexts/09_implementation_plan.md#post-release-roadmap-fu
 ---
 
 **Última actualización:** 2025-11-06
-**Versión de documentación:** 2.0.0
+**Versión de documentación:** 2.1.0 (Fase 1 completada)

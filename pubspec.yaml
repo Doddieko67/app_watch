@@ -1,0 +1,88 @@
+name: app_watch
+description: "App Watch - Smart daily reminders with fitness, nutrition, and sleep tracking"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Estado y arquitectura
+  flutter_riverpod: ^2.5.0
+  riverpod_annotation: ^2.3.0
+
+  # Base de datos
+  drift: ^2.16.0
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.1.0
+
+  # Notificaciones
+  flutter_local_notifications: ^17.0.0
+  timezone: ^0.9.0
+
+  # IA
+  google_generative_ai: ^0.4.0
+  image_picker: ^1.0.0
+
+  # UI/UX
+  fl_chart: ^0.66.0
+  table_calendar: ^3.0.0
+  flutter_animate: ^4.5.0
+
+  # Utilidades
+  freezed_annotation: ^2.4.0
+  json_annotation: ^4.8.0
+  intl: ^0.19.0
+
+  # Exportación
+  share_plus: ^7.2.0
+  file_picker: ^10.3.3
+
+  # Configuración
+  shared_preferences: ^2.2.0
+  flutter_secure_storage: ^9.0.0
+  path: ^1.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+  # Generación de código
+  build_runner: ^2.4.0
+  drift_dev: ^2.16.0
+  riverpod_generator: ^2.3.0
+  freezed: ^2.4.0
+  json_serializable: ^6.7.0
+
+  # Testing
+  mockito: ^5.4.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  uses-material-design: true
+
+  # Assets
+  assets:
+    - assets/
+    - assets/images/
+    - assets/icons/
+    - assets/nutrition_database.json
+

@@ -1,0 +1,59 @@
+{
+  "foods": [
+    {
+      "name": "Pechuga de pollo",
+      "aliases": ["pollo", "pechuga", "chicken breast", "pollo a la plancha"],
+      "servingSize": 100,
+      "unit": "g",
+      "calories": 165,
+      "protein": 31,
+      "carbs": 0,
+      "fats": 3.6,
+      "category": "proteína"
+    },
+    {
+      "name": "Arroz blanco cocido",
+      "aliases": ["arroz", "white rice", "arroz hervido"],
+      "servingSize": 100,
+      "unit": "g",
+      "calories": 130,
+      "protein": 2.7,
+      "carbs": 28,
+      "fats": 0.3,
+      "category": "carbohidrato"
+    },
+    {
+      "name": "Huevo entero",
+      "aliases": ["huevo", "egg", "huevos"],
+      "servingSize": 50,
+      "unit": "g",
+      "calories": 72,
+      "protein": 6,
+      "carbs": 0.4,
+      "fats": 5,
+      "category": "proteína"
+    },
+    {
+      "name": "Plátano",
+      "aliases": ["banana", "platano", "guineo"],
+      "servingSize": 100,
+      "unit": "g",
+      "calories": 89,
+      "protein": 1.1,
+      "carbs": 23,
+      "fats": 0.3,
+      "category": "fruta"
+    },
+    {
+      "name": "Almendras",
+      "aliases": ["almendra", "almonds", "almendras tostadas"],
+      "servingSize": 28,
+      "unit": "g",
+      "calories": 164,
+      "protein": 6,
+      "carbs": 6,
+      "fats": 14,
+      "category": "fruto seco"
+    }
+  ]
+}

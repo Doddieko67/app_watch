@@ -1,0 +1,177 @@
+import 'dart:io';
+
+import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
+import 'tables/ai_cache_table.dart';
+import 'tables/app_settings_table.dart';
+import 'tables/exercises_table.dart';
+import 'tables/food_items_table.dart';
+import 'tables/meals_table.dart';
+import 'tables/nutrition_goals_table.dart';
+import 'tables/reminders_table.dart';
+import 'tables/sleep_records_table.dart';
+import 'tables/sleep_schedules_table.dart';
+import 'tables/study_sessions_table.dart';
+import 'tables/workouts_table.dart';
+
+part 'app_database.g.dart';
+
+@DriftDatabase(tables: [
+  Reminders,
+  Workouts,
+  Exercises,
+  Meals,
+  FoodItems,
+  NutritionGoals,
+  SleepRecords,
+  StudySessions,
+  SleepSchedules,
+  AppSettings,
+  AiCache,
+])
+class AppDatabase extends _$AppDatabase {
+  AppDatabase() : super(_openConnection());
+
+  @override
+  int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (Migrator m) async {
+          await m.createAll();
+        },
+        onUpgrade: (Migrator m, int from, int to) async {
+          // Migraciones futuras aquí
+          // if (from == 1) {
+          //   await m.addColumn(reminders, reminders.tags);
+          // }
+        },
+      );
+
+  // DAOs básicos para cada tabla
+
+  // Reminders
+  Future<List<Reminder>> getAllReminders() => select(reminders).get();
+  Future<Reminder?> getReminderById(int id) =>
+      (select(reminders)..where((r) => r.id.equals(id))).getSingleOrNull();
+  Future<int> insertReminder(RemindersCompanion reminder) =>
+      into(reminders).insert(reminder);
+  Future<bool> updateReminder(Reminder reminder) =>
+      update(reminders).replace(reminder);
+  Future<int> deleteReminder(int id) =>
+      (delete(reminders)..where((r) => r.id.equals(id))).go();
+
+  // Workouts
+  Future<List<Workout>> getAllWorkouts() => select(workouts).get();
+  Future<Workout?> getWorkoutById(int id) =>
+      (select(workouts)..where((w) => w.id.equals(id))).getSingleOrNull();
+  Future<int> insertWorkout(WorkoutsCompanion workout) =>
+      into(workouts).insert(workout);
+  Future<bool> updateWorkout(Workout workout) =>
+      update(workouts).replace(workout);
+  Future<int> deleteWorkout(int id) =>
+      (delete(workouts)..where((w) => w.id.equals(id))).go();
+
+  // Exercises
+  Future<List<Exercise>> getExercisesByWorkoutId(int workoutId) =>
+      (select(exercises)..where((e) => e.workoutId.equals(workoutId))).get();
+  Future<int> insertExercise(ExercisesCompanion exercise) =>
+      into(exercises).insert(exercise);
+  Future<bool> updateExercise(Exercise exercise) =>
+      update(exercises).replace(exercise);
+  Future<int> deleteExercise(int id) =>
+      (delete(exercises)..where((e) => e.id.equals(id))).go();
+
+  // Meals
+  Future<List<Meal>> getAllMeals() => select(meals).get();
+  Future<Meal?> getMealById(int id) =>
+      (select(meals)..where((m) => m.id.equals(id))).getSingleOrNull();
+  Future<int> insertMeal(MealsCompanion meal) => into(meals).insert(meal);
+  Future<bool> updateMeal(Meal meal) => update(meals).replace(meal);
+  Future<int> deleteMeal(int id) =>
+      (delete(meals)..where((m) => m.id.equals(id))).go();
+
+  // FoodItems
+  Future<List<FoodItem>> getFoodItemsByMealId(int mealId) =>
+      (select(foodItems)..where((f) => f.mealId.equals(mealId))).get();
+  Future<int> insertFoodItem(FoodItemsCompanion foodItem) =>
+      into(foodItems).insert(foodItem);
+  Future<bool> updateFoodItem(FoodItem foodItem) =>
+      update(foodItems).replace(foodItem);
+  Future<int> deleteFoodItem(int id) =>
+      (delete(foodItems)..where((f) => f.id.equals(id))).go();
+
+  // NutritionGoals
+  Future<List<NutritionGoal>> getAllNutritionGoals() =>
+      select(nutritionGoals).get();
+  Future<NutritionGoal?> getActiveNutritionGoal() => (select(nutritionGoals)
+        ..where((g) => g.isActive.equals(true)))
+      .getSingleOrNull();
+  Future<int> insertNutritionGoal(NutritionGoalsCompanion goal) =>
+      into(nutritionGoals).insert(goal);
+  Future<bool> updateNutritionGoal(NutritionGoal goal) =>
+      update(nutritionGoals).replace(goal);
+
+  // SleepRecords
+  Future<List<SleepRecord>> getAllSleepRecords() => select(sleepRecords).get();
+  Future<SleepRecord?> getSleepRecordById(int id) =>
+      (select(sleepRecords)..where((s) => s.id.equals(id))).getSingleOrNull();
+  Future<int> insertSleepRecord(SleepRecordsCompanion record) =>
+      into(sleepRecords).insert(record);
+  Future<bool> updateSleepRecord(SleepRecord record) =>
+      update(sleepRecords).replace(record);
+  Future<int> deleteSleepRecord(int id) =>
+      (delete(sleepRecords)..where((s) => s.id.equals(id))).go();
+
+  // StudySessions
+  Future<List<StudySession>> getAllStudySessions() =>
+      select(studySessions).get();
+  Future<StudySession?> getStudySessionById(int id) =>
+      (select(studySessions)..where((s) => s.id.equals(id))).getSingleOrNull();
+  Future<int> insertStudySession(StudySessionsCompanion session) =>
+      into(studySessions).insert(session);
+  Future<bool> updateStudySession(StudySession session) =>
+      update(studySessions).replace(session);
+  Future<int> deleteStudySession(int id) =>
+      (delete(studySessions)..where((s) => s.id.equals(id))).go();
+
+  // SleepSchedules
+  Future<List<SleepSchedule>> getAllSleepSchedules() =>
+      select(sleepSchedules).get();
+  Future<SleepSchedule?> getActiveSleepSchedule() => (select(sleepSchedules)
+        ..where((s) => s.isActive.equals(true)))
+      .getSingleOrNull();
+  Future<int> insertSleepSchedule(SleepSchedulesCompanion schedule) =>
+      into(sleepSchedules).insert(schedule);
+  Future<bool> updateSleepSchedule(SleepSchedule schedule) =>
+      update(sleepSchedules).replace(schedule);
+
+  // AppSettings
+  Future<List<AppSetting>> getAllSettings() => select(appSettings).get();
+  Future<AppSetting?> getSettingByKey(String key) =>
+      (select(appSettings)..where((s) => s.key.equals(key))).getSingleOrNull();
+  Future<int> insertOrUpdateSetting(AppSettingsCompanion setting) =>
+      into(appSettings).insertOnConflictUpdate(setting);
+
+  // AiCache
+  Future<AiCacheData?> getCachedResponse(String queryHash) =>
+      (select(aiCache)..where((c) => c.queryHash.equals(queryHash)))
+          .getSingleOrNull();
+  Future<int> insertCacheEntry(AiCacheCompanion entry) =>
+      into(aiCache).insert(entry);
+  Future<bool> updateCacheEntry(AiCacheData entry) =>
+      update(aiCache).replace(entry);
+  Future<int> deleteCacheEntry(int id) =>
+      (delete(aiCache)..where((c) => c.id.equals(id))).go();
+}
+
+LazyDatabase _openConnection() {
+  return LazyDatabase(() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dbFolder.path, 'app_watch.db'));
+    return NativeDatabase(file);
+  });
+}
