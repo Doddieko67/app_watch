@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../daily_reminders/presentation/screens/reminders_home_screen.dart';
 import '../../../fitness/presentation/screens/fitness_home_screen.dart';
+import '../../../nutrition/presentation/screens/nutrition_home_screen.dart';
+import '../../../sleep_study/presentation/screens/sleep_study_home_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -18,8 +20,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _PlaceholderScreen(title: '🏠 Home'),
     RemindersHomeScreen(), // ✅ Fase 2 completada
     FitnessHomeScreen(), // ✅ Fase 3 completada
-    _PlaceholderScreen(title: '🍽️ Nutrición'),
-    _PlaceholderScreen(title: '💤 Sueño & Estudio'),
+    NutritionHomeScreen(), // ✅ Fase 4 completada
+    SleepStudyHomeScreen(), // ✅ Fase 5 en progreso
     _PlaceholderScreen(title: '⚙️ Ajustes'),
   ];
 

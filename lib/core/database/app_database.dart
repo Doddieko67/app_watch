@@ -166,6 +166,11 @@ class AppDatabase extends _$AppDatabase {
       update(aiCache).replace(entry);
   Future<int> deleteCacheEntry(int id) =>
       (delete(aiCache)..where((c) => c.id.equals(id))).go();
+
+  // AiCache - Additional methods for nutrition
+  Future<AiCacheData?> findByHash(String hash) =>
+      (select(aiCache)..where((c) => c.queryHash.equals(hash)))
+          .getSingleOrNull();
 }
 
 LazyDatabase _openConnection() {

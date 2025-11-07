@@ -1,59 +1,164 @@
 {
+  "version": "1.0.0",
+  "last_updated": "2025-01-07",
   "foods": [
     {
+      "id": "food_001",
       "name": "Pechuga de pollo",
-      "aliases": ["pollo", "pechuga", "chicken breast", "pollo a la plancha"],
-      "servingSize": 100,
-      "unit": "g",
-      "calories": 165,
-      "protein": 31,
-      "carbs": 0,
-      "fats": 3.6,
-      "category": "proteína"
+      "aliases": ["pollo", "pechuga", "chicken breast", "pollo a la plancha", "pollo cocido"],
+      "calories_per_100g": 165,
+      "protein_per_100g": 31,
+      "carbs_per_100g": 0,
+      "fats_per_100g": 3.6,
+      "category": "protein"
     },
     {
+      "id": "food_002",
       "name": "Arroz blanco cocido",
-      "aliases": ["arroz", "white rice", "arroz hervido"],
-      "servingSize": 100,
-      "unit": "g",
-      "calories": 130,
-      "protein": 2.7,
-      "carbs": 28,
-      "fats": 0.3,
-      "category": "carbohidrato"
+      "aliases": ["arroz", "white rice", "arroz hervido", "arroz blanco"],
+      "calories_per_100g": 130,
+      "protein_per_100g": 2.7,
+      "carbs_per_100g": 28,
+      "fats_per_100g": 0.3,
+      "category": "carbs"
     },
     {
-      "name": "Huevo entero",
-      "aliases": ["huevo", "egg", "huevos"],
-      "servingSize": 50,
-      "unit": "g",
-      "calories": 72,
-      "protein": 6,
-      "carbs": 0.4,
-      "fats": 5,
-      "category": "proteína"
+      "id": "food_003",
+      "name": "Huevo entero cocido",
+      "aliases": ["huevo", "egg", "huevos", "huevo duro", "huevo hervido"],
+      "calories_per_100g": 155,
+      "protein_per_100g": 13,
+      "carbs_per_100g": 1.1,
+      "fats_per_100g": 11,
+      "category": "protein"
     },
     {
+      "id": "food_004",
       "name": "Plátano",
-      "aliases": ["banana", "platano", "guineo"],
-      "servingSize": 100,
-      "unit": "g",
-      "calories": 89,
-      "protein": 1.1,
-      "carbs": 23,
-      "fats": 0.3,
-      "category": "fruta"
+      "aliases": ["banana", "platano", "guineo", "banano"],
+      "calories_per_100g": 89,
+      "protein_per_100g": 1.1,
+      "carbs_per_100g": 23,
+      "fats_per_100g": 0.3,
+      "category": "fruits"
     },
     {
+      "id": "food_005",
       "name": "Almendras",
       "aliases": ["almendra", "almonds", "almendras tostadas"],
-      "servingSize": 28,
-      "unit": "g",
-      "calories": 164,
-      "protein": 6,
-      "carbs": 6,
-      "fats": 14,
-      "category": "fruto seco"
+      "calories_per_100g": 579,
+      "protein_per_100g": 21,
+      "carbs_per_100g": 22,
+      "fats_per_100g": 50,
+      "category": "fats"
+    },
+    {
+      "id": "food_006",
+      "name": "Manzana",
+      "aliases": ["apple", "manzana roja", "manzana verde"],
+      "calories_per_100g": 52,
+      "protein_per_100g": 0.3,
+      "carbs_per_100g": 14,
+      "fats_per_100g": 0.2,
+      "category": "fruits"
+    },
+    {
+      "id": "food_007",
+      "name": "Avena",
+      "aliases": ["oatmeal", "avena cruda", "hojuelas de avena", "copos de avena"],
+      "calories_per_100g": 389,
+      "protein_per_100g": 17,
+      "carbs_per_100g": 66,
+      "fats_per_100g": 7,
+      "category": "carbs"
+    },
+    {
+      "id": "food_008",
+      "name": "Salmón",
+      "aliases": ["salmon", "salmon cocido", "salmon a la plancha"],
+      "calories_per_100g": 208,
+      "protein_per_100g": 20,
+      "carbs_per_100g": 0,
+      "fats_per_100g": 13,
+      "category": "protein"
+    },
+    {
+      "id": "food_009",
+      "name": "Brócoli",
+      "aliases": ["brocoli", "broccoli", "brocoli cocido"],
+      "calories_per_100g": 34,
+      "protein_per_100g": 2.8,
+      "carbs_per_100g": 7,
+      "fats_per_100g": 0.4,
+      "category": "vegetables"
+    },
+    {
+      "id": "food_010",
+      "name": "Yogur griego natural",
+      "aliases": ["yogur", "yogurt griego", "greek yogurt", "yogurt"],
+      "calories_per_100g": 59,
+      "protein_per_100g": 10,
+      "carbs_per_100g": 3.6,
+      "fats_per_100g": 0.4,
+      "category": "dairy"
+    },
+    {
+      "id": "food_011",
+      "name": "Pan integral",
+      "aliases": ["pan", "whole wheat bread", "pan de trigo"],
+      "calories_per_100g": 247,
+      "protein_per_100g": 13,
+      "carbs_per_100g": 41,
+      "fats_per_100g": 3.4,
+      "category": "carbs"
+    },
+    {
+      "id": "food_012",
+      "name": "Aguacate",
+      "aliases": ["avocado", "palta", "aguacate hass"],
+      "calories_per_100g": 160,
+      "protein_per_100g": 2,
+      "carbs_per_100g": 9,
+      "fats_per_100g": 15,
+      "category": "fats"
+    },
+    {
+      "id": "food_013",
+      "name": "Atún en lata",
+      "aliases": ["atun", "tuna", "atun al natural"],
+      "calories_per_100g": 116,
+      "protein_per_100g": 26,
+      "carbs_per_100g": 0,
+      "fats_per_100g": 1,
+      "category": "protein"
+    },
+    {
+      "id": "food_014",
+      "name": "Pasta cocida",
+      "aliases": ["pasta", "spaghetti", "espagueti", "fideos"],
+      "calories_per_100g": 131,
+      "protein_per_100g": 5,
+      "carbs_per_100g": 25,
+      "fats_per_100g": 1.1,
+      "category": "carbs"
+    },
+    {
+      "id": "food_015",
+      "name": "Leche descremada",
+      "aliases": ["leche", "milk", "leche desnatada"],
+      "calories_per_100g": 34,
+      "protein_per_100g": 3.4,
+      "carbs_per_100g": 5,
+      "fats_per_100g": 0.1,
+      "category": "dairy"
     }
-  ]
+  ],
+  "categories": {
+    "protein": ["Carnes", "Huevos", "Pescados", "Mariscos"],
+    "carbs": ["Granos", "Cereales", "Pastas", "Panes"],
+    "fats": ["Aceites", "Frutos secos", "Aguacate"],
+    "vegetables": ["Verduras", "Hortalizas"],
+    "fruits": ["Frutas"],
+    "dairy": ["Lácteos", "Quesos", "Yogures"]
+  }
 }

@@ -205,7 +205,7 @@ app_watch/
 
 ## 🎯 Estado Actual
 
-### Fase Actual: **Fase 3 Completada ✅ - Listo para Fase 4**
+### Fase Actual: **Fase 5 Completada ✅ - Listo para Fase 6**
 
 **Implementado:**
 
@@ -215,7 +215,7 @@ app_watch/
 - ✅ Riverpod configurado (database + theme + notification providers)
 - ✅ Material 3 Theme con colores personalizables
 - ✅ Navegación adaptativa (Bottom Nav + Rail)
-- ✅ Assets base (nutrition_database.json con 5 alimentos)
+- ✅ Assets base (nutrition_database.json con 15 alimentos)
 - ✅ analysis_options.yaml con lints estrictos
 - ✅ Estructura completa de carpetas (Clean Architecture)
 
@@ -240,19 +240,55 @@ app_watch/
 - ✅ Cálculo de volumen, PRs, ejercicios frecuentes
 - ✅ Integrado a navegación principal
 - ✅ 15 archivos creados (~2,000+ líneas de código)
+
+#### Fase 4 - Módulo de Nutrición (BÁSICO)
+- ✅ Domain Layer completo (MealEntity, FoodItemEntity, NutritionGoalsEntity, 6 use cases)
+- ✅ Data Layer completo (models, mappers, datasource, repository impl)
+- ✅ AI Service con flujo de fallback preparado (Cache → Gemini → DB Local → Manual)
+- ✅ LocalNutritionDatabase con búsqueda fuzzy (Levenshtein)
+- ✅ Base de datos local con 15 alimentos de ejemplo
+- ✅ Presentation Layer básico (providers, NutritionHomeScreen, LogMealScreen)
+- ✅ CRUD básico de comidas y objetivos nutricionales
+- ✅ Resumen nutricional diario con progress indicators
+- ✅ Integrado a navegación principal
+- ✅ 20+ archivos creados (~2,500+ líneas de código)
+- ✅ APK debug generado exitosamente
+- ✅ 0 errores de compilación críticos
+
+#### Fase 5 - Módulo de Sueño y Estudio
+- ✅ Domain Layer completo (SleepRecordEntity, StudySessionEntity, SleepScheduleEntity)
+- ✅ Repository interface con métodos para estadísticas (SleepStats, StudyStats)
+- ✅ 5 use cases (ConfigureSleepSchedule, LogSleepRecord, LogStudySession, CalculateOptimalStudyTime, GetSleepStats)
+- ✅ Data Layer completo (models, mappers, datasource, repository impl)
+- ✅ SleepStudyLocalDataSource con CRUD completo y cálculo de estadísticas
+- ✅ Presentation Layer (13+ providers, SleepStudyHomeScreen, SleepConfigScreen)
+- ✅ Configuración de horario de sueño con notificaciones
+- ✅ Registro de sueño planificado vs real con métricas
+- ✅ Sistema de sesiones de estudio con cronómetro
+- ✅ Cálculo de hora óptima de estudio (2.5h después de despertar)
+- ✅ Estadísticas semanales de sueño y estudio
+- ✅ Integrado a navegación principal
+- ✅ 16 archivos creados (~2,400+ líneas de código)
 - ✅ APK debug generado exitosamente
 - ✅ 0 errores de compilación
 
-**Total archivos:** 38 archivos (~4,500+ líneas de código)
+**Total archivos:** ~74 archivos (~9,400+ líneas de código)
 
 ### Próximos Pasos
 
-**Fase 4: Módulo de Nutrición** (Semana 4)
-1. Implementar domain/data/presentation layers
-2. Integración con Gemini AI para análisis de alimentos
-3. Sistema de fallback (Cache → Gemini → DB Local → Manual)
-4. Tracking de comidas y macros diarios
-5. Gráficas de nutrición con fl_chart
+**Fase 6: Ajustes y Extras** (Semana 6)
+1. Implementar SettingsScreen completo
+2. Configuración de tema (light/dark/system) y color primario
+3. Gestión segura de API key de Gemini (flutter_secure_storage)
+4. Configuración de permisos y notificaciones
+5. Sistema de exportación/importación de datos (JSON)
+6. Auto-backup configurable
+7. Onboarding de 3-4 pantallas
+8. Acerca de y versión de app
+
+**Mejoras opcionales para Fases anteriores:**
+- Fase 4 (Nutrición): Análisis con IA funcional, gráficas avanzadas, más alimentos
+- Fase 5 (Sueño/Estudio): Gráficas de sueño con fl_chart, cronómetro visual para estudio
 
 Ver detalles completos en [Plan de Implementación](.claude/contexts/09_implementation_plan.md).
 
@@ -344,5 +380,5 @@ Ver [Roadmap](.claude/contexts/09_implementation_plan.md#post-release-roadmap-fu
 
 ---
 
-**Última actualización:** 2025-11-06
-**Versión de documentación:** 3.0.0 (Fase 3 completada - Fitness Tracker)
+**Última actualización:** 2025-11-07
+**Versión de documentación:** 5.0.0 (Fase 5 completada - Sueño y Estudio)
