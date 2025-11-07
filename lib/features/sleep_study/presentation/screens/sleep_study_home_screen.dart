@@ -230,7 +230,7 @@ class SleepStudyHomeScreen extends ConsumerWidget {
                                 const Icon(Icons.timer),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Sesión en progreso',
+                                  'Estudiando ahora',
                                   style: Theme.of(context).textTheme.titleMedium,
                                 ),
                               ],
@@ -244,15 +244,15 @@ class SleepStudyHomeScreen extends ConsumerWidget {
                             const SizedBox(height: 8),
                             ElevatedButton(
                               onPressed: () {
-                                // Aquí iría la lógica para finalizar sesión
+                                // Aquí iría la lógica para finalizar estudio
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content:
-                                        Text('Finalizar sesión próximamente'),
+                                        Text('Función próximamente'),
                                   ),
                                 );
                               },
-                              child: const Text('Finalizar sesión'),
+                              child: const Text('Terminar estudio'),
                             ),
                           ],
                         ),
@@ -271,19 +271,19 @@ class SleepStudyHomeScreen extends ConsumerWidget {
                             color: Colors.grey,
                           ),
                           const SizedBox(height: 8),
-                          const Text('No hay sesión de estudio activa'),
+                          const Text('No estás estudiando ahora'),
                           const SizedBox(height: 8),
                           ElevatedButton.icon(
                             onPressed: () {
-                              // Aquí iría la lógica para iniciar sesión
+                              // Aquí iría la lógica para iniciar sesión de estudio
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Iniciar sesión próximamente'),
+                                  content: Text('Función próximamente'),
                                 ),
                               );
                             },
                             icon: const Icon(Icons.play_arrow),
-                            label: const Text('Iniciar sesión'),
+                            label: const Text('Comenzar a estudiar'),
                           ),
                         ],
                       ),
@@ -314,12 +314,12 @@ class SleepStudyHomeScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Sesiones de hoy',
+                            'Estudio de hoy',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '${sessions.length} sesiones - ${_formatDuration(totalMinutes)}',
+                            '${sessions.length} ${sessions.length == 1 ? "sesión" : "sesiones"} - ${_formatDuration(totalMinutes)} total',
                           ),
                         ],
                       ),
