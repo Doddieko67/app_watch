@@ -150,11 +150,13 @@ class AppDatabase extends _$AppDatabase {
       update(sleepSchedules).replace(schedule);
 
   // AppSettings
-  Future<List<AppSetting>> getAllSettings() => select(appSettings).get();
-  Future<AppSetting?> getSettingByKey(String key) =>
-      (select(appSettings)..where((s) => s.key.equals(key))).getSingleOrNull();
-  Future<int> insertOrUpdateSetting(AppSettingsCompanion setting) =>
-      into(appSettings).insertOnConflictUpdate(setting);
+  Future<AppSetting?> getSettings() => (select(appSettings)..limit(1)).getSingleOrNull();
+  Future<int> insertSettings(AppSettingsCompanion settings) =>
+      into(appSettings).insert(settings);
+  Future<bool> updateSettings(AppSetting settings) =>
+      update(appSettings).replace(settings);
+  Stream<AppSetting?> watchSettings() =>
+      (select(appSettings)..limit(1)).watchSingleOrNull();
 
   // AiCache
   Future<AiCacheData?> getCachedResponse(String queryHash) =>
