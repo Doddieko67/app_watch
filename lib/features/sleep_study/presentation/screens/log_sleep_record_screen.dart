@@ -65,7 +65,7 @@ class _LogSleepRecordScreenState extends ConsumerState<LogSleepRecordScreen> {
             );
           }
 
-          return _buildForm(context, schedule.plannedBedtime, schedule.plannedWakeup);
+          return _buildForm(context, schedule.defaultBedtime, schedule.defaultWakeup);
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
@@ -370,8 +370,8 @@ class _LogSleepRecordScreenState extends ConsumerState<LogSleepRecordScreen> {
     }
 
     try {
-      final logSleepRecord = ref.read(logSleepRecordProvider);
-      await logSleepRecord(
+      final createAndLogSleepRecord = ref.read(createAndLogSleepRecordProvider);
+      await createAndLogSleepRecord(
         actualBedtime: _actualBedtime!,
         actualWakeup: _actualWakeup!,
         sleepQuality: _sleepQuality,

@@ -154,3 +154,52 @@ Future<DateTime?> optimalStudyTime(OptimalStudyTimeRef ref) async {
   final useCase = ref.watch(calculateOptimalStudyTimeProvider);
   return useCase();
 }
+
+// ==================== ACTION PROVIDERS ====================
+
+/// Provider de acción para crear y registrar sueño en un solo paso
+final createAndLogSleepRecordProvider = Provider<
+    Future<SleepRecordEntity> Function({
+  required DateTime actualBedtime,
+  required DateTime actualWakeup,
+  required int sleepQuality,
+  String? notes,
+})>((ref) {
+  final repository = ref.watch(sleepStudyRepositoryProvider);
+
+  return ({
+    required DateTime actualBedtime,
+    required DateTime actualWakeup,
+    required int sleepQuality,
+    String? notes,
+  }) async {
+    final schedule = await repository.getActiveSleepSchedule();
+    if (schedule == null) {
+      throw Exception('No active sleep schedule found');
+    }
+
+    // Crear registro planificado primero
+    final plannedRecord = await repository.createSleepRecord(
+      date: actualBedtime,
+      plannedBedtime: schedule.defaultBedtime,
+      plannedWakeup: schedule.defaultWakeup,
+      notes: notes,
+    );
+
+    // Actualizar con datos reales
+    final completeRecord = await repository.logActualSleep(
+      recordId: plannedRecord.id,
+      actualBedtime: actualBedtime,
+      actualWakeup: actualWakeup,
+      sleepQuality: sleepQuality,
+      notes: notes,
+    );
+
+    // Invalidar providers
+    ref.invalidate(todaySleepRecordProvider);
+    ref.invalidate(weeklySleepRecordsProvider);
+    ref.invalidate(weeklySleepStatsProvider);
+
+    return completeRecord;
+  };
+});

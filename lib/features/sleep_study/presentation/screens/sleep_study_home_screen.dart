@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/sleep_study_providers.dart';
 import 'sleep_config_screen.dart';
-// TODO: Descomentar cuando se corrijan los errores
-// import 'log_sleep_record_screen.dart';
-// import 'study_session_screen.dart';
+import 'log_sleep_record_screen.dart';
+// import 'study_session_screen.dart'; // TODO: Crear esta pantalla
 
 /// Pantalla principal de Sueño y Estudio
 class SleepStudyHomeScreen extends ConsumerWidget {
@@ -148,15 +147,12 @@ class SleepStudyHomeScreen extends ConsumerWidget {
                                   }
                                   return;
                                 }
-                                // Aquí iría la navegación al formulario de registro
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Formulario de registro próximamente'),
-                                    ),
-                                  );
-                                }
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LogSleepRecordScreen(),
+                                  ),
+                                );
                               },
                               child: const Text('Registrar sueño'),
                             ),
