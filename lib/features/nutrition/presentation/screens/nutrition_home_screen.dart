@@ -4,6 +4,7 @@ import '../../domain/entities/meal_entity.dart';
 import '../providers/nutrition_providers.dart';
 import 'log_meal_screen.dart';
 import 'meal_detail_screen.dart';
+import 'nutrition_charts_screen.dart';
 
 /// Pantalla principal del módulo de nutrición
 class NutritionHomeScreen extends ConsumerWidget {
@@ -21,7 +22,11 @@ class NutritionHomeScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.insights),
             onPressed: () {
-              // TODO: Navegar a estadísticas
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const NutritionChartsScreen(),
+                ),
+              );
             },
           ),
         ],
