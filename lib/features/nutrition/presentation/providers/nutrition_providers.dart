@@ -108,3 +108,19 @@ final mostFrequentFoodsProvider =
   final repository = ref.watch(nutritionRepositoryProvider);
   return repository.getMostFrequentFoods(limit: 10);
 });
+
+/// Provider para obtener una comida por ID
+final mealByIdProvider = FutureProvider.family<MealEntity?, int>((ref, id) async {
+  final repository = ref.watch(nutritionRepositoryProvider);
+  return repository.getMealById(id);
+});
+
+/// Provider para eliminar una comida
+final deleteMealProvider = Provider<Future<void> Function(int)>((ref) {
+  final repository = ref.watch(nutritionRepositoryProvider);
+  return (int id) async {
+    await repository.deleteMeal(id);
+    ref.invalidate(todayMealsProvider);
+    ref.invalidate(dailyNutritionSummaryProvider);
+  };
+});

@@ -167,5 +167,21 @@ class RefreshReminders extends _$RefreshReminders {
   void refresh() {
     state++;
     ref.invalidate(filteredRemindersProvider);
+    ref.invalidate(todayRemindersProvider);
+    ref.invalidate(pendingRemindersProvider);
   }
+}
+
+/// Provider que obtiene los recordatorios de hoy
+@riverpod
+Future<List<ReminderEntity>> todayReminders(TodayRemindersRef ref) async {
+  final repository = ref.watch(reminderRepositoryProvider);
+  return await repository.getTodayReminders();
+}
+
+/// Provider que obtiene los recordatorios pendientes
+@riverpod
+Future<List<ReminderEntity>> pendingReminders(PendingRemindersRef ref) async {
+  final repository = ref.watch(reminderRepositoryProvider);
+  return await repository.getPendingReminders();
 }

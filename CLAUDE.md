@@ -205,7 +205,7 @@ app_watch/
 
 ## 🎯 Estado Actual
 
-### Fase Actual: **Fase 5 Completada ✅ - Listo para Fase 6**
+### Fase Actual: **Fase 6.5 En Progreso 🚧 - Completando Funcionalidades Pre-Release**
 
 **Implementado:**
 
@@ -272,23 +272,81 @@ app_watch/
 - ✅ APK debug generado exitosamente
 - ✅ 0 errores de compilación
 
-**Total archivos:** ~74 archivos (~9,400+ líneas de código)
+#### Fase 6 - Settings, Onboarding y Exportación
+- ✅ Domain Layer completo (AppSettingsEntity, repository, 3 use cases)
+- ✅ Data Layer completo (models, mappers, datasource, repository impl)
+- ✅ Core Services (ExportImportService, SecureStorageService)
+- ✅ SettingsScreen completo con todas las secciones:
+  - Configuración de tema (light/dark/system)
+  - Selector de color primario personalizable
+  - Gestión segura de API key de Gemini (flutter_secure_storage)
+  - Configuración de auto-backup
+  - Exportación/Importación de datos JSON
+  - Gestión de permisos y notificaciones
+- ✅ OnboardingScreen de 3 pantallas con introducción a la app
+- ✅ AboutScreen con información de versión y enlaces
+- ✅ 5 widgets especializados (ThemeModeSelector, ColorPicker, ApiKeyConfig, etc.)
+- ✅ Sistema de exportación completo con compartir vía Share API
+- ✅ Sistema de importación con validación de datos
+- ✅ Integrado a navegación principal
+- ✅ 24 archivos creados (~3,400+ líneas de código)
+- ✅ APK debug generado exitosamente
+- ✅ 0 errores de compilación
 
-### Próximos Pasos
+#### Fase 6.5 - Completando Funcionalidades (En Progreso)
+- ✅ Home Dashboard completo con 4 summary cards:
+  - RemindersSummaryCard (recordatorios de hoy + pendientes)
+  - FitnessSummaryCard (workouts de hoy + stats generales)
+  - NutritionSummaryCard (calorías y macros del día)
+  - SleepStudySummaryCard (calidad de sueño + minutos estudiados)
+- ✅ MealDetailScreen con visualización completa de comidas
+- ✅ Navegación funcional desde cards del Dashboard
+- ✅ Providers adicionales para datos del dashboard
+- ⏳ Formularios de Sueño/Estudio (en desarrollo)
+- ⏳ Gráficas con fl_chart (pendiente)
+- ⏳ Historial de workouts (pendiente)
 
-**Fase 6: Ajustes y Extras** (Semana 6)
-1. Implementar SettingsScreen completo
-2. Configuración de tema (light/dark/system) y color primario
-3. Gestión segura de API key de Gemini (flutter_secure_storage)
-4. Configuración de permisos y notificaciones
-5. Sistema de exportación/importación de datos (JSON)
-6. Auto-backup configurable
-7. Onboarding de 3-4 pantallas
-8. Acerca de y versión de app
+**Total archivos:** ~103 archivos (~13,500+ líneas de código)
 
-**Mejoras opcionales para Fases anteriores:**
+### Próximos Pasos (Fase 6.5)
+
+**Completar Fase 6.5 - Funcionalidades Restantes:**
+1. Formulario de registro de sueño
+2. Pantalla de sesiones de estudio con cronómetro
+3. Gráficas de nutrición (LineChart, PieChart, BarChart)
+4. Gráficas de sueño (LineChart, BarChart)
+5. Gráficas de estudio (BarChart, PieChart)
+6. Historial de workouts con filtros
+7. Navegación desde notificaciones
+
+**Luego Fase 7: Pulido y Optimización** (Semana 7)
+1. **Animaciones:**
+   - Hero animations entre pantallas
+   - Fade in + slide en listas con flutter_animate
+   - Animaciones de éxito/error en formularios
+   - Smooth transitions en gráficas
+
+2. **Performance:**
+   - Optimizar consultas a DB (índices)
+   - Implementar paginación en listas largas
+   - Lazy loading de gráficas
+   - Reducir rebuilds innecesarios
+
+3. **Testing:**
+   - Unit tests para todos los use cases
+   - Widget tests para componentes críticos
+   - Integration tests para flujos principales
+   - Probar con datos grandes (10,000+ registros)
+
+4. **Preparación para Release:**
+   - Configurar app icons y splash screen
+   - Versionar app (1.0.0)
+   - Build de release y probar
+   - Screenshots para stores
+
+**Mejoras opcionales:**
 - Fase 4 (Nutrición): Análisis con IA funcional, gráficas avanzadas, más alimentos
-- Fase 5 (Sueño/Estudio): Gráficas de sueño con fl_chart, cronómetro visual para estudio
+- Fase 5 (Sueño/Estudio): Gráficas de sueño con fl_chart, cronómetro visual
 
 Ver detalles completos en [Plan de Implementación](.claude/contexts/09_implementation_plan.md).
 
@@ -380,5 +438,5 @@ Ver [Roadmap](.claude/contexts/09_implementation_plan.md#post-release-roadmap-fu
 
 ---
 
-**Última actualización:** 2025-11-07
-**Versión de documentación:** 5.0.0 (Fase 5 completada - Sueño y Estudio)
+**Última actualización:** 2025-11-08
+**Versión de documentación:** 6.5.0 (Fase 6.5 en progreso - Home Dashboard y Detalles)

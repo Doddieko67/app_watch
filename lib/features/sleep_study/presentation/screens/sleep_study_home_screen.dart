@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/sleep_study_providers.dart';
 import 'sleep_config_screen.dart';
+// TODO: Descomentar cuando se corrijan los errores
+// import 'log_sleep_record_screen.dart';
+// import 'study_session_screen.dart';
 
 /// Pantalla principal de Sueño y Estudio
 class SleepStudyHomeScreen extends ConsumerWidget {

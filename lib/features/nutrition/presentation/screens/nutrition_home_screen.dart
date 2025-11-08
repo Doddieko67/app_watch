@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/meal_entity.dart';
 import '../providers/nutrition_providers.dart';
 import 'log_meal_screen.dart';
+import 'meal_detail_screen.dart';
 
 /// Pantalla principal del módulo de nutrición
 class NutritionHomeScreen extends ConsumerWidget {
@@ -313,7 +314,12 @@ class _MealCard extends StatelessWidget {
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
-          // TODO: Navegar a detalle de comida
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => MealDetailScreen(mealId: meal.id),
+            ),
+          );
         },
       ),
     );

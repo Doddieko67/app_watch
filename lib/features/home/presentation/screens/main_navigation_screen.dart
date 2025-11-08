@@ -4,6 +4,8 @@ import '../../../daily_reminders/presentation/screens/reminders_home_screen.dart
 import '../../../fitness/presentation/screens/fitness_home_screen.dart';
 import '../../../nutrition/presentation/screens/nutrition_home_screen.dart';
 import '../../../sleep_study/presentation/screens/sleep_study_home_screen.dart';
+import '../../../settings/presentation/screens/settings_screen.dart';
+import 'home_dashboard_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -17,12 +19,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   // Pantallas
   final List<Widget> _screens = const [
-    _PlaceholderScreen(title: '🏠 Home'),
+    HomeDashboardScreen(), // ✅ Fase 6.5 - Dashboard
     RemindersHomeScreen(), // ✅ Fase 2 completada
     FitnessHomeScreen(), // ✅ Fase 3 completada
     NutritionHomeScreen(), // ✅ Fase 4 completada
-    SleepStudyHomeScreen(), // ✅ Fase 5 en progreso
-    _PlaceholderScreen(title: '⚙️ Ajustes'),
+    SleepStudyHomeScreen(), // ✅ Fase 5 completada
+    SettingsScreen(), // ✅ Fase 6 completada
   ];
 
   @override
