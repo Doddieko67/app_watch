@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/fitness_providers.dart';
 import '../widgets/workout_card.dart';
 import 'workout_detail_screen.dart';
+import 'workout_history_screen.dart';
 
 /// Pantalla principal de Fitness
 ///
@@ -25,10 +26,9 @@ class FitnessHomeScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.history),
             onPressed: () {
-              // TODO: Navegar a WorkoutHistoryScreen
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Historial (próximamente)'),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const WorkoutHistoryScreen(),
                 ),
               );
             },
