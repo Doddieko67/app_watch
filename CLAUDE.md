@@ -205,7 +205,7 @@ app_watch/
 
 ## 🎯 Estado Actual
 
-### Fase Actual: **Fase 6.5 En Progreso 🚧 - Completando Funcionalidades Pre-Release**
+### Fase Actual: **Fase 6.5 Completada ✅ - Listo para Fase 7 (Testing & Release)**
 
 **Implementado:**
 
@@ -293,33 +293,65 @@ app_watch/
 - ✅ APK debug generado exitosamente
 - ✅ 0 errores de compilación
 
-#### Fase 6.5 - Completando Funcionalidades (En Progreso)
+#### Fase 6.5 - Completando Funcionalidades Pre-Release
 - ✅ Home Dashboard completo con 4 summary cards:
-  - RemindersSummaryCard (recordatorios de hoy + pendientes)
+  - RemindersSummaryCard (recordatorios de hoy + pendientes + próximos 2)
   - FitnessSummaryCard (workouts de hoy + stats generales)
-  - NutritionSummaryCard (calorías y macros del día)
+  - NutritionSummaryCard (calorías y macros del día con progress)
   - SleepStudySummaryCard (calidad de sueño + minutos estudiados)
-- ✅ MealDetailScreen con visualización completa de comidas
-- ✅ Navegación funcional desde cards del Dashboard
-- ✅ Providers adicionales para datos del dashboard
-- ⏳ Formularios de Sueño/Estudio (en desarrollo)
-- ⏳ Gráficas con fl_chart (pendiente)
-- ⏳ Historial de workouts (pendiente)
+- ✅ MealDetailScreen con visualización completa de comidas:
+  - Breakdown nutricional detallado (calorías, proteína, carbos, grasas)
+  - Lista de alimentos con cantidades
+  - Funcionalidad de eliminar comida
+  - Navegación desde NutritionHomeScreen
+- ✅ LogSleepRecordScreen - Formulario completo de registro de sueño:
+  - Selectores de fecha y hora (dormir/despertar)
+  - Sistema de calificación con estrellas (1-5)
+  - Validación de datos (despertar después de dormir)
+  - Action provider para crear y registrar en un solo paso
+  - Muestra horario planificado vs real
+- ✅ StudySessionScreen - Sesión de estudio con cronómetro:
+  - Timer con play/pause/reset (formato HH:MM:SS o MM:SS)
+  - Campos de materia y notas opcionales
+  - Validación de duración mínima (60 segundos)
+  - Diálogo de confirmación con resumen de tiempo
+  - Integración con LogStudySession use case
+  - Navegación para iniciar o continuar sesión
+- ✅ NutritionChartsScreen - Gráficas de nutrición (fl_chart):
+  - LineChart de calorías semanales con gradiente
+  - PieChart de distribución de macros (% proteína/carbos/grasas)
+  - BarChart de comparación de comidas por tipo
+  - Empty states y manejo de errores
+  - Navegación desde NutritionHomeScreen (botón insights)
+- ✅ SleepStudyChartsScreen - Gráficas de sueño y estudio:
+  - TabBar con 2 tabs (Sueño / Estudio)
+  - Sleep: LineChart horas (planeado vs real), BarChart calidad (color-coded)
+  - Study: BarChart tiempo diario, PieChart distribución por materia
+  - Tarjetas de estadísticas semanales (promedio, calidad, sesiones, etc.)
+  - Navegación desde SleepStudyHomeScreen (botón insights)
+- ✅ WorkoutHistoryScreen - Historial con calendario:
+  - Integración con table_calendar (vista mes/semana/2 semanas)
+  - Marcadores en días con entrenamientos
+  - Lista de workouts filtrada por fecha seleccionada
+  - Cards con split type, duración, ejercicios, volumen
+  - Color-coded según tipo de split
+  - Navegación a WorkoutDetailScreen para editar
+  - Navegación desde FitnessHomeScreen (botón history)
+- ✅ NavigationService - Infraestructura de navegación global:
+  - Global navigator key para acceso desde servicios
+  - Parsing de payloads de notificaciones ("type:id")
+  - Base preparada para deep linking futuro
+  - Manejo de taps en notificaciones con debug logs
+- ✅ Correcciones y ajustes de propiedades de entidades
+- ✅ 11 archivos nuevos creados (~3,500+ líneas de código)
+- ✅ 7 commits exitosos con APK debug generado en cada uno
+- ✅ 0 errores de compilación
 
-**Total archivos:** ~103 archivos (~13,500+ líneas de código)
+**Total archivos:** ~114 archivos (~17,000+ líneas de código)
 
-### Próximos Pasos (Fase 6.5)
+### Próximos Pasos
 
-**Completar Fase 6.5 - Funcionalidades Restantes:**
-1. Formulario de registro de sueño
-2. Pantalla de sesiones de estudio con cronómetro
-3. Gráficas de nutrición (LineChart, PieChart, BarChart)
-4. Gráficas de sueño (LineChart, BarChart)
-5. Gráficas de estudio (BarChart, PieChart)
-6. Historial de workouts con filtros
-7. Navegación desde notificaciones
-
-**Luego Fase 7: Pulido y Optimización** (Semana 7)
+**Fase 7: Pulido, Testing y Release** (Semana 7)
 1. **Animaciones:**
    - Hero animations entre pantallas
    - Fade in + slide en listas con flutter_animate
@@ -439,4 +471,4 @@ Ver [Roadmap](.claude/contexts/09_implementation_plan.md#post-release-roadmap-fu
 ---
 
 **Última actualización:** 2025-11-08
-**Versión de documentación:** 6.5.0 (Fase 6.5 en progreso - Home Dashboard y Detalles)
+**Versión de documentación:** 6.5.1 (Fase 6.5 completada - Todas las funcionalidades implementadas)
