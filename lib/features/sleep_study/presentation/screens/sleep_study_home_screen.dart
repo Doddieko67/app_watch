@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/sleep_study_providers.dart';
 import 'sleep_config_screen.dart';
 import 'log_sleep_record_screen.dart';
-// import 'study_session_screen.dart'; // TODO: Crear esta pantalla
+import 'study_session_screen.dart';
 
 /// Pantalla principal de Sueño y Estudio
 class SleepStudyHomeScreen extends ConsumerWidget {
@@ -243,11 +243,11 @@ class SleepStudyHomeScreen extends ConsumerWidget {
                             const SizedBox(height: 8),
                             ElevatedButton(
                               onPressed: () {
-                                // Aquí iría la lógica para finalizar estudio
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Función próximamente'),
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => StudySessionScreen(
+                                      existingSessionId: session.id,
+                                    ),
                                   ),
                                 );
                               },
@@ -274,10 +274,9 @@ class SleepStudyHomeScreen extends ConsumerWidget {
                           const SizedBox(height: 8),
                           ElevatedButton.icon(
                             onPressed: () {
-                              // Aquí iría la lógica para iniciar sesión de estudio
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Función próximamente'),
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const StudySessionScreen(),
                                 ),
                               );
                             },
