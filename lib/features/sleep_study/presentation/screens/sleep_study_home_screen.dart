@@ -4,6 +4,7 @@ import '../providers/sleep_study_providers.dart';
 import 'sleep_config_screen.dart';
 import 'log_sleep_record_screen.dart';
 import 'study_session_screen.dart';
+import 'sleep_study_charts_screen.dart';
 
 /// Pantalla principal de Sueño y Estudio
 class SleepStudyHomeScreen extends ConsumerWidget {
@@ -20,6 +21,16 @@ class SleepStudyHomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Sueño y Estudio'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.insights),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SleepStudyChartsScreen(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
