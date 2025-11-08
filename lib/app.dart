@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/services/navigation_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/home/presentation/screens/main_navigation_screen.dart';
 import 'features/settings/presentation/providers/settings_providers.dart';
@@ -21,6 +22,7 @@ class App extends ConsumerWidget {
     return MaterialApp(
       title: 'App Watch',
       debugShowCheckedModeBanner: false,
+      navigatorKey: NavigationService().navigatorKey,
       theme: AppTheme.lightTheme(primaryColor),
       darkTheme: AppTheme.darkTheme(primaryColor),
       themeMode: themeMode,

@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../features/daily_reminders/domain/entities/reminder_entity.dart'
     hide Priority;
+import 'navigation_service.dart';
 
 /// Servicio de Notificaciones Locales
 ///
@@ -294,12 +296,31 @@ class NotificationService {
   }
 
   void _onNotificationTapped(NotificationResponse response) {
-    // TODO: Navegar a la pantalla correspondiente según el payload
     final payload = response.payload;
-    if (payload != null) {
-      // Parsear payload y navegar
-      // Ejemplo: "reminder:123" -> Abrir reminder con ID 123
-    }
+    if (payload == null || payload.isEmpty) return;
+
+    // Parsear payload: "type:id" o solo "type"
+    final parts = payload.split(':');
+    final type = parts[0];
+    final id = parts.length > 1 ? int.tryParse(parts[1]) : null;
+
+    // Navegar según el tipo
+    _navigateToScreen(type, id);
+  }
+
+  void _navigateToScreen(String type, int? id) {
+    final navigationService = NavigationService();
+    final context = navigationService.context;
+    if (context == null) return;
+
+    // Navegar a la pantalla principal correspondiente
+    // Como MainNavigationScreen maneja la navegación entre módulos,
+    // simplemente mostramos un mensaje por ahora.
+    // En una implementación completa, se navegaría directamente al detalle.
+
+    // Por ahora, la navegación se maneja a nivel de tabs en MainNavigationScreen
+    // Los payloads podrían usarse en el futuro para deep linking
+    debugPrint('Notification tapped: type=$type, id=$id');
   }
 
   /// Solicitar permisos de notificación (iOS)
