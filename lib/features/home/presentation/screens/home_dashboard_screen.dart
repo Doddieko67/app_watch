@@ -7,7 +7,12 @@ import '../widgets/nutrition_summary_card.dart';
 import '../widgets/sleep_study_summary_card.dart';
 
 class HomeDashboardScreen extends ConsumerWidget {
-  const HomeDashboardScreen({super.key});
+  final void Function(int) onNavigateToTab;
+
+  const HomeDashboardScreen({
+    super.key,
+    required this.onNavigateToTab,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,13 +48,13 @@ class HomeDashboardScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // Quick summary cards
-            const RemindersSummaryCard(),
+            RemindersSummaryCard(onTap: () => onNavigateToTab(1)),
             const SizedBox(height: 16),
-            const FitnessSummaryCard(),
+            FitnessSummaryCard(onTap: () => onNavigateToTab(2)),
             const SizedBox(height: 16),
-            const NutritionSummaryCard(),
+            NutritionSummaryCard(onTap: () => onNavigateToTab(3)),
             const SizedBox(height: 16),
-            const SleepStudySummaryCard(),
+            SleepStudySummaryCard(onTap: () => onNavigateToTab(4)),
             const SizedBox(height: 32),
 
             // Footer

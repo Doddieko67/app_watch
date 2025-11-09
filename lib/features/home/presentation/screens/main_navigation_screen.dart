@@ -17,14 +17,20 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
 
+  void _navigateToTab(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   // Pantallas
-  final List<Widget> _screens = const [
-    HomeDashboardScreen(), // ✅ Fase 6.5 - Dashboard
-    RemindersHomeScreen(), // ✅ Fase 2 completada
-    FitnessHomeScreen(), // ✅ Fase 3 completada
-    NutritionHomeScreen(), // ✅ Fase 4 completada
-    SleepStudyHomeScreen(), // ✅ Fase 5 completada
-    SettingsScreen(), // ✅ Fase 6 completada
+  List<Widget> get _screens => [
+    HomeDashboardScreen(onNavigateToTab: _navigateToTab), // ✅ Fase 6.5 - Dashboard
+    const RemindersHomeScreen(), // ✅ Fase 2 completada
+    const FitnessHomeScreen(), // ✅ Fase 3 completada
+    const NutritionHomeScreen(), // ✅ Fase 4 completada
+    const SleepStudyHomeScreen(), // ✅ Fase 5 completada
+    const SettingsScreen(), // ✅ Fase 6 completada
   ];
 
   @override

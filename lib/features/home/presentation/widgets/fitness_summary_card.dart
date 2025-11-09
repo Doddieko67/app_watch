@@ -6,7 +6,12 @@ import '../../../fitness/presentation/providers/fitness_providers.dart';
 import '../../../fitness/presentation/screens/fitness_home_screen.dart';
 
 class FitnessSummaryCard extends ConsumerWidget {
-  const FitnessSummaryCard({super.key});
+  final VoidCallback onTap;
+
+  const FitnessSummaryCard({
+    super.key,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,12 +21,7 @@ class FitnessSummaryCard extends ConsumerWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const FitnessHomeScreen()),
-          );
-        },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

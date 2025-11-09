@@ -6,7 +6,12 @@ import '../../../daily_reminders/presentation/providers/reminder_providers.dart'
 import '../../../daily_reminders/presentation/screens/reminders_home_screen.dart';
 
 class RemindersSummaryCard extends ConsumerWidget {
-  const RemindersSummaryCard({super.key});
+  final VoidCallback onTap;
+
+  const RemindersSummaryCard({
+    super.key,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,15 +21,7 @@ class RemindersSummaryCard extends ConsumerWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
-          // Navigate to reminders screen by changing tab
-          // Since we're in a StatefulWidget in main_navigation, we can't directly change index
-          // Instead, show the reminders screen directly
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RemindersHomeScreen()),
-          );
-        },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

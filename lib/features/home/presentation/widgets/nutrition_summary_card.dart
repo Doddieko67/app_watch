@@ -5,7 +5,12 @@ import '../../../nutrition/presentation/providers/nutrition_providers.dart';
 import '../../../nutrition/presentation/screens/nutrition_home_screen.dart';
 
 class NutritionSummaryCard extends ConsumerWidget {
-  const NutritionSummaryCard({super.key});
+  final VoidCallback onTap;
+
+  const NutritionSummaryCard({
+    super.key,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,12 +20,7 @@ class NutritionSummaryCard extends ConsumerWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const NutritionHomeScreen()),
-          );
-        },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

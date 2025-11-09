@@ -5,7 +5,12 @@ import '../../../sleep_study/presentation/providers/sleep_study_providers.dart';
 import '../../../sleep_study/presentation/screens/sleep_study_home_screen.dart';
 
 class SleepStudySummaryCard extends ConsumerWidget {
-  const SleepStudySummaryCard({super.key});
+  final VoidCallback onTap;
+
+  const SleepStudySummaryCard({
+    super.key,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,12 +21,7 @@ class SleepStudySummaryCard extends ConsumerWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SleepStudyHomeScreen()),
-          );
-        },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
