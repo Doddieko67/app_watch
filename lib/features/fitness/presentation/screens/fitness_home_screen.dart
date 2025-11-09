@@ -364,27 +364,28 @@ class _EmptyState extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.fitness_center,
-              size: 80,
+              size: 64,
               color: theme.colorScheme.primary.withOpacity(0.5),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Text(
               'No hay entrenamientos',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Text(
               'Comienza tu primer entrenamiento para hacer seguimiento de tu progreso',
               style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: onAddWorkout,
               icon: const Icon(Icons.add),
