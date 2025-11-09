@@ -315,4 +315,49 @@ class NutritionLocalDataSource {
     // Por ahora retornamos lista vacía - se puede implementar con queries más complejas
     return [];
   }
+
+  Future<List<FoodItemEntity>> getRecentUniqueFoods({int limit = 50}) async {
+    // Query SQL para obtener alimentos únicos más recientes
+    final query = _database.select(_database.foodItems)
+      ..where((f) => f.deletedAt.isNull())
+      ..orderBy([(f) => OrderingTerm.desc(f.createdAt)])
+      ..limit(limit * 3); // Obtenemos más para filtrar duplicados
+
+    final foodItems = await query.get();
+
+    // Filtrar duplicados por nombre (mantener el más reciente de cada nombre)
+    final uniqueFoods = <String, FoodItem>{};
+    for (final food in foodItems) {
+      if (!uniqueFoods.containsKey(food.name)) {
+        uniqueFoods[food.name] = food;
+      }
+    }
+
+    // Convertir a entities y limitar a 'limit'
+    final entities = uniqueFoods.values
+        .take(limit)
+        .map((data) => _mapToEntity(data))
+        .toList();
+
+    return entities;
+  }
+
+  FoodItemEntity _mapToEntity(FoodItem data) {
+    return FoodItemEntity(
+      id: data.id,
+      mealId: data.mealId,
+      name: data.name,
+      quantity: data.quantity,
+      unit: data.unit,
+      calories: data.calories,
+      protein: data.protein,
+      carbs: data.carbs,
+      fats: data.fats,
+      source: data.source,
+      aiResponse: data.aiResponse,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      deletedAt: data.deletedAt,
+    );
+  }
 }

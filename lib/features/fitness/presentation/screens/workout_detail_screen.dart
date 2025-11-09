@@ -215,6 +215,7 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
                 final exercise = entry.value;
                 return ExerciseLogCard(
                   exercise: exercise,
+                  onEdit: () => _editExercise(index),
                   onDelete: () => _removeExercise(index),
                 );
               }),
@@ -256,6 +257,22 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
     }
   }
 
+  Future<void> _editExercise(int index) async {
+    final exercise = await showDialog<ExerciseEntity>(
+      context: context,
+      builder: (context) => ExerciseFormDialog(
+        exercise: _exercises[index],
+        workoutId: widget.workout?.id ?? 0,
+      ),
+    );
+
+    if (exercise != null) {
+      setState(() {
+        _exercises[index] = exercise;
+      });
+    }
+  }
+
   void _removeExercise(int index) {
     setState(() {
       _exercises.removeAt(index);
@@ -287,7 +304,7 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
       final createWorkoutUseCase = ref.read(createWorkoutProvider);
       final logExerciseUseCase = ref.read(logExerciseProvider);
 
-      // Crear el workout
+      // Crear/actualizar el workout
       final workout = WorkoutEntity(
         id: widget.workout?.id ?? 0,
         name: _nameController.text.trim(),
@@ -307,16 +324,59 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
 
       final workoutId = await createWorkoutUseCase(workout);
 
-      // Guardar ejercicios
-      for (final exercise in _exercises) {
-        await logExerciseUseCase(
-          exercise.copyWith(workoutId: workoutId),
-        );
+      final repository = ref.read(fitnessRepositoryProvider);
+
+      // Si estamos editando un workout existente, manejar ejercicios inteligentemente
+      if (widget.workout != null && widget.workout!.id != 0) {
+        final oldExercises = widget.workout!.exercises;
+        final oldExerciseIds = oldExercises.map((e) => e.id).toSet();
+        final currentExerciseIds = _exercises.where((e) => e.id != 0).map((e) => e.id).toSet();
+
+        // 1. Eliminar ejercicios que ya no están en la lista
+        for (final oldEx in oldExercises) {
+          if (!currentExerciseIds.contains(oldEx.id)) {
+            await repository.deleteExercise(oldEx.id);
+          }
+        }
+
+        // 2. Actualizar o crear ejercicios
+        for (final exercise in _exercises) {
+          if (exercise.id != 0 && oldExerciseIds.contains(exercise.id)) {
+            // Actualizar ejercicio existente (preservar ID y timestamps)
+            await repository.updateExercise(
+              exercise.copyWith(workoutId: workoutId),
+            );
+          } else {
+            // Crear nuevo ejercicio
+            await logExerciseUseCase(
+              exercise.copyWith(
+                workoutId: workoutId,
+                id: 0,
+              ),
+            );
+          }
+        }
+      } else {
+        // Workout nuevo: crear todos los ejercicios
+        for (final exercise in _exercises) {
+          await logExerciseUseCase(
+            exercise.copyWith(
+              workoutId: workoutId,
+              id: 0,
+            ),
+          );
+        }
       }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Workout guardado exitosamente')),
+          SnackBar(
+            content: Text(
+              widget.workout != null
+                  ? 'Workout actualizado exitosamente'
+                  : 'Workout guardado exitosamente',
+            ),
+          ),
         );
         Navigator.pop(context);
       }

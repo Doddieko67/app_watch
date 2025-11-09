@@ -1,18 +1,26 @@
+import 'package:drift/drift.dart' as drift hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/database/app_database.dart';
+import '../../../../core/providers/database_provider.dart';
 import '../../domain/entities/workout_entity.dart';
+import '../providers/fitness_providers.dart';
+import 'exercise_autocomplete_field.dart';
 
 /// Widget para mostrar y editar un ejercicio
 class ExerciseLogCard extends StatelessWidget {
   final ExerciseEntity? exercise;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
   final ValueChanged<ExerciseEntity>? onChanged;
 
   const ExerciseLogCard({
     super.key,
     this.exercise,
     this.onDelete,
+    this.onEdit,
     this.onChanged,
   });
 
@@ -27,7 +35,7 @@ class ExerciseLogCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header con nombre y botón eliminar
+            // Header con nombre y botones de acción
             Row(
               children: [
                 Icon(
@@ -44,6 +52,15 @@ class ExerciseLogCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (onEdit != null)
+                  IconButton(
+                    icon: Icon(
+                      Icons.edit_outlined,
+                      color: theme.colorScheme.primary,
+                    ),
+                    onPressed: onEdit,
+                    tooltip: 'Editar ejercicio',
+                  ),
                 if (onDelete != null)
                   IconButton(
                     icon: Icon(
@@ -51,6 +68,7 @@ class ExerciseLogCard extends StatelessWidget {
                       color: theme.colorScheme.error,
                     ),
                     onPressed: onDelete,
+                    tooltip: 'Eliminar ejercicio',
                   ),
               ],
             ),
@@ -187,7 +205,7 @@ class _InfoChip extends StatelessWidget {
 }
 
 /// Dialog para agregar/editar un ejercicio
-class ExerciseFormDialog extends StatefulWidget {
+class ExerciseFormDialog extends ConsumerStatefulWidget {
   final ExerciseEntity? exercise;
   final int workoutId;
 
@@ -198,19 +216,21 @@ class ExerciseFormDialog extends StatefulWidget {
   });
 
   @override
-  State<ExerciseFormDialog> createState() => _ExerciseFormDialogState();
+  ConsumerState<ExerciseFormDialog> createState() => _ExerciseFormDialogState();
 }
 
-class _ExerciseFormDialogState extends State<ExerciseFormDialog> {
+class _ExerciseFormDialogState extends ConsumerState<ExerciseFormDialog> {
   late final TextEditingController _nameController;
   late final TextEditingController _setsController;
   late final TextEditingController _repsController;
   late final TextEditingController _weightController;
   late final TextEditingController _notesController;
+  bool _isEditingExisting = false;
 
   @override
   void initState() {
     super.initState();
+    _isEditingExisting = widget.exercise != null;
     _nameController = TextEditingController(text: widget.exercise?.name ?? '');
     _setsController = TextEditingController(
       text: widget.exercise?.sets.toString() ?? '',
@@ -244,15 +264,30 @@ class _ExerciseFormDialogState extends State<ExerciseFormDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nombre del Ejercicio',
-                hintText: 'Ej: Bench Press',
-                prefixIcon: Icon(Icons.fitness_center),
+            // Usar autocompletar solo cuando es ejercicio nuevo
+            if (!_isEditingExisting)
+              ExerciseAutocompleteField(
+                controller: _nameController,
+                onExerciseSelected: (savedExercise) {
+                  if (savedExercise != null) {
+                    setState(() {
+                      _setsController.text = savedExercise.lastSets.toString();
+                      _repsController.text = savedExercise.lastReps.toString();
+                      _weightController.text = savedExercise.lastWeight.toString();
+                    });
+                  }
+                },
+              )
+            else
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre del Ejercicio',
+                  hintText: 'Ej: Bench Press',
+                  prefixIcon: Icon(Icons.fitness_center),
+                ),
+                textCapitalization: TextCapitalization.words,
               ),
-              textCapitalization: TextCapitalization.words,
-            ),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -319,7 +354,7 @@ class _ExerciseFormDialogState extends State<ExerciseFormDialog> {
     );
   }
 
-  void _saveExercise() {
+  Future<void> _saveExercise() async {
     if (_nameController.text.trim().isEmpty ||
         _setsController.text.isEmpty ||
         _repsController.text.isEmpty ||
@@ -345,6 +380,47 @@ class _ExerciseFormDialogState extends State<ExerciseFormDialog> {
       deletedAt: null,
     );
 
-    Navigator.pop(context, exercise);
+    // Guardar/actualizar en SavedExercises
+    try {
+      final database = ref.read(appDatabaseProvider);
+      final existing = await database.getSavedExerciseByName(exercise.name);
+      final now = DateTime.now();
+
+      if (existing != null) {
+        // Actualizar ejercicio existente
+        await database.updateSavedExercise(
+          existing.copyWith(
+            lastSets: exercise.sets,
+            lastReps: exercise.reps,
+            lastWeight: exercise.weight,
+            lastUsed: now,
+            usageCount: existing.usageCount + 1,
+            updatedAt: now,
+          ),
+        );
+      } else {
+        // Crear nuevo ejercicio guardado
+        await database.insertSavedExercise(
+          SavedExercisesCompanion.insert(
+            name: exercise.name,
+            lastSets: drift.Value(exercise.sets),
+            lastReps: drift.Value(exercise.reps),
+            lastWeight: drift.Value(exercise.weight),
+            lastUsed: now,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+      }
+      // Invalidar el provider para refrescar la lista
+      ref.invalidate(savedExercisesProvider);
+    } catch (e) {
+      // Error silencioso, no bloqueamos el guardado del ejercicio
+      debugPrint('Error saving to SavedExercises: $e');
+    }
+
+    if (mounted) {
+      Navigator.pop(context, exercise);
+    }
   }
 }

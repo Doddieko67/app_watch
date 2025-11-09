@@ -42,12 +42,14 @@ class NutritionHomeScreen extends ConsumerWidget {
             SliverToBoxAdapter(
               child: summaryAsync.when(
                 data: (summary) => _DailySummaryCard(summary: summary),
-                loading: () => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+                loading: () => summaryAsync.valueOrNull != null
+                    ? _DailySummaryCard(summary: summaryAsync.valueOrNull!)
+                    : const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(24.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
                 error: (error, stack) => Center(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -94,10 +96,33 @@ class NutritionHomeScreen extends ConsumerWidget {
                   ),
                 );
               },
-              loading: () => const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(child: CircularProgressIndicator()),
-              ),
+              loading: () {
+                // Si hay datos previos, mostrarlos mientras carga
+                final previousMeals = mealsAsync.valueOrNull;
+                if (previousMeals != null) {
+                  if (previousMeals.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Text('No hay comidas registradas'),
+                      ),
+                    );
+                  }
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final meal = previousMeals[index];
+                        return _MealCard(meal: meal);
+                      },
+                      childCount: previousMeals.length,
+                    ),
+                  );
+                }
+                return const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              },
               error: (error, stack) => SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(child: Text('Error: $error')),

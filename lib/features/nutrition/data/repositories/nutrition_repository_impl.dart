@@ -175,4 +175,9 @@ class NutritionRepositoryImpl implements INutritionRepository {
   Future<List<FoodFrequency>> getMostFrequentFoods({int limit = 10}) {
     return _localDataSource.getMostFrequentFoods(limit: limit);
   }
+
+  @override
+  Future<List<FoodItemEntity>> getRecentUniqueFoods({int limit = 50}) {
+    return _localDataSource.getRecentUniqueFoods(limit: limit);
+  }
 }

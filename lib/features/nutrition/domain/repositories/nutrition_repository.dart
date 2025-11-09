@@ -102,6 +102,9 @@ abstract class INutritionRepository {
 
   /// Obtiene alimentos más frecuentes
   Future<List<FoodFrequency>> getMostFrequentFoods({int limit = 10});
+
+  /// Obtiene alimentos únicos recientes (para autocompletar)
+  Future<List<FoodItemEntity>> getRecentUniqueFoods({int limit = 50});
 }
 
 /// Resumen nutricional diario

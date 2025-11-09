@@ -6,6 +6,7 @@ import '../../../../core/services/local_nutrition_database.dart';
 import '../../domain/repositories/nutrition_repository.dart' as domain;
 import '../../data/datasources/nutrition_local_datasource.dart';
 import '../../data/repositories/nutrition_repository_impl.dart';
+import '../../domain/entities/food_item_entity.dart';
 import '../../domain/entities/meal_entity.dart';
 import '../../domain/entities/nutrition_goals_entity.dart';
 import '../../domain/repositories/nutrition_repository.dart';
@@ -72,7 +73,10 @@ final addFoodToMealUseCaseProvider = Provider<AddFoodToMeal>((ref) {
 final selectedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
 
 /// Provider para obtener comidas del día actual
-final todayMealsProvider = FutureProvider<List<MealEntity>>((ref) async {
+final todayMealsProvider = FutureProvider.autoDispose<List<MealEntity>>((ref) async {
+  // Mantener el provider vivo para cachear resultados
+  ref.keepAlive();
+
   final repository = ref.watch(nutritionRepositoryProvider);
   final selectedDate = ref.watch(selectedDateProvider);
   return repository.getMealsByDate(selectedDate);
@@ -80,7 +84,10 @@ final todayMealsProvider = FutureProvider<List<MealEntity>>((ref) async {
 
 /// Provider para resumen nutricional del día
 final dailyNutritionSummaryProvider =
-    FutureProvider<domain.DailyNutritionSummary>((ref) async {
+    FutureProvider.autoDispose<domain.DailyNutritionSummary>((ref) async {
+  // Mantener el provider vivo para cachear resultados
+  ref.keepAlive();
+
   final useCase = ref.watch(getDailyNutritionUseCaseProvider);
   final selectedDate = ref.watch(selectedDateProvider);
   return useCase(selectedDate);
@@ -123,4 +130,12 @@ final deleteMealProvider = Provider<Future<void> Function(int)>((ref) {
     ref.invalidate(todayMealsProvider);
     ref.invalidate(dailyNutritionSummaryProvider);
   };
+});
+
+/// Provider para obtener alimentos recientes/únicos (para autocompletar)
+final recentFoodsProvider = FutureProvider<List<FoodItemEntity>>((ref) async {
+  final repository = ref.watch(nutritionRepositoryProvider);
+  // Obtener alimentos únicos ordenados por fecha de uso
+  final allFoods = await repository.getRecentUniqueFoods(limit: 50);
+  return allFoods;
 });

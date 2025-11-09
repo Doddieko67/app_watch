@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/fitness_providers.dart';
+import '../widgets/one_rm_calculator.dart';
 import '../widgets/workout_card.dart';
+import 'fitness_stats_screen.dart';
+import 'saved_exercises_list_screen.dart';
 import 'workout_detail_screen.dart';
 import 'workout_history_screen.dart';
 
@@ -37,12 +40,48 @@ class FitnessHomeScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.analytics_outlined),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Estadísticas detalladas (próximamente)'),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const FitnessStatsScreen(),
                 ),
               );
             },
+          ),
+          // Menú con más opciones
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'exercises') {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const SavedExercisesListScreen(),
+                  ),
+                );
+              } else if (value == '1rm') {
+                showOneRMCalculator(context);
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'exercises',
+                child: Row(
+                  children: [
+                    Icon(Icons.fitness_center),
+                    SizedBox(width: 12),
+                    Text('Ejercicios Guardados'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: '1rm',
+                child: Row(
+                  children: [
+                    Icon(Icons.calculate),
+                    SizedBox(width: 12),
+                    Text('Calculadora 1RM'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

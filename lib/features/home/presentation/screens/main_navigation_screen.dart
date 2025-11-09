@@ -105,35 +105,36 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   _selectedIndex = index;
                 });
               },
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
               destinations: const [
                 NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home),
+                  icon: Icon(Icons.home_outlined, size: 28),
+                  selectedIcon: Icon(Icons.home, size: 28),
                   label: 'Home',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.notifications_outlined),
-                  selectedIcon: Icon(Icons.notifications),
+                  icon: Icon(Icons.notifications_outlined, size: 28),
+                  selectedIcon: Icon(Icons.notifications, size: 28),
                   label: 'Recordatorios',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.fitness_center_outlined),
-                  selectedIcon: Icon(Icons.fitness_center),
+                  icon: Icon(Icons.fitness_center_outlined, size: 28),
+                  selectedIcon: Icon(Icons.fitness_center, size: 28),
                   label: 'Fitness',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.restaurant_outlined),
-                  selectedIcon: Icon(Icons.restaurant),
+                  icon: Icon(Icons.restaurant_outlined, size: 28),
+                  selectedIcon: Icon(Icons.restaurant, size: 28),
                   label: 'Nutrición',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.bedtime_outlined),
-                  selectedIcon: Icon(Icons.bedtime),
+                  icon: Icon(Icons.bedtime_outlined, size: 28),
+                  selectedIcon: Icon(Icons.bedtime, size: 28),
                   label: 'Sueño',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings),
+                  icon: Icon(Icons.settings_outlined, size: 28),
+                  selectedIcon: Icon(Icons.settings, size: 28),
                   label: 'Ajustes',
                 ),
               ],

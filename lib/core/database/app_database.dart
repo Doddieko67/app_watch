@@ -12,6 +12,7 @@ import 'tables/food_items_table.dart';
 import 'tables/meals_table.dart';
 import 'tables/nutrition_goals_table.dart';
 import 'tables/reminders_table.dart';
+import 'tables/saved_exercises_table.dart';
 import 'tables/sleep_records_table.dart';
 import 'tables/sleep_schedules_table.dart';
 import 'tables/study_sessions_table.dart';
@@ -23,6 +24,7 @@ part 'app_database.g.dart';
   Reminders,
   Workouts,
   Exercises,
+  SavedExercises,
   Meals,
   FoodItems,
   NutritionGoals,
@@ -36,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -44,10 +46,10 @@ class AppDatabase extends _$AppDatabase {
           await m.createAll();
         },
         onUpgrade: (Migrator m, int from, int to) async {
-          // Migraciones futuras aquí
-          // if (from == 1) {
-          //   await m.addColumn(reminders, reminders.tags);
-          // }
+          // Migración de v1 a v2: agregar tabla SavedExercises
+          if (from == 1 && to == 2) {
+            await m.createTable(savedExercises);
+          }
         },
       );
 
@@ -84,6 +86,22 @@ class AppDatabase extends _$AppDatabase {
       update(exercises).replace(exercise);
   Future<int> deleteExercise(int id) =>
       (delete(exercises)..where((e) => e.id.equals(id))).go();
+
+  // SavedExercises
+  Future<List<SavedExerciseData>> getAllSavedExercises() =>
+      (select(savedExercises)
+            ..where((e) => e.deletedAt.isNull())
+            ..orderBy([(e) => OrderingTerm.desc(e.lastUsed)]))
+          .get();
+  Future<SavedExerciseData?> getSavedExerciseByName(String name) =>
+      (select(savedExercises)..where((e) => e.name.equals(name)))
+          .getSingleOrNull();
+  Future<int> insertSavedExercise(SavedExercisesCompanion exercise) =>
+      into(savedExercises).insert(exercise);
+  Future<bool> updateSavedExercise(SavedExerciseData exercise) =>
+      update(savedExercises).replace(exercise);
+  Future<int> deleteSavedExercise(int id) =>
+      (delete(savedExercises)..where((e) => e.id.equals(id))).go();
 
   // Meals
   Future<List<Meal>> getAllMeals() => select(meals).get();

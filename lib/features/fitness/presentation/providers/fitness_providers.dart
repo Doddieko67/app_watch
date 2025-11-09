@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/database/app_database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../data/datasources/fitness_local_datasource.dart';
 import '../../data/repositories/fitness_repository_impl.dart';
@@ -174,4 +175,11 @@ Future<Map<String, double>> weeklyVolume(
 }) async {
   final repository = ref.watch(fitnessRepositoryProvider);
   return await repository.getWeeklyVolume(start, end);
+}
+
+/// Provider para obtener ejercicios guardados
+@riverpod
+Future<List<SavedExerciseData>> savedExercises(SavedExercisesRef ref) async {
+  final database = ref.watch(appDatabaseProvider);
+  return await database.getAllSavedExercises();
 }
