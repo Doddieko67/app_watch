@@ -424,9 +424,10 @@ class _ApiKeyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return const SingleChildScrollView(
       padding: EdgeInsets.all(32),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ApiKeyOnboardingWidget(),
