@@ -360,40 +360,50 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.fitness_center,
-              size: 64,
-              color: theme.colorScheme.primary.withOpacity(0.5),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Adaptar el diseño según el espacio disponible
+        final hasLimitedSpace = constraints.maxHeight < 400;
+
+        return Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(hasLimitedSpace ? 16 : 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.fitness_center,
+                  size: hasLimitedSpace ? 48 : 64,
+                  color: theme.colorScheme.primary.withOpacity(0.5),
+                ),
+                SizedBox(height: hasLimitedSpace ? 12 : 16),
+                Text(
+                  'No hay entrenamientos',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: hasLimitedSpace ? 20 : null,
+                  ),
+                ),
+                SizedBox(height: hasLimitedSpace ? 6 : 8),
+                Text(
+                  'Comienza tu primer entrenamiento para hacer seguimiento de tu progreso',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: hasLimitedSpace ? 13 : null,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: hasLimitedSpace ? 16 : 24),
+                FilledButton.icon(
+                  onPressed: onAddWorkout,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Nuevo Entrenamiento'),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              'No hay entrenamientos',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Comienza tu primer entrenamiento para hacer seguimiento de tu progreso',
-              style: theme.textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: onAddWorkout,
-              icon: const Icon(Icons.add),
-              label: const Text('Nuevo Entrenamiento'),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
