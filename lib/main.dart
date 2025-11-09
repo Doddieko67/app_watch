@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'app.dart';
-import 'core/services/notification_service.dart';
 
 void main() async {
   // Asegurar que Flutter esté inicializado
@@ -12,8 +11,8 @@ void main() async {
   // Inicializar locale data para formateo de fechas en español
   await initializeDateFormatting('es_ES', null);
 
-  // Inicializar servicios
-  await NotificationService().initialize();
+  // NotificationService se inicializa automáticamente cuando se usa por primera vez
+  // (lazy initialization para evitar errores de contexto en Android)
 
   runApp(
     const ProviderScope(
