@@ -205,7 +205,7 @@ app_watch/
 
 ## 🎯 Estado Actual
 
-### Fase Actual: **Fase 6.5 Completada ✅ - Listo para Fase 7 (Testing & Release)**
+### Fase Actual: **Fase 6.5 Completada ✅ - Listo para Fase 6.8 (Mejoras Funcionales)**
 
 **Implementado:**
 
@@ -351,34 +351,39 @@ app_watch/
 
 ### Próximos Pasos
 
-**Fase 7: Pulido, Testing y Release** (Semana 7)
-1. **Animaciones:**
-   - Hero animations entre pantallas
-   - Fade in + slide en listas con flutter_animate
-   - Animaciones de éxito/error en formularios
-   - Smooth transitions en gráficas
+**Fase 6.8: Mejoras Funcionales Pre-Pulido**
+1. **FITNESS:**
+   - Editar ejercicios en workout (antes y después de guardar)
+   - Sistema de ejercicios guardados con autocompletar
+   - Pantalla de estadísticas detalladas (ejercicios frecuentes, PRs)
 
-2. **Performance:**
-   - Optimizar consultas a DB (índices)
-   - Implementar paginación en listas largas
-   - Lazy loading de gráficas
-   - Reducir rebuilds innecesarios
+2. **NUTRITION:**
+   - Optimizar carga al cambiar de día (eliminar loading de 100ms)
+   - Sistema de alimentos guardados con autocompletar
+   - Guardar últimas cantidades/porciones
 
-3. **Testing:**
-   - Unit tests para todos los use cases
-   - Widget tests para componentes críticos
-   - Integration tests para flujos principales
-   - Probar con datos grandes (10,000+ registros)
+3. **NAVIGATION:**
+   - Simplificar barra de navegación (solo iconos, sin labels)
+   - Iconos más grandes para mejor UX
 
-4. **Preparación para Release:**
-   - Configurar app icons y splash screen
-   - Versionar app (1.0.0)
-   - Build de release y probar
-   - Screenshots para stores
+**Fase 7.0: Pulido Técnico** (Primera mitad Semana 7)
+- Animaciones con flutter_animate
+- Optimización de performance (DB, paginación, lazy loading)
+- Manejo robusto de errores
+- Optimización y limpieza de base de datos
 
-**Mejoras opcionales:**
-- Fase 4 (Nutrición): Análisis con IA funcional, gráficas avanzadas, más alimentos
-- Fase 5 (Sueño/Estudio): Gráficas de sueño con fl_chart, cronómetro visual
+**Fase 7.5: Preparación para Release** (Segunda mitad Semana 7)
+- Testing completo (unit, widget, integration - 80%+ coverage)
+- Documentación final (README, ARCHITECTURE, CONTRIBUTING)
+- Configuración de release (icons, splash, signing)
+- Preparación para stores (screenshots, descripciones)
+
+**Post-Release: Mejoras UI/UX** (Futuro)
+- Rediseño completo con Brutalist Dark UI
+- Tipografía bold y amigable (estilo Duolingo)
+- Temas predefinidos (Sakura, Capuccino, Tokyo Night)
+- Widgets más grandes, más iconos, menos texto
+- Ver NOTITAS.md para detalles completos
 
 Ver detalles completos en [Plan de Implementación](.claude/contexts/09_implementation_plan.md).
 

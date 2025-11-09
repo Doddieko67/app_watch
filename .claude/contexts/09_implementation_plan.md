@@ -318,6 +318,67 @@ App completa con todas las configuraciones y onboarding.
 
 ---
 
+## Fase 6.8: Mejoras Funcionales Pre-Pulido
+
+### Objetivos
+Implementar mejoras funcionales identificadas antes del pulido final: edición de ejercicios, listas de items guardados, estadísticas detalladas y optimizaciones de UX.
+
+### Tareas
+
+#### FITNESS - Edición de Ejercicios
+- [ ] Permitir editar ejercicios en workout ANTES de guardar:
+  - Modificar sets, reps, peso de ejercicios ya agregados
+  - Botón de edición en cada ejercicio de la lista
+  - Reordenar ejercicios (opcional)
+- [ ] Permitir editar workouts ya guardados:
+  - Editar ejercicios existentes en workout guardado
+  - Agregar/eliminar ejercicios de workout existente
+  - Actualizar estadísticas al modificar
+
+#### FITNESS - Sistema de Ejercicios Guardados
+- [ ] Crear tabla/almacenamiento de ejercicios únicos usados
+- [ ] Implementar autocompletar al escribir nombre de ejercicio:
+  - Sugerir ejercicios previamente usados
+  - Mostrar últimos valores (sets, reps, peso)
+- [ ] Botón para ver lista completa de ejercicios guardados:
+  - Pantalla con todos los ejercicios históricos
+  - Búsqueda y filtrado
+  - Seleccionar ejercicio pre-rellena últimos valores
+
+#### FITNESS - Estadísticas Detalladas
+- [ ] Crear pantalla de estadísticas avanzadas:
+  - Ejercicios más frecuentes (top 10-15)
+  - Records personales (PRs) por ejercicio
+  - Última vez que se hizo cada ejercicio
+  - Progresión de peso/volumen por ejercicio
+
+#### NUTRITION - Optimización de Carga
+- [ ] Eliminar pantalla de carga al cambiar de día:
+  - Optimizar query de resumen diario
+  - Usar caché o estado previo mientras carga
+  - Transición suave sin loading indicator
+
+#### NUTRITION - Sistema de Alimentos Guardados
+- [ ] Crear tabla/almacenamiento de alimentos únicos usados
+- [ ] Implementar autocompletar al escribir nombre de alimento:
+  - Sugerir alimentos previamente loggeados
+  - Mostrar últimas cantidades/porciones
+- [ ] Botón para ver lista completa de alimentos guardados:
+  - Pantalla con todos los alimentos históricos
+  - Búsqueda y filtrado
+  - Seleccionar alimento pre-rellena últimos valores
+
+#### NAVIGATION BAR - Simplificación
+- [ ] Modificar MainNavigationScreen:
+  - Eliminar labels de texto en NavigationBar
+  - Aumentar tamaño de iconos
+  - Solo iconos visibles en bottom navigation
+
+### Entregable
+App con todas las mejoras funcionales implementadas, lista para entrar a Fase 7 (Pulido).
+
+---
+
 ## Fase 7.0: Pulido Técnico (Primera mitad Semana 7)
 
 ### Objetivos
