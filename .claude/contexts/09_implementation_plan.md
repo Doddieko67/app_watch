@@ -318,10 +318,10 @@ App completa con todas las configuraciones y onboarding.
 
 ---
 
-## Fase 7: Pulido y Optimización (Semana 7)
+## Fase 7.0: Pulido Técnico (Primera mitad Semana 7)
 
 ### Objetivos
-Optimizar rendimiento, agregar animaciones y preparar para release.
+Optimizar rendimiento, agregar animaciones, mejorar manejo de errores y optimizar base de datos.
 
 ### Tareas
 
@@ -330,51 +330,90 @@ Optimizar rendimiento, agregar animaciones y preparar para release.
 - [ ] Fade in + slide en listas con flutter_animate
 - [ ] Animaciones de éxito/error en formularios
 - [ ] Smooth transitions en gráficas
+- [ ] Animaciones en cambios de estado (loading, empty, error)
 
 #### Performance
 - [ ] Optimizar consultas a DB (índices)
 - [ ] Implementar paginación en listas largas
 - [ ] Lazy loading de gráficas
-- [ ] Reducir rebuilds innecesarios
+- [ ] Reducir rebuilds innecesarios con `const` constructors
+- [ ] Usar `RepaintBoundary` en widgets complejos
+- [ ] Optimizar imágenes y assets
 
 #### Manejo de Errores
 - [ ] Try-catch en todos los services
 - [ ] Snackbars informativos para el usuario
-- [ ] Logging para debugging
+- [ ] Logging para debugging (usando logger package)
 - [ ] Validación de formularios robusta
-
-#### Testing
-- [ ] Completar unit tests para todos los use cases
-- [ ] Widget tests para componentes críticos
-- [ ] Integration tests para flujos principales:
-  - Crear recordatorio → recibir notificación
-  - Loggear comida con IA
-  - Registrar workout completo
-- [ ] Probar en múltiples tamaños de pantalla
-- [ ] Probar con datos grandes (10,000+ registros)
+- [ ] Error boundaries para widgets críticos
+- [ ] Mensajes de error user-friendly
 
 #### Optimización de DB
-- [ ] Verificar índices están aplicados
-- [ ] Probar queries con EXPLAIN
-- [ ] Implementar limpieza de cache antigua
-- [ ] Limpiar soft deletes viejos
-
-#### Documentación
-- [ ] Comentar código complejo
-- [ ] README.md del proyecto
-- [ ] Documentar arquitectura
-- [ ] Guía de contribución
-
-#### Preparación para Release
-- [ ] Configurar app icons (Android/iOS)
-- [ ] Configurar splash screen
-- [ ] Versionar app (1.0.0)
-- [ ] Configurar signing (Android)
-- [ ] Build de release y probar
-- [ ] Screenshots para stores
+- [ ] Verificar índices están aplicados correctamente
+- [ ] Probar queries con EXPLAIN para análisis
+- [ ] Implementar limpieza de cache antigua (>30 días)
+- [ ] Limpiar soft deletes viejos (>90 días)
+- [ ] Optimizar queries N+1 si existen
+- [ ] Implementar batch operations donde sea posible
 
 ### Entregable
-App lista para publicar en Play Store / App Store.
+App con animaciones fluidas, rendimiento optimizado y manejo robusto de errores.
+
+---
+
+## Fase 7.5: Preparación para Release (Segunda mitad Semana 7)
+
+### Objetivos
+Testing completo, documentación final y preparación para publicación en stores.
+
+### Tareas
+
+#### Testing Completo
+- [ ] Completar unit tests para todos los use cases (objetivo: 80%+ coverage)
+- [ ] Widget tests para componentes críticos:
+  - ReminderCard, WorkoutCard, MealCard
+  - Summary cards del home
+  - Formularios principales
+- [ ] Integration tests para flujos principales:
+  - Crear recordatorio → recibir notificación
+  - Loggear comida con IA → verificar guardado
+  - Registrar workout completo → verificar estadísticas
+  - Exportar/Importar datos
+- [ ] Probar en múltiples tamaños de pantalla (small, medium, large)
+- [ ] Probar con datos grandes (10,000+ registros)
+- [ ] Probar modo offline completo
+- [ ] Ejecutar `flutter test --coverage`
+
+#### Documentación
+- [ ] Comentar código complejo con ejemplos
+- [ ] README.md del proyecto completo con:
+  - Descripción de la app
+  - Screenshots
+  - Instalación y setup
+  - Estructura del proyecto
+  - Comandos útiles
+- [ ] Documentar arquitectura en ARCHITECTURE.md
+- [ ] Guía de contribución (CONTRIBUTING.md)
+- [ ] Changelog actualizado (CHANGELOG.md)
+- [ ] Actualizar todos los contextos en `.claude/contexts/`
+
+#### Preparación para Release
+- [ ] Configurar app icons (Android/iOS) - 1024x1024 base
+- [ ] Configurar splash screen adaptativo
+- [ ] Actualizar versión a 1.0.0 en pubspec.yaml
+- [ ] Configurar signing para Android (keystore)
+- [ ] Configurar bundle ID y signing para iOS
+- [ ] Build de release y probar exhaustivamente:
+  - `flutter build apk --release`
+  - `flutter build appbundle --release`
+  - `flutter build ios --release`
+- [ ] Tomar screenshots para stores (5-8 por plataforma)
+- [ ] Preparar descripción para stores
+- [ ] Crear privacy policy
+- [ ] Preparar términos de servicio
+
+### Entregable
+App completamente probada, documentada y lista para publicar en Play Store / App Store.
 
 ---
 
