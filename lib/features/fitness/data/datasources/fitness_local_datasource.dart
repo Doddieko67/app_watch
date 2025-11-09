@@ -365,13 +365,22 @@ class FitnessLocalDataSource {
     return await getExercisesByWorkoutId(workoutId);
   }
 
-  /// Obtiene todos los ejercicios activos
+  /// Obtiene todos los ejercicios activos (de workouts no eliminados)
   Future<List<ExerciseEntity>> _getAllActiveExercises() async {
-    final query = _database.select(_database.exercises)
-      ..where((e) => e.deletedAt.isNull());
+    // JOIN con workouts para filtrar ejercicios de workouts eliminados
+    final query = _database.select(_database.exercises).join([
+      innerJoin(
+        _database.workouts,
+        _database.workouts.id.equalsExp(_database.exercises.workoutId),
+      ),
+    ])
+      ..where(_database.exercises.deletedAt.isNull() &
+          _database.workouts.deletedAt.isNull());
 
-    final exercisesData = await query.get();
-    return exercisesData.map((e) => ExerciseMapper.toEntity(e)).toList();
+    final results = await query.get();
+    return results
+        .map((row) => ExerciseMapper.toEntity(row.readTable(_database.exercises)))
+        .toList();
   }
 
   /// Formatea una fecha a string "YYYY-MM-DD"
