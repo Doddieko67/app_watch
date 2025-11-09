@@ -150,17 +150,18 @@ class _WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(32),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.watch,
-            size: 120,
+            size: 80,
             color: Theme.of(context).colorScheme.primary,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Text(
             '¡Bienvenido a App Watch!',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -168,13 +169,13 @@ class _WelcomePage extends StatelessWidget {
                 ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             'Tu asistente personal para gestionar recordatorios, entrenamientos, nutrición, sueño y estudio.',
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Text(
             '100% local • Privado • Sin anuncios',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -195,9 +196,10 @@ class _FeaturesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(32),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -207,28 +209,28 @@ class _FeaturesPage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           _buildFeature(
             context,
             Icons.task_alt,
             'Recordatorios',
             'Gestiona tareas con recurrencias personalizadas',
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           _buildFeature(
             context,
             Icons.fitness_center,
             'Fitness Tracker',
             'Registra entrenamientos y visualiza tu progreso',
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           _buildFeature(
             context,
             Icons.restaurant,
             'Nutrición con IA',
             'Analiza alimentos con inteligencia artificial',
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           _buildFeature(
             context,
             Icons.bedtime,
@@ -286,17 +288,18 @@ class _PermissionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(32),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.notifications_active,
-            size: 80,
+            size: 64,
             color: Theme.of(context).colorScheme.primary,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Text(
             'Permisos',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -304,13 +307,13 @@ class _PermissionsPage extends StatelessWidget {
                 ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             'Para ofrecerte la mejor experiencia, App Watch necesita algunos permisos:',
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           _buildPermission(
             context,
             Icons.notifications,
@@ -318,7 +321,7 @@ class _PermissionsPage extends StatelessWidget {
             'Para recordarte tus tareas y horarios',
             required: true,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           _buildPermission(
             context,
             Icons.alarm,
@@ -326,7 +329,7 @@ class _PermissionsPage extends StatelessWidget {
             'Para notificaciones precisas (Android 12+)',
             required: false,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
