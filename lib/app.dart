@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/services/navigation_service.dart';
@@ -26,6 +27,17 @@ class App extends ConsumerWidget {
       theme: AppTheme.lightTheme(primaryColor),
       darkTheme: AppTheme.darkTheme(primaryColor),
       themeMode: themeMode,
+      // Localizaciones
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('es', 'ES'), // Español
+        Locale('en', 'US'), // Inglés
+      ],
+      locale: const Locale('es', 'ES'),
       // Show onboarding if not completed
       home: onboardingCompleted ? const MainNavigationScreen() : const OnboardingScreen(),
     );

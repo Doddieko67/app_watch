@@ -33,6 +33,7 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
   // Búsqueda/filtro
   final _searchController = TextEditingController();
   String _searchQuery = '';
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -84,55 +85,59 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Historial de Recordatorios'),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Buscar recordatorios...',
+                  border: InputBorder.none,
+                  hintStyle: theme.textTheme.titleLarge?.copyWith(
+                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                  _loadMonthReminders();
+                },
+              )
+            : const Text('Historial de Recordatorios'),
         actions: [
+          // Botón de búsqueda/cerrar
           IconButton(
-            icon: const Icon(Icons.today),
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
             onPressed: () {
               setState(() {
-                _selectedDay = DateTime.now();
-                _focusedDay = DateTime.now();
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  _searchController.clear();
+                  _searchQuery = '';
+                  _loadMonthReminders();
+                }
               });
             },
-            tooltip: 'Ir a hoy',
+            tooltip: _isSearching ? 'Cerrar búsqueda' : 'Buscar',
           ),
+          if (!_isSearching)
+            IconButton(
+              icon: const Icon(Icons.today),
+              onPressed: () {
+                setState(() {
+                  _selectedDay = DateTime.now();
+                  _focusedDay = DateTime.now();
+                });
+              },
+              tooltip: 'Ir a hoy',
+            ),
         ],
       ),
       body: Column(
         children: [
-          // Campo de búsqueda
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Buscar recordatorios...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          setState(() {
-                            _searchController.clear();
-                            _searchQuery = '';
-                          });
-                          _loadMonthReminders();
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-                _loadMonthReminders();
-              },
-            ),
-          ),
-
           // Calendario
           Card(
             margin: const EdgeInsets.all(8),
