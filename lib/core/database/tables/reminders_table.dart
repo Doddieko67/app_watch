@@ -10,6 +10,8 @@ class Reminders extends Table {
   TextColumn get recurrenceType => text()(); // daily, weekly, custom
   TextColumn get recurrenceDays =>
       text().nullable()(); // JSON: [1,2,3] (lunes, martes...)
+  IntColumn get customIntervalDays =>
+      integer().nullable()(); // Para custom: cada X días
 
   // Horarios
   DateTimeColumn get scheduledTime => dateTime()();

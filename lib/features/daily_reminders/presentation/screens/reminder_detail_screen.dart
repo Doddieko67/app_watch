@@ -33,6 +33,7 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
   late Priority _selectedPriority;
   late RecurrenceType _selectedRecurrenceType;
   List<int> _selectedDays = [];
+  int _customIntervalDays = 2; // Valor por defecto para custom
   bool _isLoading = false;
 
   @override
@@ -52,12 +53,14 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
       _selectedPriority = reminder.priority;
       _selectedRecurrenceType = reminder.recurrenceType;
       _selectedDays = reminder.recurrenceDays ?? [];
+      _customIntervalDays = reminder.customIntervalDays ?? 2;
     } else {
       // Modo creación
       _selectedTime = DateTime.now().add(const Duration(hours: 1));
       _selectedPriority = Priority.medium;
       _selectedRecurrenceType = RecurrenceType.daily;
       _selectedDays = [];
+      _customIntervalDays = 2;
     }
   }
 
@@ -152,6 +155,13 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
                 });
               },
             ),
+
+            // Si es custom, mostrar selector de intervalo
+            if (_selectedRecurrenceType == RecurrenceType.custom) ...[
+              const SizedBox(height: 16),
+              _buildCustomIntervalSelector(theme),
+            ],
+
             const SizedBox(height: 24),
 
             // Tags
@@ -226,6 +236,61 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
     );
   }
 
+  Widget _buildCustomIntervalSelector(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Repetir cada',
+          style: theme.textTheme.titleSmall,
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: Slider(
+                value: _customIntervalDays.toDouble(),
+                min: 1,
+                max: 30,
+                divisions: 29,
+                label: '$_customIntervalDays día${_customIntervalDays > 1 ? 's' : ''}',
+                onChanged: (value) {
+                  setState(() {
+                    _customIntervalDays = value.round();
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '$_customIntervalDays día${_customIntervalDays > 1 ? 's' : ''}',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          _customIntervalDays == 1
+              ? 'Se repetirá cada día (igual que "Diario")'
+              : 'Se repetirá cada $_customIntervalDays días',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurface.withOpacity(0.6),
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> _selectTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -284,6 +349,10 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
         recurrenceDays:
             _selectedRecurrenceType == RecurrenceType.weekly
                 ? _selectedDays
+                : null,
+        customIntervalDays:
+            _selectedRecurrenceType == RecurrenceType.custom
+                ? _customIntervalDays
                 : null,
         scheduledTime: _selectedTime,
         nextOccurrence: _selectedTime,

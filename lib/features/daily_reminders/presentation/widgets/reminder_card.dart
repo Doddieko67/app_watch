@@ -216,7 +216,9 @@ class _ReminderCardState extends ConsumerState<ReminderCard> {
                           _buildChip(
                             context,
                             Icons.repeat,
-                            widget.reminder.recurrenceType.displayName,
+                            widget.reminder.recurrenceType == RecurrenceType.custom
+                                ? 'Cada ${widget.reminder.customIntervalDays ?? 1} día${(widget.reminder.customIntervalDays ?? 1) > 1 ? 's' : ''}'
+                                : widget.reminder.recurrenceType.displayName,
                           ),
                           // Estado vencido más prominente
                           if (isOverdue)

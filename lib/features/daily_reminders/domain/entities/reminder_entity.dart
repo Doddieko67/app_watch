@@ -13,6 +13,7 @@ class ReminderEntity with _$ReminderEntity {
     String? description,
     required RecurrenceType recurrenceType,
     List<int>? recurrenceDays, // Para recurrencia semanal: 1=Lunes, 7=Domingo
+    int? customIntervalDays, // Para recurrencia custom: cada X días
     required DateTime scheduledTime,
     required DateTime nextOccurrence,
     required Priority priority,

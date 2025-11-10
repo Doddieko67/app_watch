@@ -152,8 +152,8 @@ class ReminderRepositoryImpl implements ReminderRepository {
             now, scheduledTime, reminder.recurrenceDays ?? []);
 
       case RecurrenceType.custom:
-        // Para custom, usar la próxima ocurrencia tal como está
-        return reminder.nextOccurrence;
+        return _calculateNextCustom(
+            now, scheduledTime, reminder.customIntervalDays ?? 1);
     }
   }
 
@@ -214,5 +214,27 @@ class ReminderRepositoryImpl implements ReminderRepository {
 
     // Si no encontramos ninguno (no debería pasar), usar el próximo día válido
     return nextOccurrence.add(const Duration(days: 7));
+  }
+
+  /// Calcula la próxima ocurrencia para recurrencia custom (cada X días)
+  DateTime _calculateNextCustom(
+    DateTime now,
+    DateTime scheduledTime,
+    int intervalDays,
+  ) {
+    final nextOccurrence = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      scheduledTime.hour,
+      scheduledTime.minute,
+    );
+
+    // Si ya pasó hoy, programar para el próximo intervalo
+    if (nextOccurrence.isBefore(now)) {
+      return nextOccurrence.add(Duration(days: intervalDays));
+    }
+
+    return nextOccurrence;
   }
 }
