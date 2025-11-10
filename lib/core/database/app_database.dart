@@ -67,7 +67,15 @@ class AppDatabase extends _$AppDatabase {
           }
           // Migración de v3 a v4: agregar columna exercises a SavedWorkouts
           if (from == 3 && to == 4) {
-            await m.addColumn(savedWorkouts, savedWorkouts.exercises);
+            // Verificar si la columna ya existe antes de agregarla
+            final result = await customSelect(
+              "PRAGMA table_info(saved_workouts)"
+            ).get();
+            final hasExercises = result.any((row) => row.data['name'] == 'exercises');
+
+            if (!hasExercises) {
+              await m.addColumn(savedWorkouts, savedWorkouts.exercises);
+            }
           }
         },
       );
