@@ -22,7 +22,7 @@ class AiService {
   /// Configura el modelo de Gemini con API key
   void configureGemini(String apiKey) {
     _geminiModel = GenerativeModel(
-      model: 'gemini-1.5-flash',
+      model: 'gemini-flash-latest', // Usa la versión más reciente de Gemini Flash (2.5)
       apiKey: apiKey,
       generationConfig: GenerationConfig(
         temperature: 0.2, // Temperatura moderada para respuestas más creativas pero consistentes
