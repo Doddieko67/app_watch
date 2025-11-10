@@ -40,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -75,6 +75,18 @@ class AppDatabase extends _$AppDatabase {
 
             if (!hasExercises) {
               await m.addColumn(savedWorkouts, savedWorkouts.exercises);
+            }
+          }
+          // Migración de v4 a v5: agregar columna startDate a Reminders
+          if (from == 4 && to == 5) {
+            // Verificar si la columna ya existe antes de agregarla
+            final result = await customSelect(
+              "PRAGMA table_info(reminders)"
+            ).get();
+            final hasStartDate = result.any((row) => row.data['name'] == 'start_date');
+
+            if (!hasStartDate) {
+              await m.addColumn(reminders, reminders.startDate);
             }
           }
         },

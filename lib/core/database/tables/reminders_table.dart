@@ -12,6 +12,8 @@ class Reminders extends Table {
       text().nullable()(); // JSON: [1,2,3] (lunes, martes...)
   IntColumn get customIntervalDays =>
       integer().nullable()(); // Para custom: cada X días
+  DateTimeColumn get startDate =>
+      dateTime().nullable()(); // Fecha de inicio de la repetición
 
   // Horarios
   DateTimeColumn get scheduledTime => dateTime()();

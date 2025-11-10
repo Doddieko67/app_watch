@@ -18,6 +18,7 @@ class ReminderMapper {
           ? List<int>.from(jsonDecode(reminder.recurrenceDays!))
           : null,
       customIntervalDays: reminder.customIntervalDays,
+      startDate: reminder.startDate,
       scheduledTime: reminder.scheduledTime,
       nextOccurrence: reminder.nextOccurrence,
       priority: Priority.fromValue(reminder.priority),
@@ -47,6 +48,9 @@ class ReminderMapper {
           : const drift.Value.absent(),
       customIntervalDays: entity.customIntervalDays != null
           ? drift.Value(entity.customIntervalDays!)
+          : const drift.Value.absent(),
+      startDate: entity.startDate != null
+          ? drift.Value(entity.startDate!)
           : const drift.Value.absent(),
       scheduledTime: drift.Value(entity.scheduledTime),
       nextOccurrence: drift.Value(entity.nextOccurrence),
@@ -80,6 +84,9 @@ class ReminderMapper {
           : const drift.Value.absent(),
       customIntervalDays: entity.customIntervalDays != null
           ? drift.Value(entity.customIntervalDays!)
+          : const drift.Value.absent(),
+      startDate: entity.startDate != null
+          ? drift.Value(entity.startDate!)
           : const drift.Value.absent(),
       scheduledTime: entity.scheduledTime,
       nextOccurrence: entity.nextOccurrence,

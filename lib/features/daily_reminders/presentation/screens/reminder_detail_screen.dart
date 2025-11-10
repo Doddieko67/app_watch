@@ -30,6 +30,7 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
   final _tagsController = TextEditingController();
 
   late DateTime _selectedTime;
+  DateTime? _selectedStartDate; // Fecha de inicio de recurrencia
   late Priority _selectedPriority;
   late RecurrenceType _selectedRecurrenceType;
   List<int> _selectedDays = [];
@@ -50,6 +51,7 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
       _descriptionController.text = reminder.description ?? '';
       _tagsController.text = reminder.tags?.join(', ') ?? '';
       _selectedTime = reminder.scheduledTime;
+      _selectedStartDate = reminder.startDate;
       _selectedPriority = reminder.priority;
       _selectedRecurrenceType = reminder.recurrenceType;
       _selectedDays = reminder.recurrenceDays ?? [];
@@ -57,6 +59,7 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
     } else {
       // Modo creación
       _selectedTime = DateTime.now().add(const Duration(hours: 1));
+      _selectedStartDate = null; // Por defecto, inicia hoy
       _selectedPriority = Priority.medium;
       _selectedRecurrenceType = RecurrenceType.daily;
       _selectedDays = [];
@@ -162,6 +165,10 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
               _buildCustomIntervalSelector(theme),
             ],
 
+            const SizedBox(height: 24),
+
+            // Selector de fecha de inicio de recurrencia
+            _buildStartDateSelector(theme),
             const SizedBox(height: 24),
 
             // Tags
@@ -291,6 +298,73 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
     );
   }
 
+  Widget _buildStartDateSelector(ThemeData theme) {
+    final displayDate = _selectedStartDate ?? DateTime.now();
+    final isToday = _selectedStartDate == null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Fecha de Inicio',
+          style: theme.textTheme.titleSmall,
+        ),
+        const SizedBox(height: 12),
+        InkWell(
+          onTap: _selectStartDate,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border.all(color: theme.colorScheme.outline),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isToday ? 'Hoy' : DateFormat('EEEE, d MMM y', 'es').format(displayDate),
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      if (!isToday)
+                        Text(
+                          'La recurrencia comenzará en esta fecha',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: theme.colorScheme.onSurface.withOpacity(0.5),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          isToday
+              ? 'La recurrencia comenzará hoy'
+              : 'El primer recordatorio será el ${DateFormat('d MMM', 'es').format(displayDate)}',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurface.withOpacity(0.6),
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> _selectTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -305,6 +379,26 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
           _selectedTime.day,
           picked.hour,
           picked.minute,
+        );
+      });
+    }
+  }
+
+  Future<void> _selectStartDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedStartDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      locale: const Locale('es'),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedStartDate = DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
         );
       });
     }
@@ -354,6 +448,7 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
             _selectedRecurrenceType == RecurrenceType.custom
                 ? _customIntervalDays
                 : null,
+        startDate: _selectedStartDate,
         scheduledTime: _selectedTime,
         nextOccurrence: _selectedTime,
         priority: _selectedPriority,

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../../../core/providers/database_provider.dart';
+import '../../data/datasources/reminder_local_datasource.dart';
 import '../../domain/entities/reminder_entity.dart';
 import '../providers/reminder_providers.dart';
 import '../widgets/reminder_card.dart';
@@ -24,6 +26,38 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
+
+  // Cache de recordatorios para marcadores del mes visible
+  Map<DateTime, List<ReminderEntity>> _reminderCache = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMonthReminders();
+  }
+
+  Future<void> _loadMonthReminders() async {
+    final firstDay = DateTime(_focusedDay.year, _focusedDay.month, 1);
+    final lastDay = DateTime(_focusedDay.year, _focusedDay.month + 1, 0);
+
+    final datasource = ReminderLocalDataSource(ref.read(appDatabaseProvider));
+    final reminders = await datasource.getRemindersByDateRange(firstDay, lastDay);
+
+    // Agrupar por día
+    final Map<DateTime, List<ReminderEntity>> grouped = {};
+    for (final reminder in reminders) {
+      final day = DateTime(
+        reminder.nextOccurrence.year,
+        reminder.nextOccurrence.month,
+        reminder.nextOccurrence.day,
+      );
+      grouped[day] = [...(grouped[day] ?? []), reminder];
+    }
+
+    setState(() {
+      _reminderCache = grouped;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +103,10 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
                 });
               },
               onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
+                setState(() {
+                  _focusedDay = focusedDay;
+                });
+                _loadMonthReminders();
               },
               calendarStyle: CalendarStyle(
                 todayDecoration: BoxDecoration(
@@ -80,7 +117,11 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
                   color: theme.colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
-                markersMaxCount: 1,
+                markersMaxCount: 3,
+                markersAlignment: Alignment.bottomCenter,
+                markerDecoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                ),
               ),
               headerStyle: const HeaderStyle(
                 formatButtonVisible: true,
@@ -89,9 +130,47 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
               // Marcadores para días con recordatorios
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, day, events) {
-                  // Aquí podríamos agregar lógica para mostrar marcadores
-                  // basados en si hay recordatorios ese día
-                  return null;
+                  final dayKey = DateTime(day.year, day.month, day.day);
+                  final reminders = _reminderCache[dayKey];
+
+                  if (reminders == null || reminders.isEmpty) {
+                    return null;
+                  }
+
+                  // Agrupar por prioridad
+                  final highPriority = reminders.where((r) => r.priority == Priority.high).toList();
+                  final mediumPriority = reminders.where((r) => r.priority == Priority.medium).toList();
+                  final lowPriority = reminders.where((r) => r.priority == Priority.low).toList();
+
+                  final List<Widget> markers = [];
+
+                  // Mostrar máximo 3 marcadores (uno por prioridad)
+                  if (highPriority.isNotEmpty) {
+                    markers.add(_buildMarker(
+                      theme.colorScheme.error,
+                      highPriority.every((r) => r.isCompleted),
+                    ));
+                  }
+                  if (mediumPriority.isNotEmpty && markers.length < 3) {
+                    markers.add(_buildMarker(
+                      theme.colorScheme.secondary,
+                      mediumPriority.every((r) => r.isCompleted),
+                    ));
+                  }
+                  if (lowPriority.isNotEmpty && markers.length < 3) {
+                    markers.add(_buildMarker(
+                      theme.colorScheme.tertiary,
+                      lowPriority.every((r) => r.isCompleted),
+                    ));
+                  }
+
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: markers.map((m) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 1),
+                      child: m,
+                    )).toList(),
+                  );
                 },
               ),
             ),
@@ -242,5 +321,16 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
     } else {
       return DateFormat('EEEE d MMMM y', 'es').format(_selectedDay);
     }
+  }
+
+  Widget _buildMarker(Color color, bool isCompleted) {
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: BoxDecoration(
+        color: isCompleted ? color : color.withOpacity(0.3),
+        shape: BoxShape.circle,
+      ),
+    );
   }
 }

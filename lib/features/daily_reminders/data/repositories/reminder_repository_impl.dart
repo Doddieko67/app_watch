@@ -141,26 +141,43 @@ class ReminderRepositoryImpl implements ReminderRepository {
   DateTime calculateNextOccurrence(ReminderEntity reminder) {
     final now = DateTime.now();
     final scheduledTime = reminder.scheduledTime;
+    final startDate = reminder.startDate;
+
+    // Si hay fecha de inicio y es en el futuro, usar esa como primera ocurrencia
+    if (startDate != null) {
+      final startDateTime = DateTime(
+        startDate.year,
+        startDate.month,
+        startDate.day,
+        scheduledTime.hour,
+        scheduledTime.minute,
+      );
+
+      // Si la fecha de inicio es en el futuro, esa es la próxima ocurrencia
+      if (startDateTime.isAfter(now)) {
+        return startDateTime;
+      }
+    }
 
     switch (reminder.recurrenceType) {
       case RecurrenceType.daily:
-        return _calculateNextDaily(now, scheduledTime);
+        return _calculateNextDaily(now, scheduledTime, startDate);
 
       case RecurrenceType.weekly:
         return _calculateNextWeekly(
-            now, scheduledTime, reminder.recurrenceDays ?? []);
+            now, scheduledTime, reminder.recurrenceDays ?? [], startDate);
 
       case RecurrenceType.custom:
         return _calculateNextCustom(
-            now, scheduledTime, reminder.customIntervalDays ?? 1);
+            now, scheduledTime, reminder.customIntervalDays ?? 1, startDate);
     }
   }
 
   // Helpers privados
 
   /// Calcula la próxima ocurrencia para recurrencia diaria
-  DateTime _calculateNextDaily(DateTime now, DateTime scheduledTime) {
-    final nextOccurrence = DateTime(
+  DateTime _calculateNextDaily(DateTime now, DateTime scheduledTime, DateTime? startDate) {
+    var nextOccurrence = DateTime(
       now.year,
       now.month,
       now.day,
@@ -170,7 +187,21 @@ class ReminderRepositoryImpl implements ReminderRepository {
 
     // Si ya pasó hoy, programar para mañana
     if (nextOccurrence.isBefore(now)) {
-      return nextOccurrence.add(const Duration(days: 1));
+      nextOccurrence = nextOccurrence.add(const Duration(days: 1));
+    }
+
+    // Si hay fecha de inicio, asegurarse de que no sea antes
+    if (startDate != null) {
+      final startDateTime = DateTime(
+        startDate.year,
+        startDate.month,
+        startDate.day,
+        scheduledTime.hour,
+        scheduledTime.minute,
+      );
+      if (nextOccurrence.isBefore(startDateTime)) {
+        return startDateTime;
+      }
     }
 
     return nextOccurrence;
@@ -181,10 +212,11 @@ class ReminderRepositoryImpl implements ReminderRepository {
     DateTime now,
     DateTime scheduledTime,
     List<int> weekdays,
+    DateTime? startDate,
   ) {
     if (weekdays.isEmpty) {
       // Si no hay días específicos, usar diario
-      return _calculateNextDaily(now, scheduledTime);
+      return _calculateNextDaily(now, scheduledTime, startDate);
     }
 
     // Ordenar los días de la semana
@@ -199,14 +231,38 @@ class ReminderRepositoryImpl implements ReminderRepository {
       scheduledTime.minute,
     );
 
+    // Si hay startDate, buscar desde esa fecha
+    if (startDate != null) {
+      final startDateTime = DateTime(
+        startDate.year,
+        startDate.month,
+        startDate.day,
+        scheduledTime.hour,
+        scheduledTime.minute,
+      );
+      if (startDateTime.isAfter(now)) {
+        nextOccurrence = startDateTime;
+      }
+    }
+
     // Buscar el próximo día de la semana válido
-    for (var i = 0; i < 7; i++) {
+    for (var i = 0; i < 14; i++) { // Buscar hasta 2 semanas adelante
       final candidateDate = nextOccurrence.add(Duration(days: i));
       final candidateWeekday = candidateDate.weekday;
 
-      // Si es un día válido y es en el futuro
+      // Si es un día válido y es en el futuro (o igual a startDate)
+      bool isAfterStart = startDate == null ||
+          !candidateDate.isBefore(DateTime(
+            startDate.year,
+            startDate.month,
+            startDate.day,
+            scheduledTime.hour,
+            scheduledTime.minute,
+          ));
+
       if (sortedWeekdays.contains(candidateWeekday) &&
-          candidateDate.isAfter(now)) {
+          candidateDate.isAfter(now) &&
+          isAfterStart) {
         return candidateDate;
       }
     }
@@ -220,8 +276,9 @@ class ReminderRepositoryImpl implements ReminderRepository {
     DateTime now,
     DateTime scheduledTime,
     int intervalDays,
+    DateTime? startDate,
   ) {
-    final nextOccurrence = DateTime(
+    var nextOccurrence = DateTime(
       now.year,
       now.month,
       now.day,
@@ -231,7 +288,30 @@ class ReminderRepositoryImpl implements ReminderRepository {
 
     // Si ya pasó hoy, programar para el próximo intervalo
     if (nextOccurrence.isBefore(now)) {
-      return nextOccurrence.add(Duration(days: intervalDays));
+      nextOccurrence = nextOccurrence.add(Duration(days: intervalDays));
+    }
+
+    // Si hay fecha de inicio, calcular desde ahí
+    if (startDate != null) {
+      final startDateTime = DateTime(
+        startDate.year,
+        startDate.month,
+        startDate.day,
+        scheduledTime.hour,
+        scheduledTime.minute,
+      );
+
+      // Si la próxima ocurrencia es antes de startDate
+      if (nextOccurrence.isBefore(startDateTime)) {
+        return startDateTime;
+      }
+
+      // Calcular cuántos intervalos han pasado desde startDate
+      final daysSinceStart = nextOccurrence.difference(startDateTime).inDays;
+      final intervalsElapsed = (daysSinceStart / intervalDays).floor();
+
+      // Próxima ocurrencia basada en intervalos desde startDate
+      return startDateTime.add(Duration(days: (intervalsElapsed + 1) * intervalDays));
     }
 
     return nextOccurrence;
