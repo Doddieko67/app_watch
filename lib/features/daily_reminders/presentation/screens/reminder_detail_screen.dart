@@ -304,13 +304,30 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
       }
 
       if (mounted) {
+        // Calcular próxima notificación para mostrar al usuario
+        final nextNotification = reminder.nextOccurrence;
+        final now = DateTime.now();
+        final difference = nextNotification.difference(now);
+
+        String timeUntilNotification;
+        if (difference.inDays > 0) {
+          timeUntilNotification = 'En ${difference.inDays} día${difference.inDays > 1 ? 's' : ''} a las ${DateFormat('HH:mm').format(nextNotification)}';
+        } else if (difference.inHours > 0) {
+          timeUntilNotification = 'En ${difference.inHours}h ${difference.inMinutes % 60}min';
+        } else if (difference.inMinutes > 0) {
+          timeUntilNotification = 'En ${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
+        } else {
+          timeUntilNotification = DateFormat('EEEE d MMM, HH:mm').format(nextNotification);
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               widget.reminder == null
-                  ? 'Recordatorio creado'
-                  : 'Recordatorio actualizado',
+                  ? '✓ Recordatorio creado\nPróxima notificación: $timeUntilNotification'
+                  : '✓ Recordatorio actualizado\nPróxima notificación: $timeUntilNotification',
             ),
+            duration: const Duration(seconds: 4),
           ),
         );
         Navigator.pop(context);
@@ -319,8 +336,9 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(_getHumanReadableError(e)),
             backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
@@ -376,5 +394,21 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
         }
       }
     }
+  }
+
+  String _getHumanReadableError(dynamic error) {
+    final errorString = error.toString().toLowerCase();
+
+    if (errorString.contains('database') || errorString.contains('sql')) {
+      return 'No se pudo guardar el recordatorio. Inténtalo de nuevo.';
+    }
+    if (errorString.contains('notification')) {
+      return 'Recordatorio guardado, pero las notificaciones están deshabilitadas. Revisa la configuración.';
+    }
+    if (errorString.contains('permission')) {
+      return 'No tienes permisos para crear notificaciones. Habilítalos en Configuración.';
+    }
+
+    return 'Algo salió mal. Por favor, inténtalo de nuevo.';
   }
 }

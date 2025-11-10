@@ -59,7 +59,7 @@ class _PriorityOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = _getPriorityColor(priority);
+    final color = _getPriorityColor(context, priority);
 
     return InkWell(
       onTap: onTap,
@@ -95,25 +95,26 @@ class _PriorityOption extends StatelessWidget {
     );
   }
 
-  Color _getPriorityColor(Priority priority) {
+  Color _getPriorityColor(BuildContext context, Priority priority) {
+    final theme = Theme.of(context);
     switch (priority) {
       case Priority.low:
-        return Colors.green;
+        return theme.colorScheme.tertiary;
       case Priority.medium:
-        return Colors.orange;
+        return theme.colorScheme.secondary;
       case Priority.high:
-        return Colors.red;
+        return theme.colorScheme.error;
     }
   }
 
   IconData _getPriorityIcon(Priority priority) {
     switch (priority) {
       case Priority.low:
-        return Icons.flag;
+        return Icons.flag_outlined;
       case Priority.medium:
         return Icons.flag;
       case Priority.high:
-        return Icons.flag;
+        return Icons.priority_high;
     }
   }
 }
