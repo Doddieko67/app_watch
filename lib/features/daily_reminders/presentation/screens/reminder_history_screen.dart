@@ -84,6 +84,7 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
     final remindersAsync = ref.watch(remindersByDateProvider(_selectedDay));
 
     return Scaffold(
+      resizeToAvoidBottomInset: false, // Evita que el teclado empuje el contenido
       appBar: AppBar(
         title: _isSearching
             ? TextField(
