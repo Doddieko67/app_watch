@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/reminder_providers.dart';
 import '../widgets/reminder_card.dart';
 import 'reminder_detail_screen.dart';
+import 'reminder_history_screen.dart';
 
 /// Pantalla principal de recordatorios
 ///
@@ -63,6 +64,20 @@ class _RemindersHomeScreenState extends ConsumerState<RemindersHomeScreen> {
               });
             },
           ),
+          // Botón de historial
+          if (!_isSearching)
+            IconButton(
+              icon: const Icon(Icons.calendar_month),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ReminderHistoryScreen(),
+                  ),
+                );
+              },
+              tooltip: 'Historial',
+            ),
           // Botón de ordenamiento
           if (!_isSearching)
             PopupMenuButton<ReminderSortOrder>(

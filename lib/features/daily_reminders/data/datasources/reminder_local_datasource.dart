@@ -142,6 +142,47 @@ class ReminderLocalDataSource {
     return reminders.map((r) => ReminderMapper.toEntity(r)).toList();
   }
 
+  /// Obtiene recordatorios para una fecha específica
+  Future<List<ReminderEntity>> getRemindersByDate(DateTime date) async {
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+
+    final query = _database.select(_database.reminders)
+      ..where((r) =>
+          (r.deletedAt.isNull()) &
+          (r.isActive.equals(true)) &
+          (r.nextOccurrence.isBiggerOrEqualValue(startOfDay)) &
+          (r.nextOccurrence.isSmallerThanValue(endOfDay)))
+      ..orderBy([
+        (r) => OrderingTerm.asc(r.nextOccurrence),
+      ]);
+
+    final reminders = await query.get();
+    return reminders.map((r) => ReminderMapper.toEntity(r)).toList();
+  }
+
+  /// Obtiene recordatorios en un rango de fechas
+  Future<List<ReminderEntity>> getRemindersByDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    final end = DateTime(endDate.year, endDate.month, endDate.day).add(const Duration(days: 1));
+
+    final query = _database.select(_database.reminders)
+      ..where((r) =>
+          (r.deletedAt.isNull()) &
+          (r.isActive.equals(true)) &
+          (r.nextOccurrence.isBiggerOrEqualValue(start)) &
+          (r.nextOccurrence.isSmallerThanValue(end)))
+      ..orderBy([
+        (r) => OrderingTerm.asc(r.nextOccurrence),
+      ]);
+
+    final reminders = await query.get();
+    return reminders.map((r) => ReminderMapper.toEntity(r)).toList();
+  }
+
   /// Crea un nuevo recordatorio
   Future<int> createReminder(ReminderEntity reminder) async {
     final companion = ReminderMapper.toCompanionForInsert(reminder);

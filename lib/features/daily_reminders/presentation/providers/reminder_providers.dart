@@ -283,3 +283,35 @@ Future<List<ReminderEntity>> searchAndSortedReminders(
 
   return filtered;
 }
+
+/// Provider para recordatorios de una fecha específica
+@riverpod
+Future<List<ReminderEntity>> remindersByDate(
+  RemindersByDateRef ref,
+  DateTime date,
+) async {
+  final datasource = ReminderLocalDataSource(ref.watch(appDatabaseProvider));
+  return await datasource.getRemindersByDate(date);
+}
+
+/// Provider para recordatorios en un rango de fechas
+@riverpod
+Future<List<ReminderEntity>> remindersByDateRange(
+  RemindersByDateRangeRef ref,
+  DateTime startDate,
+  DateTime endDate,
+) async {
+  final datasource = ReminderLocalDataSource(ref.watch(appDatabaseProvider));
+  return await datasource.getRemindersByDateRange(startDate, endDate);
+}
+
+/// Provider para la fecha seleccionada en el calendario
+@riverpod
+class SelectedDate extends _$SelectedDate {
+  @override
+  DateTime build() => DateTime.now();
+
+  void selectDate(DateTime date) {
+    state = date;
+  }
+}
