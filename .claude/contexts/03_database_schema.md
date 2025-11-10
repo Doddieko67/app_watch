@@ -3,6 +3,7 @@
 ## 1. Reminders Table
 
 ```dart
+@TableIndex(name: 'reminders_next_occurrence_idx', columns: {#nextOccurrence})
 class Reminders extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get title => text().withLength(min: 1, max: 200)();
@@ -11,6 +12,8 @@ class Reminders extends Table {
   // Recurrencia
   TextColumn get recurrenceType => text()(); // daily, weekly, custom
   TextColumn get recurrenceDays => text().nullable()(); // JSON: [1,2,3] (lunes, martes...)
+  IntColumn get customIntervalDays => integer().nullable()(); // Para custom: cada X días
+  DateTimeColumn get startDate => dateTime().nullable()(); // Fecha de inicio de la repetición
 
   // Horarios
   DateTimeColumn get scheduledTime => dateTime()();
@@ -401,7 +404,7 @@ IntColumn get syncStatus => integer().withDefault(const Constant(0))();
 
 ## Migraciones
 
-**Schema actual: v4**
+**Schema actual: v5**
 
 Drift soporta migraciones automáticas. Para cada cambio de schema:
 
@@ -434,7 +437,26 @@ if (from == 2 && to == 3) {
 **v3 → v4:** Agregar columna exercises a SavedWorkouts
 ```dart
 if (from == 3 && to == 4) {
-  await m.addColumn(savedWorkouts, savedWorkouts.exercises);
+  // Verificar si la columna ya existe antes de agregarla
+  final result = await customSelect("PRAGMA table_info(saved_workouts)").get();
+  final hasExercises = result.any((row) => row.data['name'] == 'exercises');
+
+  if (!hasExercises) {
+    await m.addColumn(savedWorkouts, savedWorkouts.exercises);
+  }
+}
+```
+
+**v4 → v5:** Agregar columna startDate a Reminders
+```dart
+if (from == 4 && to == 5) {
+  // Verificar si la columna ya existe antes de agregarla
+  final result = await customSelect("PRAGMA table_info(reminders)").get();
+  final hasStartDate = result.any((row) => row.data['name'] == 'start_date');
+
+  if (!hasStartDate) {
+    await m.addColumn(reminders, reminders.startDate);
+  }
 }
 ```
 

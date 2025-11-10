@@ -391,7 +391,38 @@ app_watch/
 - ✅ 3 commits exitosos con APK debug generado
 - ✅ 0 errores de compilación
 
-**Total archivos:** ~130 archivos (~20,500+ líneas de código)
+#### Fase 6.9 - Calendario de Recordatorios y Localizaciones (COMPLETADA ✅)
+- ✅ **ReminderHistoryScreen - Calendario con filtros:**
+  - Calendario mensual con table_calendar
+  - Marcadores visuales por día con recordatorios
+  - Búsqueda flotante en AppBar (toggle search mode)
+  - Filtrado de marcadores por nombre de recordatorio
+  - Color fuerte (opacidad 1.0) para completados
+  - Color débil (opacidad 0.3) para pendientes
+  - Lista de recordatorios filtrada por fecha seleccionada
+  - Navegación rápida a "hoy"
+  - Cache optimizado para mes visible
+- ✅ **Sistema de fecha de inicio para recurrencia:**
+  - Campo startDate en ReminderEntity y tabla Reminders
+  - Selector de fecha en ReminderDetailScreen
+  - Lógica de cálculo de próxima ocurrencia respeta startDate
+  - Validación: primera ocurrencia no antes de startDate
+  - Aplicable a todos los tipos de recurrencia (diaria/semanal/custom)
+- ✅ **Localizaciones de la app:**
+  - Integración de flutter_localizations
+  - Español (es_ES) como locale por defecto
+  - GlobalMaterialLocalizations, GlobalWidgetsLocalizations, GlobalCupertinoLocalizations
+  - DatePicker y TimePicker funcionan correctamente en español
+  - Actualización de intl a 0.20.2
+- ✅ **Mejoras de UX:**
+  - resizeToAvoidBottomInset: false para evitar overflow del teclado
+  - Búsqueda con clear button automático
+  - Experiencia fluida al filtrar recordatorios
+- ✅ Database migration v4 → v5 (columna start_date)
+- ✅ 3 commits exitosos con APK debug generado
+- ✅ 0 errores de compilación
+
+**Total archivos:** ~130 archivos (~21,000+ líneas de código)
 
 ### Próximos Pasos
 
@@ -506,4 +537,4 @@ Ver [Roadmap](.claude/contexts/09_implementation_plan.md#post-release-roadmap-fu
 ---
 
 **Última actualización:** 2025-11-09
-**Versión de documentación:** 7.0.1 (Fase 7.0 parcial - Mejoras UX de Recordatorios completadas)
+**Versión de documentación:** 6.9.1 (Fase 6.9 completada - Calendario de recordatorios y localizaciones implementados)
