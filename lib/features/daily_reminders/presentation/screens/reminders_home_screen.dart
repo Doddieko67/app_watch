@@ -7,27 +7,95 @@ import 'reminder_detail_screen.dart';
 
 /// Pantalla principal de recordatorios
 ///
-/// Muestra la lista de recordatorios con filtros
-class RemindersHomeScreen extends ConsumerWidget {
+/// Muestra la lista de recordatorios con filtros, búsqueda y ordenamiento
+class RemindersHomeScreen extends ConsumerStatefulWidget {
   const RemindersHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RemindersHomeScreen> createState() =>
+      _RemindersHomeScreenState();
+}
+
+class _RemindersHomeScreenState extends ConsumerState<RemindersHomeScreen> {
+  bool _isSearching = false;
+  final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final currentFilter = ref.watch(currentReminderFilterProvider);
-    final remindersAsync = ref.watch(filteredRemindersProvider);
+    final remindersAsync = ref.watch(searchAndSortedRemindersProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recordatorios'),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Buscar recordatorios...',
+                  border: InputBorder.none,
+                ),
+                style: theme.textTheme.titleLarge,
+                onChanged: (query) {
+                  ref.read(searchQueryProvider.notifier).setQuery(query);
+                },
+              )
+            : const Text('Recordatorios'),
         actions: [
-          // Botón de refrescar
+          // Botón de búsqueda/cerrar
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
             onPressed: () {
-              ref.read(refreshRemindersProvider.notifier).refresh();
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  _searchController.clear();
+                  ref.read(searchQueryProvider.notifier).clear();
+                }
+              });
             },
           ),
+          // Botón de ordenamiento
+          if (!_isSearching)
+            PopupMenuButton<ReminderSortOrder>(
+              icon: const Icon(Icons.sort),
+              tooltip: 'Ordenar',
+              onSelected: (order) {
+                ref.read(currentSortOrderProvider.notifier).setSortOrder(order);
+              },
+              itemBuilder: (context) => ReminderSortOrder.values
+                  .map((order) => PopupMenuItem(
+                        value: order,
+                        child: Row(
+                          children: [
+                            Icon(
+                              _getSortIcon(order),
+                              size: 20,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(order.displayName),
+                          ],
+                        ),
+                      ))
+                  .toList(),
+            ),
+          // Botón de refrescar
+          if (!_isSearching)
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                ref.read(refreshRemindersProvider.notifier).refresh();
+              },
+            ),
         ],
       ),
       body: Column(
@@ -46,7 +114,10 @@ class RemindersHomeScreen extends ConsumerWidget {
             child: remindersAsync.when(
               data: (reminders) {
                 if (reminders.isEmpty) {
-                  return _EmptyState(filter: currentFilter);
+                  return _EmptyState(
+                    filter: currentFilter,
+                    isSearching: searchQuery.isNotEmpty,
+                  );
                 }
                 return RefreshIndicator(
                   onRefresh: () async {
@@ -125,6 +196,17 @@ class RemindersHomeScreen extends ConsumerWidget {
       ),
     );
   }
+
+  IconData _getSortIcon(ReminderSortOrder order) {
+    switch (order) {
+      case ReminderSortOrder.date:
+        return Icons.calendar_today;
+      case ReminderSortOrder.priority:
+        return Icons.priority_high;
+      case ReminderSortOrder.alphabetical:
+        return Icons.sort_by_alpha;
+    }
+  }
 }
 
 /// Barra de filtros
@@ -164,13 +246,53 @@ class _FilterBar extends StatelessWidget {
 /// Estado vacío
 class _EmptyState extends StatelessWidget {
   final ReminderFilter filter;
+  final bool isSearching;
 
-  const _EmptyState({required this.filter});
+  const _EmptyState({
+    required this.filter,
+    this.isSearching = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // Si está buscando y no hay resultados
+    if (isSearching) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.search_off,
+                size: 80,
+                color: theme.colorScheme.primary.withOpacity(0.5),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'No se encontraron recordatorios',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Intenta con otros términos de búsqueda',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withOpacity(0.5),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Estados vacíos por filtro
     String message;
     IconData icon;
 

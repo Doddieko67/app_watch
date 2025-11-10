@@ -185,3 +185,101 @@ Future<List<ReminderEntity>> pendingReminders(PendingRemindersRef ref) async {
   final repository = ref.watch(reminderRepositoryProvider);
   return await repository.getPendingReminders();
 }
+
+// ========== Search and Sort Providers ==========
+
+/// Enum para el ordenamiento de recordatorios
+enum ReminderSortOrder {
+  date,
+  priority,
+  alphabetical;
+
+  String get displayName {
+    switch (this) {
+      case ReminderSortOrder.date:
+        return 'Por fecha';
+      case ReminderSortOrder.priority:
+        return 'Por prioridad';
+      case ReminderSortOrder.alphabetical:
+        return 'Alfabético';
+    }
+  }
+}
+
+/// Provider para el query de búsqueda
+@riverpod
+class SearchQuery extends _$SearchQuery {
+  @override
+  String build() => '';
+
+  void setQuery(String query) {
+    state = query.toLowerCase().trim();
+  }
+
+  void clear() {
+    state = '';
+  }
+}
+
+/// Provider para el ordenamiento actual
+@riverpod
+class CurrentSortOrder extends _$CurrentSortOrder {
+  @override
+  ReminderSortOrder build() => ReminderSortOrder.date;
+
+  void setSortOrder(ReminderSortOrder order) {
+    state = order;
+  }
+}
+
+/// Provider que filtra y ordena recordatorios según búsqueda y ordenamiento
+@riverpod
+Future<List<ReminderEntity>> searchAndSortedReminders(
+    SearchAndSortedRemindersRef ref) async {
+  final reminders = await ref.watch(filteredRemindersProvider.future);
+  final searchQuery = ref.watch(searchQueryProvider);
+  final sortOrder = ref.watch(currentSortOrderProvider);
+
+  // Filtrar por búsqueda
+  var filtered = reminders;
+  if (searchQuery.isNotEmpty) {
+    filtered = reminders.where((reminder) {
+      final titleMatch = reminder.title.toLowerCase().contains(searchQuery);
+      final descriptionMatch = reminder.description
+              ?.toLowerCase()
+              .contains(searchQuery) ??
+          false;
+      final tagsMatch =
+          reminder.tags?.any((tag) => tag.toLowerCase().contains(searchQuery)) ??
+              false;
+      return titleMatch || descriptionMatch || tagsMatch;
+    }).toList();
+  }
+
+  // Ordenar
+  switch (sortOrder) {
+    case ReminderSortOrder.date:
+      filtered.sort((a, b) => a.nextOccurrence.compareTo(b.nextOccurrence));
+      break;
+    case ReminderSortOrder.priority:
+      filtered.sort((a, b) {
+        // HIGH = 2, MEDIUM = 1, LOW = 0 (orden inverso para que HIGH sea primero)
+        final priorityOrder = {
+          Priority.high: 0,
+          Priority.medium: 1,
+          Priority.low: 2,
+        };
+        final priorityCompare =
+            priorityOrder[a.priority]!.compareTo(priorityOrder[b.priority]!);
+        if (priorityCompare != 0) return priorityCompare;
+        // Si tienen la misma prioridad, ordenar por fecha
+        return a.nextOccurrence.compareTo(b.nextOccurrence);
+      });
+      break;
+    case ReminderSortOrder.alphabetical:
+      filtered.sort((a, b) => a.title.compareTo(b.title));
+      break;
+  }
+
+  return filtered;
+}
