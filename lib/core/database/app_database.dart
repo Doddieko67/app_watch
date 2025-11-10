@@ -40,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,6 +64,10 @@ class AppDatabase extends _$AppDatabase {
               WHERE muscle_groups IS NULL OR muscle_groups = ''
             ''');
             // Nota: No eliminamos la columna 'split' por compatibilidad
+          }
+          // Migración de v3 a v4: agregar columna exercises a SavedWorkouts
+          if (from == 3 && to == 4) {
+            await m.addColumn(savedWorkouts, savedWorkouts.exercises);
           }
         },
       );

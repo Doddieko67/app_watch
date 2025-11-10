@@ -11,6 +11,9 @@ class SavedWorkouts extends Table {
   /// Grupos musculares trabajados (JSON array: ["chest", "triceps"])
   TextColumn get muscleGroups => text()();
 
+  /// Ejercicios del template (JSON array de objetos con name, sets, reps, weight, notes)
+  TextColumn get exercises => text().withDefault(const Constant('[]'))();
+
   /// Duración promedio en minutos
   IntColumn get avgDurationMinutes => integer().nullable()();
 

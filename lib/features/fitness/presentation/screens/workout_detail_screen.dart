@@ -100,6 +100,8 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
                   if (savedWorkout.notes != null) {
                     _notesController.text = savedWorkout.notes!;
                   }
+                  // Cargar ejercicios del template
+                  _exercises = _decodeExercises(savedWorkout.exercises);
                 });
 
                 // Actualizar contador de uso
@@ -437,6 +439,7 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
     final existing = await database.getSavedWorkoutByName(workoutName);
 
     final muscleGroupsJson = _encodeMuscleGroups(_selectedMuscleGroups);
+    final exercisesJson = _encodeExercises(_exercises);
     final duration = _durationController.text.isEmpty
         ? null
         : int.tryParse(_durationController.text);
@@ -446,6 +449,7 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
       await database.updateSavedWorkout(
         existing.copyWith(
           muscleGroups: muscleGroupsJson,
+          exercises: exercisesJson,
           avgDurationMinutes: duration != null ? drift.Value(duration) : drift.Value(existing.avgDurationMinutes),
           notes: drift.Value(
             _notesController.text.trim().isEmpty
@@ -461,6 +465,7 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
         SavedWorkoutsCompanion.insert(
           name: workoutName,
           muscleGroups: muscleGroupsJson,
+          exercises: drift.Value(exercisesJson),
           avgDurationMinutes: drift.Value(duration),
           notes: drift.Value(
             _notesController.text.trim().isEmpty
@@ -488,5 +493,42 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
   String _encodeMuscleGroups(List<MuscleGroup> groups) {
     final List<String> values = groups.map((g) => g.value).toList();
     return jsonEncode(values);
+  }
+
+  /// Codifica List<ExerciseEntity> a JSON string
+  String _encodeExercises(List<ExerciseEntity> exercises) {
+    final List<Map<String, dynamic>> exercisesList = exercises.map((e) {
+      return {
+        'name': e.name,
+        'sets': e.sets,
+        'reps': e.reps,
+        'weight': e.weight,
+        'notes': e.notes,
+      };
+    }).toList();
+    return jsonEncode(exercisesList);
+  }
+
+  /// Decodifica exercises desde JSON string a List<ExerciseEntity>
+  List<ExerciseEntity> _decodeExercises(String json) {
+    try {
+      final List<dynamic> decoded = jsonDecode(json);
+      return decoded.map((item) {
+        return ExerciseEntity(
+          id: 0, // ID temporal, se asignará al guardar
+          workoutId: 0, // Se asignará al guardar
+          name: item['name'] as String,
+          sets: item['sets'] as int,
+          reps: item['reps'] as int,
+          weight: (item['weight'] as num).toDouble(),
+          notes: item['notes'] as String?,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          deletedAt: null,
+        );
+      }).toList();
+    } catch (e) {
+      return [];
+    }
   }
 }
