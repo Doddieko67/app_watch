@@ -44,8 +44,11 @@ class Reminders extends Table {
 ```dart
 class Workouts extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get name => text()(); // "Push Day", "Pull Day"
-  TextColumn get split => text()(); // "push", "pull", "legs", "custom"
+  TextColumn get name => text()(); // "Push Day", "Full Body"
+
+  /// Grupos musculares trabajados (JSON array: ["chest", "triceps", "shoulders"])
+  TextColumn get muscleGroups => text()();
+
   DateTimeColumn get date => dateTime()();
   IntColumn get durationMinutes => integer().nullable()();
   TextColumn get notes => text().nullable()();
@@ -57,6 +60,10 @@ class Workouts extends Table {
   IntColumn get syncStatus => integer().withDefault(const Constant(0))();
 }
 ```
+
+**Muscle Groups disponibles:**
+- `chest`, `back`, `shoulders`, `biceps`, `triceps`, `forearms`
+- `abs`, `quads`, `hamstrings`, `glutes`, `calves`, `cardio`
 
 ### Exercises Table
 
@@ -77,6 +84,88 @@ class Exercises extends Table {
   DateTimeColumn get deletedAt => dateTime().nullable()();
   IntColumn get syncStatus => integer().withDefault(const Constant(0))();
 }
+```
+
+### SavedExercises Table
+
+```dart
+class SavedExercises extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+
+  /// Últimos valores usados (para autocompletado inteligente)
+  IntColumn get lastSets => integer().withDefault(const Constant(3))();
+  IntColumn get lastReps => integer().withDefault(const Constant(10))();
+  RealColumn get lastWeight => real().withDefault(const Constant(0.0))();
+
+  /// Categoría opcional para organización
+  TextColumn get category => text().nullable()();
+
+  /// Número de veces usado
+  IntColumn get usageCount => integer().withDefault(const Constant(0))();
+
+  /// Última vez usado
+  DateTimeColumn get lastUsed => dateTime().withDefault(currentDateAndTime)();
+
+  // Metadatos
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  IntColumn get syncStatus => integer().withDefault(const Constant(0))();
+}
+```
+
+### SavedWorkouts Table
+
+```dart
+class SavedWorkouts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+
+  /// Grupos musculares trabajados (JSON array: ["chest", "triceps"])
+  TextColumn get muscleGroups => text()();
+
+  /// Ejercicios del template (JSON array de objetos con name, sets, reps, weight, notes)
+  TextColumn get exercises => text().withDefault(const Constant('[]'))();
+
+  /// Duración promedio en minutos
+  IntColumn get avgDurationMinutes => integer().nullable()();
+
+  /// Notas sobre el workout template
+  TextColumn get notes => text().nullable()();
+
+  /// Número de veces usado
+  IntColumn get usageCount => integer().withDefault(const Constant(0))();
+
+  /// Última vez usado
+  DateTimeColumn get lastUsed => dateTime().withDefault(currentDateAndTime)();
+
+  // Metadatos
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  IntColumn get syncStatus => integer().withDefault(const Constant(0))();
+}
+```
+
+**Formato JSON de `exercises` en SavedWorkouts:**
+```json
+[
+  {
+    "name": "Bench Press",
+    "sets": 3,
+    "reps": 10,
+    "weight": 80.0,
+    "notes": "Explosivo en la subida"
+  },
+  {
+    "name": "Incline Dumbbell Press",
+    "sets": 3,
+    "reps": 12,
+    "weight": 30.0,
+    "notes": null
+  }
+]
 ```
 
 ---
@@ -312,24 +401,59 @@ IntColumn get syncStatus => integer().withDefault(const Constant(0))();
 
 ## Migraciones
 
+**Schema actual: v4**
+
 Drift soporta migraciones automáticas. Para cada cambio de schema:
 
 1. Incrementar `schemaVersion` en `AppDatabase`
 2. Implementar migración en `MigrationStrategy`
 3. Probar con database inspector
 
-Ejemplo:
+### Historial de Migraciones:
+
+**v1 → v2:** Agregar tabla SavedExercises
 ```dart
-@DriftDatabase(tables: [...], schemaVersion: 2)
-class AppDatabase extends _$AppDatabase {
-  @override
-  MigrationStrategy get migration => MigrationStrategy(
-    onUpgrade: (migrator, from, to) async {
-      if (from == 1) {
-        // Migración de v1 a v2
-        await migrator.addColumn(reminders, reminders.tags);
-      }
-    },
-  );
+if (from == 1 && to == 2) {
+  await m.createTable(savedExercises);
 }
 ```
+
+**v2 → v3:** Agregar SavedWorkouts + cambiar split a muscleGroups
+```dart
+if (from == 2 && to == 3) {
+  await m.createTable(savedWorkouts);
+  await m.addColumn(workouts, workouts.muscleGroups);
+  await customStatement('''
+    UPDATE workouts
+    SET muscle_groups = '["' || split || '"]'
+    WHERE muscle_groups IS NULL OR muscle_groups = ''
+  ''');
+}
+```
+
+**v3 → v4:** Agregar columna exercises a SavedWorkouts
+```dart
+if (from == 3 && to == 4) {
+  await m.addColumn(savedWorkouts, savedWorkouts.exercises);
+}
+```
+
+---
+
+## Resumen de Tablas
+
+**Total: 13 tablas**
+
+1. **Reminders** - Recordatorios diarios
+2. **Workouts** - Entrenamientos realizados
+3. **Exercises** - Ejercicios dentro de workouts
+4. **SavedExercises** - Templates de ejercicios
+5. **SavedWorkouts** - Templates de entrenamientos completos
+6. **Meals** - Comidas registradas
+7. **FoodItems** - Alimentos dentro de comidas
+8. **NutritionGoals** - Objetivos nutricionales
+9. **SleepRecords** - Registros de sueño
+10. **StudySessions** - Sesiones de estudio
+11. **SleepSchedules** - Horarios de sueño configurados
+12. **AppSettings** - Configuración de la app
+13. **AiCache** - Cache de respuestas de IA

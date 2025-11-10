@@ -211,10 +211,10 @@ app_watch/
 
 #### Fase 1 - Infraestructura Base
 - ✅ Proyecto Flutter creado y compilando
-- ✅ 11 tablas Drift con DAOs básicos
+- ✅ 13 tablas Drift con DAOs básicos (incluye SavedExercises, SavedWorkouts)
 - ✅ Riverpod configurado (database + theme + notification providers)
 - ✅ Material 3 Theme con colores personalizables
-- ✅ Navegación adaptativa (Bottom Nav + Rail)
+- ✅ Navegación adaptativa (Bottom Nav + Rail) - Solo iconos, sin labels
 - ✅ Assets base (nutrition_database.json con 15 alimentos)
 - ✅ analysis_options.yaml con lints estrictos
 - ✅ Estructura completa de carpetas (Clean Architecture)
@@ -230,16 +230,24 @@ app_watch/
 - ✅ 23 archivos creados (~2,500+ líneas de código)
 
 #### Fase 3 - Módulo de Fitness Tracker
-- ✅ Domain Layer completo (WorkoutEntity, ExerciseEntity, 4 use cases)
-- ✅ Data Layer completo (mappers, datasource, repository impl)
-- ✅ Presentation Layer completo (15+ providers, screens, widgets)
-- ✅ FitnessHomeScreen con estadísticas generales
-- ✅ WorkoutDetailScreen para crear/editar entrenamientos
-- ✅ CRUD de workouts y ejercicios
-- ✅ 7 tipos de splits (Push/Pull/Legs/Upper/Lower/Full/Custom)
-- ✅ Cálculo de volumen, PRs, ejercicios frecuentes
+- ✅ Domain Layer completo (WorkoutEntity, ExerciseEntity, MuscleGroup enum, 4 use cases)
+- ✅ Data Layer completo (mappers con JSON encoding, datasource, repository impl)
+- ✅ Presentation Layer completo (20+ providers, screens, widgets)
+- ✅ FitnessHomeScreen con estadísticas generales y menú de utilidades
+- ✅ WorkoutDetailScreen con autocompletado de templates y edición inteligente
+- ✅ CRUD de workouts y ejercicios con preservación de IDs
+- ✅ Sistema de Grupos Musculares (12 grupos: chest, back, shoulders, biceps, triceps, forearms, abs, quads, hamstrings, glutes, calves, cardio)
+- ✅ Selección múltiple de grupos musculares con emojis
+- ✅ SavedWorkouts: Templates reutilizables con ejercicios completos
+- ✅ WorkoutAutocompleteField: Carga automática de templates con ejercicios
+- ✅ ExerciseAutocompleteField: Autocompletado de ejercicios guardados
+- ✅ FitnessStatsScreen con 3 tabs (PRs, Frecuencia, Volumen semanal)
+- ✅ SavedExercisesListScreen: Gestión completa de ejercicios guardados
+- ✅ OneRMCalculator: Calculadora 1RM con fórmulas Epley y Brzycki
+- ✅ WorkoutHistoryScreen con calendario y filtrado por fecha
+- ✅ Cálculo de volumen, PRs, ejercicios frecuentes (con filtro de soft-delete)
 - ✅ Integrado a navegación principal
-- ✅ 15 archivos creados (~2,000+ líneas de código)
+- ✅ 23 archivos creados (~3,500+ líneas de código)
 
 #### Fase 4 - Módulo de Nutrición (BÁSICO)
 - ✅ Domain Layer completo (MealEntity, FoodItemEntity, NutritionGoalsEntity, 6 use cases)
@@ -333,8 +341,7 @@ app_watch/
   - Integración con table_calendar (vista mes/semana/2 semanas)
   - Marcadores en días con entrenamientos
   - Lista de workouts filtrada por fecha seleccionada
-  - Cards con split type, duración, ejercicios, volumen
-  - Color-coded según tipo de split
+  - Cards con muscle groups (emojis), duración, ejercicios, volumen
   - Navegación a WorkoutDetailScreen para editar
   - Navegación desde FitnessHomeScreen (botón history)
 - ✅ NavigationService - Infraestructura de navegación global:
@@ -347,26 +354,36 @@ app_watch/
 - ✅ 7 commits exitosos con APK debug generado en cada uno
 - ✅ 0 errores de compilación
 
-**Total archivos:** ~114 archivos (~17,000+ líneas de código)
+#### Fase 6.8 - Mejoras Funcionales UX (COMPLETADA ✅)
+- ✅ **FITNESS - Sistema de Templates Completo:**
+  - Tabla SavedWorkouts para guardar plantillas de entrenamientos
+  - WorkoutAutocompleteField con carga de templates
+  - Replicación completa de ejercicios al seleccionar template
+  - Sistema de Grupos Musculares (reemplaza Splits)
+  - MuscleGroupSelector con 12 grupos y emojis
+  - ExerciseAutocompleteField para ejercicios guardados
+  - Edición inteligente de ejercicios (preserva IDs, no destructiva)
+  - FitnessStatsScreen con 3 tabs (PRs, Frecuencia, Volumen)
+  - SavedExercisesListScreen con CRUD completo
+  - OneRMCalculator profesional (Epley + Brzycki)
+  - Contador de uso de templates
+- ✅ **NUTRITION - Optimizaciones:**
+  - Eliminado loading innecesario al cambiar de día
+  - FoodAutocompleteField para alimentos guardados
+  - Sistema de alimentos frecuentes
+- ✅ **NAVIGATION - Simplificación:**
+  - Barra de navegación solo con iconos (sin labels)
+  - Iconos más grandes para mejor UX táctil
+- ✅ 10 archivos nuevos creados (~2,000+ líneas de código)
+- ✅ Schema v2 → v4 (migraciones de SavedExercises y SavedWorkouts)
+- ✅ 3 commits exitosos con APK debug generado
+- ✅ 0 errores de compilación
+
+**Total archivos:** ~130 archivos (~20,500+ líneas de código)
 
 ### Próximos Pasos
 
-**Fase 6.8: Mejoras Funcionales Pre-Pulido**
-1. **FITNESS:**
-   - Editar ejercicios en workout (antes y después de guardar)
-   - Sistema de ejercicios guardados con autocompletar
-   - Pantalla de estadísticas detalladas (ejercicios frecuentes, PRs)
-
-2. **NUTRITION:**
-   - Optimizar carga al cambiar de día (eliminar loading de 100ms)
-   - Sistema de alimentos guardados con autocompletar
-   - Guardar últimas cantidades/porciones
-
-3. **NAVIGATION:**
-   - Simplificar barra de navegación (solo iconos, sin labels)
-   - Iconos más grandes para mejor UX
-
-**Fase 7.0: Pulido Técnico** (Primera mitad Semana 7)
+**Fase 7.0: Pulido Técnico** (ACTUAL)
 - Animaciones con flutter_animate
 - Optimización de performance (DB, paginación, lazy loading)
 - Manejo robusto de errores
