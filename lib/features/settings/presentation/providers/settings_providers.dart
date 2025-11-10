@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/export_import_service.dart';
 import '../../../../core/services/secure_storage_service.dart';
+import '../../../nutrition/presentation/providers/nutrition_providers.dart' as nutrition;
 import '../../data/datasources/settings_local_datasource.dart';
 import '../../data/repositories/settings_repository_impl.dart';
 import '../../domain/entities/app_settings_entity.dart';
@@ -127,6 +128,16 @@ final saveApiKeyActionProvider = Provider<Future<void> Function(String)>((ref) {
     await SecureStorageService.saveGeminiApiKey(key);
     final repository = ref.read(settingsRepositoryProvider);
     await repository.updateHasApiKey(key.isNotEmpty);
+
+    // Reconfigurar Gemini AI con la nueva API key
+    if (key.isNotEmpty) {
+      final aiService = ref.read(nutrition.aiServiceProvider);
+      aiService.configureGemini(key);
+      debugPrint('✅ Gemini AI reconfigurado con nueva API key');
+    }
+
+    // Invalidar provider de API key para actualizar UI
+    ref.invalidate(hasApiKeyProvider);
   };
 });
 
@@ -136,6 +147,11 @@ final deleteApiKeyActionProvider = Provider<Future<void> Function()>((ref) {
     await SecureStorageService.deleteGeminiApiKey();
     final repository = ref.read(settingsRepositoryProvider);
     await repository.updateHasApiKey(false);
+
+    // Invalidar provider de API key para actualizar UI
+    ref.invalidate(hasApiKeyProvider);
+
+    debugPrint('⚠️  API key de Gemini eliminada. Configúrala en Settings para usar IA.');
   };
 });
 

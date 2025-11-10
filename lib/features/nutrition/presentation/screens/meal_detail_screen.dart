@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/entities/meal_entity.dart';
 import '../providers/nutrition_providers.dart';
+import 'add_food_item_screen.dart';
 
 class MealDetailScreen extends ConsumerWidget {
   final int mealId;
@@ -36,6 +37,11 @@ class MealDetailScreen extends ConsumerWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _navigateToAddFood(context, ref),
+        icon: const Icon(Icons.add),
+        label: const Text('Agregar Alimento'),
+      ),
       body: mealAsync.when(
         data: (meal) {
           if (meal == null) {
@@ -51,6 +57,19 @@ class MealDetailScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _navigateToAddFood(BuildContext context, WidgetRef ref) async {
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => AddFoodItemScreen(mealId: mealId),
+      ),
+    );
+
+    // Si se guardó el alimento, refrescar el provider
+    if (result == true) {
+      ref.invalidate(mealByIdProvider(mealId));
+    }
   }
 
   Widget _buildMealDetail(BuildContext context, MealEntity meal) {

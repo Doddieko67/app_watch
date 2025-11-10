@@ -60,6 +60,7 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_secure_storage: ^9.0.0
   flutter_slidable: ^4.0.3
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -91,4 +92,5 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/nutrition_database.json
+    - .env
 

@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Service for securely storing sensitive data (API keys, tokens, etc.)
@@ -13,7 +15,18 @@ class SecureStorageService {
   }
 
   /// Get Gemini API key
+  /// In debug mode, reads from .env file first, then falls back to secure storage
+  /// In release mode, only uses secure storage
   static Future<String?> getGeminiApiKey() async {
+    // In debug mode, try .env first
+    if (kDebugMode) {
+      final envKey = dotenv.env['GEMINI_API_KEY'];
+      if (envKey != null && envKey.isNotEmpty && envKey != 'your_gemini_api_key_here') {
+        return envKey;
+      }
+    }
+
+    // Fallback to secure storage (or use it directly in release mode)
     return await _storage.read(key: _geminiApiKeyKey);
   }
 

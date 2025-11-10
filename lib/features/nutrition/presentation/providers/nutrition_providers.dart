@@ -3,9 +3,11 @@ import '../../../../core/database/app_database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/local_nutrition_database.dart';
+import '../../../../core/services/secure_storage_service.dart';
 import '../../domain/repositories/nutrition_repository.dart' as domain;
 import '../../data/datasources/nutrition_local_datasource.dart';
 import '../../data/repositories/nutrition_repository_impl.dart';
+import '../../domain/entities/food_analysis_result.dart';
 import '../../domain/entities/food_item_entity.dart';
 import '../../domain/entities/meal_entity.dart';
 import '../../domain/entities/nutrition_goals_entity.dart';
@@ -65,6 +67,35 @@ final getDailyNutritionUseCaseProvider = Provider<GetDailyNutrition>((ref) {
 final addFoodToMealUseCaseProvider = Provider<AddFoodToMeal>((ref) {
   final repository = ref.watch(nutritionRepositoryProvider);
   return AddFoodToMeal(repository);
+});
+
+// ==================== ACTION PROVIDERS ====================
+
+/// Check if Gemini API key is configured
+final hasApiKeyProvider = FutureProvider<bool>((ref) async {
+  return await SecureStorageService.hasGeminiApiKey();
+});
+
+/// Provider de acción para agregar un FoodItem a una comida
+final addFoodItemUseCaseProvider = Provider<Future<void> Function(int, FoodData)>((ref) {
+  return (int mealId, FoodData foodData) async {
+    final repository = ref.watch(nutritionRepositoryProvider);
+    await repository.addFoodItem(
+      mealId: mealId,
+      name: foodData.name,
+      quantity: foodData.quantity,
+      unit: foodData.unit,
+      calories: foodData.calories,
+      protein: foodData.protein,
+      carbs: foodData.carbs,
+      fats: foodData.fats,
+      source: 'ai', // Marcamos que viene del análisis de IA
+    );
+    // Invalidar providers relevantes para refrescar UI
+    ref.invalidate(mealByIdProvider);
+    ref.invalidate(todayMealsProvider);
+    ref.invalidate(dailyNutritionSummaryProvider);
+  };
 });
 
 // ==================== STATE PROVIDERS ====================
