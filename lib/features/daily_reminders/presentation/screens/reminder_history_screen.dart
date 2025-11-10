@@ -30,10 +30,20 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
   // Cache de recordatorios para marcadores del mes visible
   Map<DateTime, List<ReminderEntity>> _reminderCache = {};
 
+  // Búsqueda/filtro
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
     _loadMonthReminders();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadMonthReminders() async {
@@ -43,9 +53,17 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
     final datasource = ReminderLocalDataSource(ref.read(appDatabaseProvider));
     final reminders = await datasource.getRemindersByDateRange(firstDay, lastDay);
 
+    // Filtrar por búsqueda si hay query
+    var filteredReminders = reminders;
+    if (_searchQuery.isNotEmpty) {
+      filteredReminders = reminders.where((reminder) {
+        return reminder.title.toLowerCase().contains(_searchQuery.toLowerCase());
+      }).toList();
+    }
+
     // Agrupar por día
     final Map<DateTime, List<ReminderEntity>> grouped = {};
-    for (final reminder in reminders) {
+    for (final reminder in filteredReminders) {
       final day = DateTime(
         reminder.nextOccurrence.year,
         reminder.nextOccurrence.month,
@@ -82,6 +100,39 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
       ),
       body: Column(
         children: [
+          // Campo de búsqueda
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Buscar recordatorios...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchController.clear();
+                            _searchQuery = '';
+                          });
+                          _loadMonthReminders();
+                        },
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+                _loadMonthReminders();
+              },
+            ),
+          ),
+
           // Calendario
           Card(
             margin: const EdgeInsets.all(8),
@@ -127,7 +178,7 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
                 formatButtonVisible: true,
                 titleCentered: true,
               ),
-              // Marcadores para días con recordatorios
+              // Marcadores para días con recordatorios filtrados
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, day, events) {
                   final dayKey = DateTime(day.year, day.month, day.day);
@@ -137,30 +188,14 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
                     return null;
                   }
 
-                  // Agrupar por prioridad
-                  final highPriority = reminders.where((r) => r.priority == Priority.high).toList();
-                  final mediumPriority = reminders.where((r) => r.priority == Priority.medium).toList();
-                  final lowPriority = reminders.where((r) => r.priority == Priority.low).toList();
-
+                  // Crear marcadores para cada recordatorio (máximo 5)
                   final List<Widget> markers = [];
+                  final displayReminders = reminders.take(5).toList();
 
-                  // Mostrar máximo 3 marcadores (uno por prioridad)
-                  if (highPriority.isNotEmpty) {
+                  for (final reminder in displayReminders) {
                     markers.add(_buildMarker(
-                      theme.colorScheme.error,
-                      highPriority.every((r) => r.isCompleted),
-                    ));
-                  }
-                  if (mediumPriority.isNotEmpty && markers.length < 3) {
-                    markers.add(_buildMarker(
-                      theme.colorScheme.secondary,
-                      mediumPriority.every((r) => r.isCompleted),
-                    ));
-                  }
-                  if (lowPriority.isNotEmpty && markers.length < 3) {
-                    markers.add(_buildMarker(
-                      theme.colorScheme.tertiary,
-                      lowPriority.every((r) => r.isCompleted),
+                      theme.colorScheme.primary,
+                      reminder.isCompleted,
                     ));
                   }
 
@@ -203,15 +238,23 @@ class _ReminderHistoryScreenState extends ConsumerState<ReminderHistoryScreen> {
           Expanded(
             child: remindersAsync.when(
               data: (reminders) {
-                if (reminders.isEmpty) {
+                // Filtrar por búsqueda
+                var filteredReminders = reminders;
+                if (_searchQuery.isNotEmpty) {
+                  filteredReminders = reminders.where((reminder) {
+                    return reminder.title.toLowerCase().contains(_searchQuery.toLowerCase());
+                  }).toList();
+                }
+
+                if (filteredReminders.isEmpty) {
                   return _buildEmptyState();
                 }
 
                 return ListView.builder(
                   padding: const EdgeInsets.only(bottom: 16),
-                  itemCount: reminders.length,
+                  itemCount: filteredReminders.length,
                   itemBuilder: (context, index) {
-                    final reminder = reminders[index];
+                    final reminder = filteredReminders[index];
                     return ReminderCard(
                       reminder: reminder,
                       onTap: () {
