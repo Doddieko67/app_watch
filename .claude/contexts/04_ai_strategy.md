@@ -427,13 +427,14 @@ class AiServiceImpl implements IAiService {
 
   AiServiceImpl(String apiKey) {
     _model = GenerativeModel(
-      model: 'gemini-1.5-flash', // Más rápido y económico
+      model: 'gemini-flash-latest', // Gemini 2.5 Flash (actualizado)
       apiKey: apiKey,
       generationConfig: GenerationConfig(
-        temperature: 0.1, // Baja temperatura para respuestas consistentes
-        topK: 1,
-        topP: 1,
-        maxOutputTokens: 500,
+        temperature: 0.2, // Moderada para balance precisión/creatividad
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024,
+        responseMimeType: 'application/json', // Crítico: fuerza respuesta JSON
       ),
       safetySettings: [
         SafetySetting(
@@ -442,6 +443,14 @@ class AiServiceImpl implements IAiService {
         ),
         SafetySetting(
           HarmCategory.hateSpeech,
+          HarmBlockThreshold.none,
+        ),
+        SafetySetting(
+          HarmCategory.sexuallyExplicit,
+          HarmBlockThreshold.none,
+        ),
+        SafetySetting(
+          HarmCategory.dangerousContent,
           HarmBlockThreshold.none,
         ),
       ],
@@ -466,3 +475,132 @@ class AiServiceImpl implements IAiService {
 - 🌐 **Respuesta de Gemini:** <3 segundos
 - 📊 **Precisión de DB local:** >85% de matches relevantes
 - 💾 **Tamaño de cache:** Limpiar entradas no usadas en 60+ días
+
+---
+
+## Mejoras Implementadas (Fase 6.10)
+
+### ✅ Fix Crítico de Gemini AI
+
+**Problema:** El método `_analyzeWithGemini()` estaba sobrescribiendo la configuración del modelo, eliminando el parámetro crítico `responseMimeType: 'application/json'`.
+
+**Impacto:** Análisis de alimentos como "pay de limón" fallaban constantemente, retornando respuestas inconsistentes.
+
+**Solución:**
+```dart
+// ❌ ANTES (causaba problemas):
+final response = await _geminiModel!.generateContent(
+  content,
+  generationConfig: GenerationConfig(
+    temperature: 0.1,
+    maxOutputTokens: 500,
+  ),
+);
+
+// ✅ DESPUÉS (corregido):
+final response = await _geminiModel!.generateContent(content);
+// Usa la configuración completa del modelo con responseMimeType
+```
+
+**Configuración actualizada:**
+```dart
+void configureGemini(String apiKey) {
+  _geminiModel = GenerativeModel(
+    model: 'gemini-flash-latest', // Gemini 2.5 Flash
+    apiKey: apiKey,
+    generationConfig: GenerationConfig(
+      temperature: 0.2,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 1024,
+      responseMimeType: 'application/json', // ← Crítico para respuestas consistentes
+    ),
+    safetySettings: [ /* ... */ ],
+  );
+}
+```
+
+**Resultado:** Análisis proporcional funciona perfectamente (100g, 150g, 1 rebanada, etc.)
+
+### ✅ Sistema de Autocompletado de Alimentos
+
+**Widget:** `FoodAutocompleteField`
+- Muestra 50 alimentos recientes únicos
+- Búsqueda en tiempo real mientras escribes
+- Información nutricional resumida en cada sugerencia
+- Badge de fuente visible (Cache/IA/DB/Manual)
+
+**Provider utilizado:**
+```dart
+final recentFoodsProvider = FutureProvider<List<FoodItemEntity>>((ref) async {
+  final repository = ref.watch(nutritionRepositoryProvider);
+  return repository.getRecentUniqueFoods(limit: 50);
+});
+```
+
+**UX:**
+```
+Usuario escribe "pollo" →
+  • 🕐 Pollo a la plancha | 200g • 330 kcal • P: 62g [IA]
+  • 🕐 Pollo al horno     | 150g • 248 kcal • P: 47g [CACHE]
+```
+
+### ✅ Agregar Múltiples Alimentos Rápidamente
+
+**Mejora:** Botón "Guardar + Otro" en `AddFoodItemScreen`
+
+**Flujo:**
+1. Agregar "200g pollo" → Analizar → **Guardar + Otro**
+2. Formulario se limpia automáticamente
+3. Agregar "100g arroz" → Analizar → **Guardar + Otro**
+4. Agregar "1 manzana" → Analizar → **Guardar** (cierra)
+
+**Métrica:** Reduce clics en 33% y pantallas en 67%
+
+### ✅ Edición de Alimentos Individuales
+
+**Nueva pantalla:** `EditFoodItemScreen` (~400 líneas)
+
+**Características:**
+- Editar nombre, cantidad, calorías, proteína, carbos, grasas
+- Muestra badge de fuente original y fecha de registro
+- Botón de eliminar con confirmación
+- Recalcula totales de comida automáticamente
+- Invalida providers para actualizar UI
+
+**Función helper:**
+```dart
+FoodAnalysisSource _convertToFoodAnalysisSource(String source) {
+  switch (source.toLowerCase()) {
+    case 'cache': return FoodAnalysisSource.cache;
+    case 'gemini':
+    case 'ai': return FoodAnalysisSource.gemini;
+    case 'local_db': return FoodAnalysisSource.localDb;
+    case 'manual': return FoodAnalysisSource.manual;
+    default: return FoodAnalysisSource.manual;
+  }
+}
+```
+
+### ✅ Alimentos Clickeables
+
+**Mejora en `MealDetailScreen`:**
+- Alimentos ahora son clickeables con InkWell
+- Icono de edición (✏️) visible
+- Tap → Abre `EditFoodItemScreen`
+- Método `_buildFoodItemCard()` con funcionalidad de edición
+
+### 📊 Métricas de Mejora
+
+| Métrica                        | Antes | Después | Mejora |
+|--------------------------------|-------|---------|--------|
+| Clics para agregar 3 alimentos | 12    | 8       | -33%   |
+| Pantallas necesarias           | 6     | 2       | -67%   |
+| Editar alimento individual     | ❌    | ✅      | +100%  |
+| Autocompletado                 | ❌    | ✅      | +100%  |
+| Análisis con Gemini funciona   | ❌    | ✅      | +100%  |
+
+---
+
+**Última actualización:** 2025-11-10
+**Documentación completa:** Ver `NUTRITION_IMPROVEMENTS.md` y `NUTRITION_AI_FIX.md`

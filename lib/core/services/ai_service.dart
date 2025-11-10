@@ -117,13 +117,8 @@ class AiService {
     final prompt = _buildFoodAnalysisPrompt(input);
     final content = [Content.text(prompt)];
 
-    final response = await _geminiModel!.generateContent(
-      content,
-      generationConfig: GenerationConfig(
-        temperature: 0.1,
-        maxOutputTokens: 500,
-      ),
-    );
+    // Usar la configuración del modelo ya configurada (no sobreescribir)
+    final response = await _geminiModel!.generateContent(content);
 
     final text = response.text;
     if (text == null || text.isEmpty) {

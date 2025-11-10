@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/meal_entity.dart';
 import '../providers/nutrition_providers.dart';
 import 'add_food_item_screen.dart';
+import 'edit_food_item_screen.dart';
 import 'edit_meal_screen.dart';
 
 class MealDetailScreen extends ConsumerWidget {
@@ -45,7 +46,7 @@ class MealDetailScreen extends ConsumerWidget {
               child: Text('Comida no encontrada'),
             );
           }
-          return _buildMealDetail(context, meal);
+          return _buildMealDetail(context, meal, ref);
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
@@ -88,7 +89,24 @@ class MealDetailScreen extends ConsumerWidget {
     }
   }
 
-  Widget _buildMealDetail(BuildContext context, MealEntity meal) {
+  Future<void> _navigateToEditFoodItem(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic foodItem,
+  ) async {
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => EditFoodItemScreen(foodItem: foodItem),
+      ),
+    );
+
+    // Si se guardó la edición, refrescar el provider
+    if (result == true) {
+      ref.invalidate(mealByIdProvider(mealId));
+    }
+  }
+
+  Widget _buildMealDetail(BuildContext context, MealEntity meal, WidgetRef ref) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -250,78 +268,7 @@ class MealDetailScreen extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                ...meal.foodItems.map((foodItem) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  foodItem.name,
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primaryContainer,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '${foodItem.quantity.toStringAsFixed(0)}${foodItem.unit}',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _buildFoodItemNutrient(
-                                context,
-                                '${foodItem.calories.toStringAsFixed(0)} kcal',
-                                Colors.orange,
-                              ),
-                              _buildFoodItemNutrient(
-                                context,
-                                'P: ${foodItem.protein.toStringAsFixed(1)}g',
-                                Colors.red,
-                              ),
-                              _buildFoodItemNutrient(
-                                context,
-                                'C: ${foodItem.carbs.toStringAsFixed(1)}g',
-                                Colors.blue,
-                              ),
-                              _buildFoodItemNutrient(
-                                context,
-                                'G: ${foodItem.fats.toStringAsFixed(1)}g',
-                                Colors.amber,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
+                ...meal.foodItems.map((foodItem) => _buildFoodItemCard(context, ref, foodItem)),
               ],
             ),
           ),
@@ -384,6 +331,89 @@ class MealDetailScreen extends ConsumerWidget {
             color: color,
             fontWeight: FontWeight.w600,
           ),
+    );
+  }
+
+  Widget _buildFoodItemCard(BuildContext context, WidgetRef ref, dynamic foodItem) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => _navigateToEditFoodItem(context, ref, foodItem),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      foodItem.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${foodItem.quantity.toStringAsFixed(0)}${foodItem.unit}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.edit,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildFoodItemNutrient(
+                    context,
+                    '${foodItem.calories.toStringAsFixed(0)} kcal',
+                    Colors.orange,
+                  ),
+                  _buildFoodItemNutrient(
+                    context,
+                    'P: ${foodItem.protein.toStringAsFixed(1)}g',
+                    Colors.red,
+                  ),
+                  _buildFoodItemNutrient(
+                    context,
+                    'C: ${foodItem.carbs.toStringAsFixed(1)}g',
+                    Colors.blue,
+                  ),
+                  _buildFoodItemNutrient(
+                    context,
+                    'G: ${foodItem.fats.toStringAsFixed(1)}g',
+                    Colors.amber,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

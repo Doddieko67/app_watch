@@ -3,37 +3,50 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/food_analysis_result.dart';
+import '../../domain/entities/food_item_entity.dart';
 import '../providers/nutrition_providers.dart';
 import '../widgets/food_source_badge.dart';
 
-class AddFoodItemScreen extends ConsumerStatefulWidget {
-  final int mealId;
+class EditFoodItemScreen extends ConsumerStatefulWidget {
+  final FoodItemEntity foodItem;
 
-  const AddFoodItemScreen({
+  const EditFoodItemScreen({
     super.key,
-    required this.mealId,
+    required this.foodItem,
   });
 
   @override
-  ConsumerState<AddFoodItemScreen> createState() => _AddFoodItemScreenState();
+  ConsumerState<EditFoodItemScreen> createState() =>
+      _EditFoodItemScreenState();
 }
 
-class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
+class _EditFoodItemScreenState extends ConsumerState<EditFoodItemScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _inputController = TextEditingController();
-  final _nameController = TextEditingController();
-  final _quantityController = TextEditingController();
-  final _caloriesController = TextEditingController();
-  final _proteinController = TextEditingController();
-  final _carbsController = TextEditingController();
-  final _fatsController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _quantityController;
+  late final TextEditingController _caloriesController;
+  late final TextEditingController _proteinController;
+  late final TextEditingController _carbsController;
+  late final TextEditingController _fatsController;
 
-  bool _isAnalyzing = false;
-  FoodAnalysisResult? _analysisResult;
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.foodItem.name);
+    _quantityController =
+        TextEditingController(text: widget.foodItem.quantity.toString());
+    _caloriesController =
+        TextEditingController(text: widget.foodItem.calories.toString());
+    _proteinController =
+        TextEditingController(text: widget.foodItem.protein.toString());
+    _carbsController =
+        TextEditingController(text: widget.foodItem.carbs.toString());
+    _fatsController =
+        TextEditingController(text: widget.foodItem.fats.toString());
+  }
 
   @override
   void dispose() {
-    _inputController.dispose();
     _nameController.dispose();
     _quantityController.dispose();
     _caloriesController.dispose();
@@ -43,114 +56,103 @@ class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
     super.dispose();
   }
 
-  Future<void> _analyzeFood() async {
-    final input = _inputController.text.trim();
-    if (input.isEmpty) {
-      _showSnackBar('Por favor, ingresa un alimento', isError: true);
-      return;
-    }
-
-    // Verificar si hay API key configurada
-    final hasApiKey = await ref.read(hasApiKeyProvider.future);
-    if (!hasApiKey) {
-      _showSnackBar(
-        'No se encontró API key de Gemini. Configúrala en Settings para usar IA.',
-        isError: true,
-      );
-      // Aún así intentar analizar (usará DB local como fallback)
-    }
-
-    setState(() => _isAnalyzing = true);
-
-    try {
-      final analyzeFood = ref.read(analyzeFoodUseCaseProvider);
-      final result = await analyzeFood(input);
-
-      setState(() {
-        _analysisResult = result;
-        _isAnalyzing = false;
-      });
-
-      // Pre-rellenar campos con el resultado
-      if (result.data != null) {
-        _nameController.text = result.data!.name;
-        _quantityController.text = result.data!.quantity.toString();
-        _caloriesController.text = result.data!.calories.toString();
-        _proteinController.text = result.data!.protein.toString();
-        _carbsController.text = result.data!.carbs.toString();
-        _fatsController.text = result.data!.fats.toString();
-      }
-
-      // Mostrar mensaje según el source
-      if (result.source == FoodAnalysisSource.error) {
-        _showSnackBar(result.errorMessage ?? 'Error al analizar el alimento', isError: true);
-      } else if (result.source == FoodAnalysisSource.manual) {
-        _showSnackBar('No se encontró información. Por favor, ingresa manualmente.', isError: false);
-      } else {
-        _showSnackBar('Análisis completado. Puedes editar los valores antes de guardar.', isError: false);
-      }
-    } catch (e) {
-      setState(() => _isAnalyzing = false);
-      _showSnackBar('Error: $e', isError: true);
-    }
-  }
-
-  Future<void> _saveFoodItem({bool continueAdding = false}) async {
+  Future<void> _saveFoodItem() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     try {
-      final foodData = FoodData(
+      final repository = ref.read(nutritionRepositoryProvider);
+
+      final updatedFoodItem = widget.foodItem.copyWith(
         name: _nameController.text.trim(),
         quantity: double.parse(_quantityController.text),
-        unit: 'g', // Por ahora siempre usamos gramos
         calories: double.parse(_caloriesController.text),
         protein: double.parse(_proteinController.text),
         carbs: double.parse(_carbsController.text),
         fats: double.parse(_fatsController.text),
+        updatedAt: DateTime.now(),
       );
 
-      final addFoodItem = ref.read(addFoodItemUseCaseProvider);
-      await addFoodItem(widget.mealId, foodData);
+      await repository.updateFoodItem(updatedFoodItem);
+
+      // Recalcular totales de la comida
+      await repository.recalculateMealTotals(widget.foodItem.mealId);
 
       if (mounted) {
-        if (continueAdding) {
-          _showSnackBar('✓ Alimento agregado', isError: false);
-          // Limpiar formulario para agregar otro
-          _clearForm();
-        } else {
-          _showSnackBar('Alimento agregado correctamente', isError: false);
-          Navigator.of(context).pop(true); // Retornar true para indicar que se guardó
-        }
+        // Invalidar providers relevantes
+        ref.invalidate(mealByIdProvider(widget.foodItem.mealId));
+        ref.invalidate(todayMealsProvider);
+        ref.invalidate(dailyNutritionSummaryProvider);
+
+        Navigator.of(context).pop(true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Alimento actualizado correctamente')),
+        );
       }
     } catch (e) {
-      _showSnackBar('Error al guardar: $e', isError: true);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al actualizar: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
-  void _clearForm() {
-    _inputController.clear();
-    _nameController.clear();
-    _quantityController.clear();
-    _caloriesController.clear();
-    _proteinController.clear();
-    _carbsController.clear();
-    _fatsController.clear();
-    setState(() {
-      _analysisResult = null;
-    });
-  }
-
-  void _showSnackBar(String message, {required bool isError}) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Theme.of(context).colorScheme.error : null,
-        behavior: SnackBarBehavior.floating,
+  Future<void> _deleteFoodItem() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar alimento'),
+        content:
+            const Text('¿Estás seguro de que deseas eliminar este alimento?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Eliminar'),
+          ),
+        ],
       ),
     );
+
+    if (confirm == true && mounted) {
+      try {
+        final repository = ref.read(nutritionRepositoryProvider);
+        await repository.deleteFoodItem(widget.foodItem.id);
+
+        // Recalcular totales de la comida
+        await repository.recalculateMealTotals(widget.foodItem.mealId);
+
+        if (mounted) {
+          // Invalidar providers relevantes
+          ref.invalidate(mealByIdProvider(widget.foodItem.mealId));
+          ref.invalidate(todayMealsProvider);
+          ref.invalidate(dailyNutritionSummaryProvider);
+
+          Navigator.of(context).pop(true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Alimento eliminado')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error al eliminar: $e'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -159,72 +161,32 @@ class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agregar Alimento'),
+        title: const Text('Editar Alimento'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: _deleteFoodItem,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Input para análisis con IA
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Analizar con IA',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Describe el alimento (ej: "200g pollo", "1 manzana", "2 huevos")',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _inputController,
-                      decoration: InputDecoration(
-                        hintText: 'Ej: 200g pollo a la plancha',
-                        border: const OutlineInputBorder(),
-                        suffixIcon: _isAnalyzing
-                            ? const Padding(
-                                padding: EdgeInsets.all(12),
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                ),
-                              )
-                            : null,
-                      ),
-                      enabled: !_isAnalyzing,
-                      onSubmitted: (_) => _analyzeFood(),
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton.icon(
-                      onPressed: _isAnalyzing ? null : _analyzeFood,
-                      icon: const Icon(Icons.auto_awesome),
-                      label: const Text('Analizar'),
-                    ),
-                  ],
+            // Badge de source
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                FoodSourceBadge(source: _convertToFoodAnalysisSource(widget.foodItem.source)),
+                Text(
+                  'Registrado: ${_formatDateTime(widget.foodItem.createdAt)}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
+              ],
             ),
-
-            // Badge de source si hay resultado
-            if (_analysisResult != null) ...[
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: FoodSourceBadge(source: _analysisResult!.source),
-              ),
-            ],
 
             const SizedBox(height: 24),
 
@@ -268,7 +230,8 @@ class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
                       prefixIcon: Icon(Icons.scale),
                       suffixText: 'g',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
@@ -294,7 +257,8 @@ class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
                       prefixIcon: Icon(Icons.local_fire_department),
                       suffixText: 'kcal',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
@@ -320,7 +284,8 @@ class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
                       prefixIcon: Icon(Icons.fitness_center),
                       suffixText: 'g',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
@@ -346,7 +311,8 @@ class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
                       prefixIcon: Icon(Icons.grain),
                       suffixText: 'g',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
@@ -372,7 +338,8 @@ class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
                       prefixIcon: Icon(Icons.water_drop),
                       suffixText: 'g',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
@@ -402,18 +369,11 @@ class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
                     child: const Text('Cancelar'),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: FilledButton.tonal(
-                    onPressed: () => _saveFoodItem(continueAdding: true),
-                    child: const Text('Guardar + Otro'),
-                  ),
-                ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 16),
                 Expanded(
                   child: FilledButton(
-                    onPressed: () => _saveFoodItem(continueAdding: false),
-                    child: const Text('Guardar'),
+                    onPressed: _saveFoodItem,
+                    child: const Text('Guardar Cambios'),
                   ),
                 ),
               ],
@@ -422,5 +382,25 @@ class _AddFoodItemScreenState extends ConsumerState<AddFoodItemScreen> {
         ),
       ),
     );
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+  }
+
+  FoodAnalysisSource _convertToFoodAnalysisSource(String source) {
+    switch (source.toLowerCase()) {
+      case 'cache':
+        return FoodAnalysisSource.cache;
+      case 'gemini':
+      case 'ai':
+        return FoodAnalysisSource.gemini;
+      case 'local_db':
+        return FoodAnalysisSource.localDb;
+      case 'manual':
+        return FoodAnalysisSource.manual;
+      default:
+        return FoodAnalysisSource.manual;
+    }
   }
 }
