@@ -114,11 +114,12 @@ class ReminderRepositoryImpl implements ReminderRepository {
         // Cancelar notificación actual
         await _notificationService.cancelReminderNotifications(reminder);
 
-        // Todos los tipos de recurrencia se reprograman automáticamente
+        // Calcular próxima ocurrencia y reprogramar notificación
+        // IMPORTANTE: Se mantiene marcado (isCompleted = true) hasta la próxima ocurrencia
         final nextOccurrence = calculateNextOccurrence(reminder);
         final updated = reminder.copyWith(
           nextOccurrence: nextOccurrence,
-          isCompleted: false,
+          // NO cambiamos isCompleted aquí - se mantiene true hasta que llegue nextOccurrence
           updatedAt: DateTime.now(),
         );
         await _localDataSource.updateReminder(updated);

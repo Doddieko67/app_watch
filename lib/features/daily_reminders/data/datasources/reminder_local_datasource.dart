@@ -12,8 +12,31 @@ class ReminderLocalDataSource {
 
   ReminderLocalDataSource(this._database);
 
+  /// Desmarca automáticamente recordatorios cuya próxima ocurrencia ya pasó
+  Future<void> _autoResetCompletedReminders() async {
+    final now = DateTime.now();
+
+    // Buscar recordatorios completados cuya próxima ocurrencia ya llegó
+    final query = _database.select(_database.reminders)
+      ..where((r) =>
+          (r.isCompleted.equals(true)) &
+          (r.nextOccurrence.isSmallerOrEqualValue(now)));
+
+    final reminders = await query.get();
+
+    // Desmarcar cada uno
+    for (final reminder in reminders) {
+      final updated = reminder.copyWith(
+        isCompleted: false,
+        updatedAt: DateTime.now(),
+      );
+      await _database.updateReminder(updated);
+    }
+  }
+
   /// Obtiene todos los recordatorios
   Future<List<ReminderEntity>> getAllReminders() async {
+    await _autoResetCompletedReminders();
     final reminders = await _database.getAllReminders();
     return reminders.map((r) => ReminderMapper.toEntity(r)).toList();
   }
@@ -26,6 +49,7 @@ class ReminderLocalDataSource {
 
   /// Obtiene los recordatorios activos (no eliminados)
   Future<List<ReminderEntity>> getActiveReminders() async {
+    await _autoResetCompletedReminders();
     final query = _database.select(_database.reminders)
       ..where((r) => (r.deletedAt.isNull()) & (r.isActive.equals(true)))
       ..orderBy([
@@ -39,6 +63,7 @@ class ReminderLocalDataSource {
 
   /// Obtiene los recordatorios pendientes (no completados)
   Future<List<ReminderEntity>> getPendingReminders() async {
+    await _autoResetCompletedReminders();
     final query = _database.select(_database.reminders)
       ..where((r) =>
           (r.deletedAt.isNull()) &
