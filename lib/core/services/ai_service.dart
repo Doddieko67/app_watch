@@ -25,10 +25,11 @@ class AiService {
       model: 'gemini-1.5-flash',
       apiKey: apiKey,
       generationConfig: GenerationConfig(
-        temperature: 0.1, // Baja temperatura para respuestas consistentes
-        topK: 1,
-        topP: 1,
-        maxOutputTokens: 500,
+        temperature: 0.2, // Temperatura moderada para respuestas más creativas pero consistentes
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024,
+        responseMimeType: 'application/json', // Forzar respuesta JSON
       ),
       safetySettings: [
         SafetySetting(
@@ -37,6 +38,14 @@ class AiService {
         ),
         SafetySetting(
           HarmCategory.hateSpeech,
+          HarmBlockThreshold.none,
+        ),
+        SafetySetting(
+          HarmCategory.sexuallyExplicit,
+          HarmBlockThreshold.none,
+        ),
+        SafetySetting(
+          HarmCategory.dangerousContent,
           HarmBlockThreshold.none,
         ),
       ],
@@ -136,44 +145,69 @@ class AiService {
   /// Construye el prompt para análisis de alimentos
   String _buildFoodAnalysisPrompt(String input) {
     return '''
-Analiza el siguiente alimento y devuelve ÚNICAMENTE un JSON con este formato exacto:
+Eres un nutricionista experto con acceso a bases de datos nutricionales (USDA, FatSecret, tablas nutricionales oficiales).
+
+Analiza este alimento: "$input"
+
+Debes responder SIEMPRE con un JSON válido siguiendo este formato EXACTO:
 
 {
-  "name": "nombre normalizado del alimento",
-  "quantity": cantidad numérica en gramos,
+  "name": "nombre del alimento en español",
+  "quantity": número_en_gramos,
   "unit": "g",
-  "calories": valor numérico de calorías,
-  "protein": valor numérico de proteínas en gramos,
-  "carbs": valor numérico de carbohidratos en gramos,
-  "fats": valor numérico de grasas en gramos,
-  "confidence": valor entre 0.0 y 1.0 indicando certeza
+  "calories": número_calorías,
+  "protein": número_proteínas_gramos,
+  "carbs": número_carbohidratos_gramos,
+  "fats": número_grasas_gramos,
+  "confidence": número_entre_0_y_1
 }
 
-Reglas:
-- Si el input no especifica cantidad, asume 100g
-- Si es una unidad (ej: "1 manzana"), convierte a gramos estimados
-- Usa valores nutricionales estándar de bases de datos oficiales (USDA)
-- Si hay ambigüedad, elige la opción más común
-- La confianza debe ser 1.0 solo para alimentos exactos en bases de datos
-- NO incluyas explicaciones, razonamientos ni texto adicional
-- SOLO retorna el JSON válido
+REGLAS CRÍTICAS:
+1. Si no se especifica cantidad, usa 100g
+2. Si dice "1 manzana", "2 huevos", etc., estima gramos (1 manzana = 180g, 1 huevo = 50g, 1 plátano = 120g)
+3. USA TU CONOCIMIENTO NUTRICIONAL: Conoces las calorías y macros de miles de alimentos comunes
+4. Ejemplos que DEBES conocer:
+   - Pollo: 165 cal, 31g proteína, 0g carbs, 3.6g grasas (por 100g)
+   - Arroz cocido: 130 cal, 2.7g proteína, 28g carbs, 0.3g grasas (por 100g)
+   - Huevo: 155 cal, 13g proteína, 1.1g carbs, 11g grasas (por 100g)
+   - Plátano: 89 cal, 1.1g proteína, 23g carbs, 0.3g grasas (por 100g)
+5. Confidence: 1.0 si es alimento común, 0.8 si es estimación, 0.6 si es aproximación
+6. Los valores NUNCA pueden ser 0 a menos que el alimento realmente carezca de ese macro (ej: pollo 0g carbs)
+7. Calcula proporcionalmente si la cantidad es diferente de 100g
 
-Alimento: $input
+IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
 ''';
   }
 
   /// Extrae JSON de la respuesta de texto
   Map<String, dynamic> _extractJson(String text) {
+    // Limpiar texto de markdown y espacios
+    String cleaned = text.trim();
+
+    // Remover bloques de código markdown si existen
+    cleaned = cleaned.replaceAll(RegExp(r'```json\s*'), '');
+    cleaned = cleaned.replaceAll(RegExp(r'```\s*'), '');
+
     // Intentar parsear directamente
     try {
-      return jsonDecode(text.trim());
+      return jsonDecode(cleaned);
     } catch (_) {
-      // Buscar JSON dentro del texto
-      final jsonMatch = RegExp(r'\{[^{}]*\}').firstMatch(text);
+      // Buscar JSON dentro del texto (incluso con nested objects)
+      final jsonMatch = RegExp(r'\{[\s\S]*\}').firstMatch(cleaned);
       if (jsonMatch != null) {
-        return jsonDecode(jsonMatch.group(0)!);
+        try {
+          return jsonDecode(jsonMatch.group(0)!);
+        } catch (_) {
+          // Intentar regex más estricto para JSON simple
+          final simpleJsonMatch = RegExp(
+            r'\{\s*"name"\s*:\s*"[^"]+"\s*,\s*"quantity"\s*:\s*\d+\.?\d*\s*,\s*"unit"\s*:\s*"[^"]+"\s*,\s*"calories"\s*:\s*\d+\.?\d*\s*,\s*"protein"\s*:\s*\d+\.?\d*\s*,\s*"carbs"\s*:\s*\d+\.?\d*\s*,\s*"fats"\s*:\s*\d+\.?\d*\s*,\s*"confidence"\s*:\s*\d+\.?\d*\s*\}',
+          ).firstMatch(cleaned);
+          if (simpleJsonMatch != null) {
+            return jsonDecode(simpleJsonMatch.group(0)!);
+          }
+        }
       }
-      throw FormatException('No valid JSON found in response');
+      throw FormatException('No valid JSON found in response: $text');
     }
   }
 

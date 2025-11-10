@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/meal_entity.dart';
 import '../providers/nutrition_providers.dart';
 import 'add_food_item_screen.dart';
+import 'edit_meal_screen.dart';
 
 class MealDetailScreen extends ConsumerWidget {
   final int mealId;
@@ -24,12 +25,7 @@ class MealDetailScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () {
-              // TODO: Navigate to edit meal screen
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Edición disponible próximamente')),
-              );
-            },
+            onPressed: () => _navigateToEditMeal(context, ref, mealAsync.value),
           ),
           IconButton(
             icon: const Icon(Icons.delete),
@@ -67,6 +63,26 @@ class MealDetailScreen extends ConsumerWidget {
     );
 
     // Si se guardó el alimento, refrescar el provider
+    if (result == true) {
+      ref.invalidate(mealByIdProvider(mealId));
+    }
+  }
+
+  Future<void> _navigateToEditMeal(BuildContext context, WidgetRef ref, MealEntity? meal) async {
+    if (meal == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: comida no encontrada')),
+      );
+      return;
+    }
+
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => EditMealScreen(meal: meal),
+      ),
+    );
+
+    // Si se guardó la edición, refrescar el provider
     if (result == true) {
       ref.invalidate(mealByIdProvider(mealId));
     }

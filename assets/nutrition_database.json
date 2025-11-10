@@ -151,6 +151,306 @@
       "carbs_per_100g": 5,
       "fats_per_100g": 0.1,
       "category": "dairy"
+    },
+    {
+      "id": "food_016",
+      "name": "Carne de res magra",
+      "aliases": ["carne", "res", "beef", "bistec", "filete de res"],
+      "calories_per_100g": 250,
+      "protein_per_100g": 26,
+      "carbs_per_100g": 0,
+      "fats_per_100g": 15,
+      "category": "protein"
+    },
+    {
+      "id": "food_017",
+      "name": "Papa cocida",
+      "aliases": ["papa", "patata", "potato", "papas"],
+      "calories_per_100g": 77,
+      "protein_per_100g": 2,
+      "carbs_per_100g": 17,
+      "fats_per_100g": 0.1,
+      "category": "carbs"
+    },
+    {
+      "id": "food_018",
+      "name": "Frijoles cocidos",
+      "aliases": ["frijol", "frijoles", "porotos", "alubias", "beans", "frijoles negros"],
+      "calories_per_100g": 127,
+      "protein_per_100g": 9,
+      "carbs_per_100g": 23,
+      "fats_per_100g": 0.5,
+      "category": "protein"
+    },
+    {
+      "id": "food_019",
+      "name": "Tortilla de maíz",
+      "aliases": ["tortilla", "tortillas", "tortilla mexicana"],
+      "calories_per_100g": 218,
+      "protein_per_100g": 5.7,
+      "carbs_per_100g": 45,
+      "fats_per_100g": 2.8,
+      "category": "carbs"
+    },
+    {
+      "id": "food_020",
+      "name": "Queso fresco",
+      "aliases": ["queso", "cheese", "queso blanco", "queso panela"],
+      "calories_per_100g": 264,
+      "protein_per_100g": 18,
+      "carbs_per_100g": 3.1,
+      "fats_per_100g": 21,
+      "category": "dairy"
+    },
+    {
+      "id": "food_021",
+      "name": "Tomate",
+      "aliases": ["jitomate", "tomato", "tomates"],
+      "calories_per_100g": 18,
+      "protein_per_100g": 0.9,
+      "carbs_per_100g": 3.9,
+      "fats_per_100g": 0.2,
+      "category": "vegetables"
+    },
+    {
+      "id": "food_022",
+      "name": "Lechuga",
+      "aliases": ["lettuce", "ensalada", "lechuga romana"],
+      "calories_per_100g": 15,
+      "protein_per_100g": 1.4,
+      "carbs_per_100g": 2.9,
+      "fats_per_100g": 0.2,
+      "category": "vegetables"
+    },
+    {
+      "id": "food_023",
+      "name": "Zanahoria",
+      "aliases": ["carrot", "zanahorias", "zanahoria cruda"],
+      "calories_per_100g": 41,
+      "protein_per_100g": 0.9,
+      "carbs_per_100g": 10,
+      "fats_per_100g": 0.2,
+      "category": "vegetables"
+    },
+    {
+      "id": "food_024",
+      "name": "Naranja",
+      "aliases": ["orange", "naranjas", "jugo de naranja"],
+      "calories_per_100g": 47,
+      "protein_per_100g": 0.9,
+      "carbs_per_100g": 12,
+      "fats_per_100g": 0.1,
+      "category": "fruits"
+    },
+    {
+      "id": "food_025",
+      "name": "Fresa",
+      "aliases": ["fresas", "strawberry", "frutilla"],
+      "calories_per_100g": 32,
+      "protein_per_100g": 0.7,
+      "carbs_per_100g": 7.7,
+      "fats_per_100g": 0.3,
+      "category": "fruits"
+    },
+    {
+      "id": "food_026",
+      "name": "Pan francés",
+      "aliases": ["bolillo", "pan blanco", "baguette"],
+      "calories_per_100g": 275,
+      "protein_per_100g": 9,
+      "carbs_per_100g": 51,
+      "fats_per_100g": 3.2,
+      "category": "carbs"
+    },
+    {
+      "id": "food_027",
+      "name": "Aceite de oliva",
+      "aliases": ["olive oil", "aceite", "aceite oliva extra virgen"],
+      "calories_per_100g": 884,
+      "protein_per_100g": 0,
+      "carbs_per_100g": 0,
+      "fats_per_100g": 100,
+      "category": "fats"
+    },
+    {
+      "id": "food_028",
+      "name": "Lentejas cocidas",
+      "aliases": ["lentejas", "lentils", "lenteja"],
+      "calories_per_100g": 116,
+      "protein_per_100g": 9,
+      "carbs_per_100g": 20,
+      "fats_per_100g": 0.4,
+      "category": "protein"
+    },
+    {
+      "id": "food_029",
+      "name": "Espinaca",
+      "aliases": ["spinach", "espinacas", "espinaca cocida"],
+      "calories_per_100g": 23,
+      "protein_per_100g": 2.9,
+      "carbs_per_100g": 3.6,
+      "fats_per_100g": 0.4,
+      "category": "vegetables"
+    },
+    {
+      "id": "food_030",
+      "name": "Camote",
+      "aliases": ["boniato", "sweet potato", "batata", "papa dulce"],
+      "calories_per_100g": 86,
+      "protein_per_100g": 1.6,
+      "carbs_per_100g": 20,
+      "fats_per_100g": 0.1,
+      "category": "carbs"
+    },
+    {
+      "id": "food_031",
+      "name": "Pechuga de pavo",
+      "aliases": ["pavo", "turkey", "pavo cocido"],
+      "calories_per_100g": 135,
+      "protein_per_100g": 30,
+      "carbs_per_100g": 0,
+      "fats_per_100g": 1,
+      "category": "protein"
+    },
+    {
+      "id": "food_032",
+      "name": "Pepino",
+      "aliases": ["cucumber", "pepinos"],
+      "calories_per_100g": 15,
+      "protein_per_100g": 0.7,
+      "carbs_per_100g": 3.6,
+      "fats_per_100g": 0.1,
+      "category": "vegetables"
+    },
+    {
+      "id": "food_033",
+      "name": "Piña",
+      "aliases": ["pineapple", "ananá", "pina"],
+      "calories_per_100g": 50,
+      "protein_per_100g": 0.5,
+      "carbs_per_100g": 13,
+      "fats_per_100g": 0.1,
+      "category": "fruits"
+    },
+    {
+      "id": "food_034",
+      "name": "Sandía",
+      "aliases": ["watermelon", "sandia", "patilla"],
+      "calories_per_100g": 30,
+      "protein_per_100g": 0.6,
+      "carbs_per_100g": 8,
+      "fats_per_100g": 0.2,
+      "category": "fruits"
+    },
+    {
+      "id": "food_035",
+      "name": "Choclo",
+      "aliases": ["maiz", "elote", "corn", "mazorca"],
+      "calories_per_100g": 86,
+      "protein_per_100g": 3.3,
+      "carbs_per_100g": 19,
+      "fats_per_100g": 1.4,
+      "category": "carbs"
+    },
+    {
+      "id": "food_036",
+      "name": "Cerdo magro",
+      "aliases": ["puerco", "pork", "lomo de cerdo", "carne de cerdo"],
+      "calories_per_100g": 242,
+      "protein_per_100g": 27,
+      "carbs_per_100g": 0,
+      "fats_per_100g": 14,
+      "category": "protein"
+    },
+    {
+      "id": "food_037",
+      "name": "Nueces",
+      "aliases": ["walnuts", "nuez"],
+      "calories_per_100g": 654,
+      "protein_per_100g": 15,
+      "carbs_per_100g": 14,
+      "fats_per_100g": 65,
+      "category": "fats"
+    },
+    {
+      "id": "food_038",
+      "name": "Pimiento",
+      "aliases": ["bell pepper", "pimiento rojo", "pimiento verde", "morrón"],
+      "calories_per_100g": 31,
+      "protein_per_100g": 1,
+      "carbs_per_100g": 6,
+      "fats_per_100g": 0.3,
+      "category": "vegetables"
+    },
+    {
+      "id": "food_039",
+      "name": "Mango",
+      "aliases": ["manga", "mangos"],
+      "calories_per_100g": 60,
+      "protein_per_100g": 0.8,
+      "carbs_per_100g": 15,
+      "fats_per_100g": 0.4,
+      "category": "fruits"
+    },
+    {
+      "id": "food_040",
+      "name": "Garbanzos cocidos",
+      "aliases": ["garbanzo", "chickpeas", "garbanzos"],
+      "calories_per_100g": 164,
+      "protein_per_100g": 8.9,
+      "carbs_per_100g": 27,
+      "fats_per_100g": 2.6,
+      "category": "protein"
+    },
+    {
+      "id": "food_041",
+      "name": "Quinoa cocida",
+      "aliases": ["quinua", "quinoa", "kinwa"],
+      "calories_per_100g": 120,
+      "protein_per_100g": 4.4,
+      "carbs_per_100g": 21,
+      "fats_per_100g": 1.9,
+      "category": "carbs"
+    },
+    {
+      "id": "food_042",
+      "name": "Cacahuate",
+      "aliases": ["mani", "peanut", "cacahuates", "maní"],
+      "calories_per_100g": 567,
+      "protein_per_100g": 26,
+      "carbs_per_100g": 16,
+      "fats_per_100g": 49,
+      "category": "fats"
+    },
+    {
+      "id": "food_043",
+      "name": "Cebollade",
+      "aliases": ["cebolla", "onion", "cebolla blanca"],
+      "calories_per_100g": 40,
+      "protein_per_100g": 1.1,
+      "carbs_per_100g": 9.3,
+      "fats_per_100g": 0.1,
+      "category": "vegetables"
+    },
+    {
+      "id": "food_044",
+      "name": "Uva",
+      "aliases": ["uvas", "grapes", "uvas verdes"],
+      "calories_per_100g": 69,
+      "protein_per_100g": 0.7,
+      "carbs_per_100g": 18,
+      "fats_per_100g": 0.2,
+      "category": "fruits"
+    },
+    {
+      "id": "food_045",
+      "name": "Jamón de pavo",
+      "aliases": ["jamon", "ham", "jamón cocido"],
+      "calories_per_100g": 104,
+      "protein_per_100g": 17,
+      "carbs_per_100g": 2,
+      "fats_per_100g": 2.5,
+      "category": "protein"
     }
   ],
   "categories": {
