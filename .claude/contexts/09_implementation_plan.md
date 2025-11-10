@@ -45,7 +45,7 @@ Proyecto base funcional con navegación entre secciones vacías y tema personali
 
 ---
 
-## Fase 2: Recordatorios (Semana 2)
+## Fase 2: Recordatorios (Semana 2) ✅ COMPLETADO
 
 ### Objetivos
 Implementar el módulo de recordatorios completo con notificaciones.
@@ -53,9 +53,9 @@ Implementar el módulo de recordatorios completo con notificaciones.
 ### Tareas
 
 #### Domain Layer
-- [ ] Crear `Reminder` entity
-- [ ] Crear `ReminderRepository` interface
-- [ ] Implementar use cases:
+- [x] Crear `Reminder` entity
+- [x] Crear `ReminderRepository` interface
+- [x] Implementar use cases:
   - `CreateReminder`
   - `UpdateReminder`
   - `DeleteReminder`
@@ -63,33 +63,46 @@ Implementar el módulo de recordatorios completo con notificaciones.
   - `ScheduleNotification`
 
 #### Data Layer
-- [ ] Implementar `ReminderRepositoryImpl`
-- [ ] Crear `ReminderLocalDataSource`
-- [ ] Configurar conversiones DTO ↔ Entity
+- [x] Implementar `ReminderRepositoryImpl`
+- [x] Crear `ReminderLocalDataSource`
+- [x] Configurar conversiones DTO ↔ Entity
 
 #### Presentation Layer
-- [ ] Crear `RemindersProvider` con Riverpod
-- [ ] Implementar `RemindersHomeScreen`:
+- [x] Crear `RemindersProvider` con Riverpod
+- [x] Implementar `RemindersHomeScreen`:
   - Lista de recordatorios
   - Filtros (todos, pendientes, completados)
   - Ordenar por prioridad/fecha
-- [ ] Implementar `ReminderDetailScreen`:
+- [x] Implementar `ReminderDetailScreen`:
   - Crear/Editar recordatorio
   - Selector de recurrencia
   - Selector de prioridad
   - Tags personalizables
-- [ ] Crear widgets:
+- [x] Crear widgets:
   - `ReminderCard`
   - `PrioritySelector`
   - `RecurrencePicker`
 
 #### Notificaciones
-- [ ] Configurar `NotificationService`
-- [ ] Implementar scheduling de notificaciones diarias
-- [ ] Implementar notificaciones semanales
-- [ ] Implementar notificaciones personalizadas
-- [ ] Configurar canales de Android
-- [ ] Solicitar permisos en iOS/Android
+- [x] Configurar `NotificationService`
+- [x] Implementar scheduling de notificaciones diarias
+- [x] Implementar notificaciones semanales
+- [x] Implementar notificaciones personalizadas
+- [x] Configurar canales de Android
+- [x] Solicitar permisos en iOS/Android
+
+#### Mejoras UX/UI (Fase 7.0 - Completadas)
+- [x] **Swipe Actions**: Deslizar para completar/eliminar (flutter_slidable)
+- [x] **Estados de Carga**: Loading indicators en acciones async
+- [x] **Búsqueda en Tiempo Real**: Buscar en título, descripción y tags
+- [x] **Ordenamiento Flexible**: Por fecha/prioridad/alfabético con menú
+- [x] **Recurrencia Personalizada**: Slider para 1-30 días con UI intuitiva
+- [x] **Feedback Mejorado**: Mostrar próxima notificación calculada
+- [x] **Errores Humanizados**: Mensajes contextuales y comprensibles
+- [x] **Jerarquía Visual**: Títulos bold, espaciado aumentado, touch targets
+- [x] **Recordatorios Vencidos**: Borde rojo + background destacado
+- [x] **Iconos de Prioridad**: Diferenciados semánticamente (flag_outlined, flag, priority_high)
+- [x] **Tema Material 3**: Colores del theme en lugar de hardcoded
 
 #### Testing
 - [ ] Unit tests para use cases
@@ -97,7 +110,7 @@ Implementar el módulo de recordatorios completo con notificaciones.
 - [ ] Integration test: crear y marcar como completado
 
 ### Entregable
-Módulo de recordatorios funcional con notificaciones locales.
+Módulo de recordatorios funcional con notificaciones locales y UX optimizada.
 
 ---
 
@@ -384,7 +397,21 @@ App con todas las mejoras funcionales implementadas, lista para entrar a Fase 7 
 ### Objetivos
 Optimizar rendimiento, agregar animaciones, mejorar manejo de errores y optimizar base de datos.
 
-### Tareas
+### Tareas Completadas
+
+#### Mejoras UX Recordatorios ✅
+- [x] Swipe actions con flutter_slidable implementado
+- [x] Loading states en acciones async
+- [x] Búsqueda en tiempo real funcional
+- [x] Ordenamiento flexible (fecha/prioridad/alfabético)
+- [x] Recurrencia custom completa (1-30 días)
+- [x] Feedback mejorado con próxima notificación
+- [x] Mensajes de error humanizados
+- [x] Jerarquía visual optimizada
+- [x] Recordatorios vencidos destacados
+- [x] Integración completa con Material 3 Theme
+
+### Tareas Pendientes
 
 #### Animaciones
 - [ ] Agregar hero animations entre pantallas

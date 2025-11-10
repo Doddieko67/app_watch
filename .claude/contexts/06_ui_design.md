@@ -403,6 +403,42 @@ textField
   .shake(hz: 4, curve: Curves.easeInOutCubic);
 ```
 
+### Swipe Actions con flutter_slidable
+
+```dart
+import 'package:flutter_slidable/flutter_slidable.dart';
+
+// Swipe para completar/eliminar
+Slidable(
+  key: ValueKey(item.id),
+  startActionPane: ActionPane(
+    motion: const DrawerMotion(),
+    children: [
+      SlidableAction(
+        onPressed: (_) => _toggleCompletion(),
+        backgroundColor: theme.colorScheme.tertiary,
+        foregroundColor: theme.colorScheme.onTertiary,
+        icon: Icons.check,
+        label: 'Completar',
+      ),
+    ],
+  ),
+  endActionPane: ActionPane(
+    motion: const DrawerMotion(),
+    children: [
+      SlidableAction(
+        onPressed: (_) => _deleteItem(),
+        backgroundColor: theme.colorScheme.error,
+        foregroundColor: theme.colorScheme.onError,
+        icon: Icons.delete,
+        label: 'Eliminar',
+      ),
+    ],
+  ),
+  child: ItemCard(item: item),
+)
+```
+
 ---
 
 ## Responsive Design

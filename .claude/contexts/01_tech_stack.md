@@ -39,6 +39,7 @@ dependencies:
   fl_chart: ^0.66.0
   table_calendar: ^3.0.0
   flutter_animate: ^4.5.0
+  flutter_slidable: ^3.0.0
 
   # Utilidades
   freezed_annotation: ^2.4.0
