@@ -48,6 +48,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Future<void> _completeOnboarding() async {
     final action = ref.read(completeOnboardingActionProvider);
     await action();
+    // Invalidar el provider para que se refresque y la app detecte el cambio
+    ref.invalidate(settingsProvider);
   }
 
   @override
