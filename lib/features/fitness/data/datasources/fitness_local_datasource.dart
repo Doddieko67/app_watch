@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 
 import '../../../../core/database/app_database.dart';
@@ -80,25 +82,25 @@ class FitnessLocalDataSource {
     return result;
   }
 
-  /// Obtiene los workouts por tipo de split
-  Future<List<WorkoutEntity>> getWorkoutsBySplit(WorkoutSplit split) async {
-    final query = _database.select(_database.workouts)
-      ..where((w) =>
-          (w.deletedAt.isNull()) & (w.split.equals(split.value)))
-      ..orderBy([
-        (w) => OrderingTerm.desc(w.date),
-      ]);
+  /// Obtiene los workouts por tipo de split (DEPRECATED - ya no se usa)
+  // Future<List<WorkoutEntity>> getWorkoutsBySplit(WorkoutSplit split) async {
+  //   final query = _database.select(_database.workouts)
+  //     ..where((w) =>
+  //         (w.deletedAt.isNull()) & (w.split.equals(split.value)))
+  //     ..orderBy([
+  //       (w) => OrderingTerm.desc(w.date),
+  //     ]);
 
-    final workoutsData = await query.get();
-    final List<WorkoutEntity> result = [];
+  //   final workoutsData = await query.get();
+  //   final List<WorkoutEntity> result = [];
 
-    for (final workout in workoutsData) {
-      final exercises = await _getExercisesForWorkout(workout.id);
-      result.add(WorkoutMapper.toEntity(workout, exercises: exercises));
-    }
+  //   for (final workout in workoutsData) {
+  //     final exercises = await _getExercisesForWorkout(workout.id);
+  //     result.add(WorkoutMapper.toEntity(workout, exercises: exercises));
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
   /// Obtiene los workouts de hoy
   Future<List<WorkoutEntity>> getTodayWorkouts() async {
@@ -148,10 +150,13 @@ class FitnessLocalDataSource {
 
   /// Actualiza un workout existente
   Future<bool> updateWorkout(WorkoutEntity workout) async {
+    // Codificar muscleGroups a JSON
+    final muscleGroupsJson = _encodeMuscleGroups(workout.muscleGroups);
+
     final driftWorkout = Workout(
       id: workout.id,
       name: workout.name,
-      split: workout.split.value,
+      muscleGroups: muscleGroupsJson,
       date: workout.date,
       durationMinutes: workout.durationMinutes,
       notes: workout.notes,
@@ -162,6 +167,12 @@ class FitnessLocalDataSource {
     );
 
     return await _database.updateWorkout(driftWorkout);
+  }
+
+  /// Codifica List<MuscleGroup> a JSON string
+  String _encodeMuscleGroups(List<MuscleGroup> groups) {
+    final List<String> values = groups.map((g) => g.value).toList();
+    return jsonEncode(values);
   }
 
   /// Elimina un workout (soft delete)

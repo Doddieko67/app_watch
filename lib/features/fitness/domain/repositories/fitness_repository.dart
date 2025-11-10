@@ -22,8 +22,8 @@ abstract class FitnessRepository {
     DateTime end,
   );
 
-  /// Obtiene los workouts por tipo de split
-  Future<List<WorkoutEntity>> getWorkoutsBySplit(WorkoutSplit split);
+  /// Obtiene los workouts por tipo de split (DEPRECATED - ya no se usa)
+  // Future<List<WorkoutEntity>> getWorkoutsBySplit(WorkoutSplit split);
 
   /// Obtiene los workouts de hoy
   Future<List<WorkoutEntity>> getTodayWorkouts();

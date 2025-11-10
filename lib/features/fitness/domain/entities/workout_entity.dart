@@ -10,7 +10,7 @@ class WorkoutEntity with _$WorkoutEntity {
   const factory WorkoutEntity({
     required int id,
     required String name,
-    required WorkoutSplit split,
+    required List<MuscleGroup> muscleGroups,
     required DateTime date,
     int? durationMinutes,
     String? notes,
@@ -84,92 +84,88 @@ class ExerciseEntity with _$ExerciseEntity {
   String get summary => '$sets x $reps @ ${weight}kg';
 }
 
-/// Enum de Tipo de Split de Entrenamiento
-enum WorkoutSplit {
-  push,
-  pull,
-  legs,
-  upperBody,
-  lowerBody,
-  fullBody,
-  custom;
+/// Enum de Grupos Musculares
+enum MuscleGroup {
+  chest,
+  back,
+  shoulders,
+  biceps,
+  triceps,
+  forearms,
+  abs,
+  quads,
+  hamstrings,
+  glutes,
+  calves,
+  cardio;
 
   String get displayName {
     switch (this) {
-      case WorkoutSplit.push:
-        return 'Push (Empuje)';
-      case WorkoutSplit.pull:
-        return 'Pull (Jalón)';
-      case WorkoutSplit.legs:
-        return 'Piernas';
-      case WorkoutSplit.upperBody:
-        return 'Tren Superior';
-      case WorkoutSplit.lowerBody:
-        return 'Tren Inferior';
-      case WorkoutSplit.fullBody:
-        return 'Cuerpo Completo';
-      case WorkoutSplit.custom:
-        return 'Personalizado';
+      case MuscleGroup.chest:
+        return 'Pecho';
+      case MuscleGroup.back:
+        return 'Espalda';
+      case MuscleGroup.shoulders:
+        return 'Hombros';
+      case MuscleGroup.biceps:
+        return 'Bíceps';
+      case MuscleGroup.triceps:
+        return 'Tríceps';
+      case MuscleGroup.forearms:
+        return 'Antebrazos';
+      case MuscleGroup.abs:
+        return 'Abdomen';
+      case MuscleGroup.quads:
+        return 'Cuádriceps';
+      case MuscleGroup.hamstrings:
+        return 'Isquiotibiales';
+      case MuscleGroup.glutes:
+        return 'Glúteos';
+      case MuscleGroup.calves:
+        return 'Pantorrillas';
+      case MuscleGroup.cardio:
+        return 'Cardio';
     }
   }
 
   String get value {
-    switch (this) {
-      case WorkoutSplit.push:
-        return 'push';
-      case WorkoutSplit.pull:
-        return 'pull';
-      case WorkoutSplit.legs:
-        return 'legs';
-      case WorkoutSplit.upperBody:
-        return 'upper_body';
-      case WorkoutSplit.lowerBody:
-        return 'lower_body';
-      case WorkoutSplit.fullBody:
-        return 'full_body';
-      case WorkoutSplit.custom:
-        return 'custom';
-    }
+    return name;
   }
 
-  static WorkoutSplit fromValue(String value) {
-    switch (value) {
-      case 'push':
-        return WorkoutSplit.push;
-      case 'pull':
-        return WorkoutSplit.pull;
-      case 'legs':
-        return WorkoutSplit.legs;
-      case 'upper_body':
-        return WorkoutSplit.upperBody;
-      case 'lower_body':
-        return WorkoutSplit.lowerBody;
-      case 'full_body':
-        return WorkoutSplit.fullBody;
-      case 'custom':
-        return WorkoutSplit.custom;
-      default:
-        return WorkoutSplit.custom;
-    }
+  static MuscleGroup fromValue(String value) {
+    return MuscleGroup.values.firstWhere(
+      (group) => group.name == value,
+      orElse: () => MuscleGroup.chest,
+    );
   }
 
-  /// Color asociado al split
-  String get color {
+  /// Emoji asociado al grupo muscular
+  String get emoji {
     switch (this) {
-      case WorkoutSplit.push:
-        return '#E91E63'; // Rosa
-      case WorkoutSplit.pull:
-        return '#2196F3'; // Azul
-      case WorkoutSplit.legs:
-        return '#4CAF50'; // Verde
-      case WorkoutSplit.upperBody:
-        return '#FF9800'; // Naranja
-      case WorkoutSplit.lowerBody:
-        return '#9C27B0'; // Morado
-      case WorkoutSplit.fullBody:
-        return '#F44336'; // Rojo
-      case WorkoutSplit.custom:
-        return '#607D8B'; // Gris azulado
+      case MuscleGroup.chest:
+        return '💪';
+      case MuscleGroup.back:
+        return '🦾';
+      case MuscleGroup.shoulders:
+        return '🤸';
+      case MuscleGroup.biceps:
+        return '💪';
+      case MuscleGroup.triceps:
+        return '💪';
+      case MuscleGroup.forearms:
+        return '✊';
+      case MuscleGroup.abs:
+        return '🔥';
+      case MuscleGroup.quads:
+        return '🦵';
+      case MuscleGroup.hamstrings:
+        return '🦵';
+      case MuscleGroup.glutes:
+        return '🍑';
+      case MuscleGroup.calves:
+        return '👟';
+      case MuscleGroup.cardio:
+        return '❤️';
     }
   }
 }

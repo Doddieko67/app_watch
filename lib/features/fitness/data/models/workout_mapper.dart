@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart' as drift;
 
 import '../../../../core/database/app_database.dart';
@@ -11,10 +13,13 @@ class WorkoutMapper {
     Workout workout, {
     List<ExerciseEntity> exercises = const [],
   }) {
+    // Decodificar muscleGroups desde JSON
+    final muscleGroupsList = _decodeMuscleGroups(workout.muscleGroups);
+
     return WorkoutEntity(
       id: workout.id,
       name: workout.name,
-      split: WorkoutSplit.fromValue(workout.split),
+      muscleGroups: muscleGroupsList,
       date: workout.date,
       durationMinutes: workout.durationMinutes,
       notes: workout.notes,
@@ -30,7 +35,7 @@ class WorkoutMapper {
     return WorkoutsCompanion(
       id: drift.Value(entity.id),
       name: drift.Value(entity.name),
-      split: drift.Value(entity.split.value),
+      muscleGroups: drift.Value(_encodeMuscleGroups(entity.muscleGroups)),
       date: drift.Value(entity.date),
       durationMinutes: entity.durationMinutes != null
           ? drift.Value(entity.durationMinutes!)
@@ -50,7 +55,7 @@ class WorkoutMapper {
   static WorkoutsCompanion toCompanionForInsert(WorkoutEntity entity) {
     return WorkoutsCompanion.insert(
       name: entity.name,
-      split: entity.split.value,
+      muscleGroups: _encodeMuscleGroups(entity.muscleGroups),
       date: entity.date,
       durationMinutes: entity.durationMinutes != null
           ? drift.Value(entity.durationMinutes!)
@@ -64,6 +69,25 @@ class WorkoutMapper {
           ? drift.Value(entity.deletedAt!)
           : const drift.Value.absent(),
     );
+  }
+
+  /// Decodifica muscleGroups desde JSON string a List<MuscleGroup>
+  static List<MuscleGroup> _decodeMuscleGroups(String json) {
+    try {
+      final List<dynamic> decoded = jsonDecode(json);
+      return decoded
+          .map((value) => MuscleGroup.fromValue(value.toString()))
+          .toList();
+    } catch (e) {
+      // Fallback: retornar lista vacía si hay error
+      return [];
+    }
+  }
+
+  /// Codifica List<MuscleGroup> a JSON string
+  static String _encodeMuscleGroups(List<MuscleGroup> groups) {
+    final List<String> values = groups.map((g) => g.value).toList();
+    return jsonEncode(values);
   }
 }
 

@@ -208,7 +208,7 @@ class ExportImportService {
   Map<String, dynamic> _workoutToJson(Workout w) {
     return {
       'name': w.name,
-      'split': w.split,
+      'muscleGroups': w.muscleGroups,
       'date': w.date.toIso8601String(),
       'durationMinutes': w.durationMinutes,
       'notes': w.notes,
@@ -288,9 +288,12 @@ class ExportImportService {
   }
 
   WorkoutsCompanion _jsonToWorkoutCompanion(Map<String, dynamic> json) {
+    // Convertir de split viejo a muscleGroups si viene en formato antiguo
+    final muscleGroupsStr = json['muscleGroups'] as String? ?? json['split'] as String? ?? '["chest"]';
+
     return WorkoutsCompanion.insert(
       name: json['name'] as String,
-      split: json['split'] as String,
+      muscleGroups: muscleGroupsStr,
       date: DateTime.parse(json['date'] as String),
       durationMinutes: Value(json['durationMinutes'] as int? ?? 0),
       notes: Value(json['notes'] as String?),

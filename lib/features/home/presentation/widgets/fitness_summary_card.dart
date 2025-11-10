@@ -103,7 +103,7 @@ class FitnessSummaryCard extends ConsumerWidget {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        workout.split.name.toUpperCase(),
+                                        workout.name.toUpperCase(),
                                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                               fontWeight: FontWeight.bold,
                                             ),

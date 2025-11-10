@@ -19,9 +19,7 @@ class WorkoutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final splitColor = Color(
-      int.parse(workout.split.color.replaceFirst('#', '0xFF')),
-    );
+    final primaryColor = theme.colorScheme.primary;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -36,12 +34,12 @@ class WorkoutCard extends StatelessWidget {
               // Header: Nombre y fecha
               Row(
                 children: [
-                  // Indicador de split con color
+                  // Indicador con color
                   Container(
                     width: 4,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: splitColor,
+                      color: primaryColor,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -59,20 +57,26 @@ class WorkoutCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(
-                              Icons.fitness_center,
-                              size: 14,
-                              color: splitColor,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              workout.split.displayName,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: splitColor,
-                                fontWeight: FontWeight.w600,
+                            // Mostrar emojis de grupos musculares
+                            if (workout.muscleGroups.isNotEmpty) ...[
+                              Text(
+                                workout.muscleGroups
+                                    .take(3)
+                                    .map((g) => g.emoji)
+                                    .join(' '),
+                                style: const TextStyle(fontSize: 14),
                               ),
-                            ),
-                            const SizedBox(width: 12),
+                              const SizedBox(width: 4),
+                              if (workout.muscleGroups.length > 3)
+                                Text(
+                                  '+${workout.muscleGroups.length - 3}',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: primaryColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              const SizedBox(width: 12),
+                            ],
                             Icon(
                               Icons.calendar_today,
                               size: 14,
@@ -132,7 +136,7 @@ class WorkoutCard extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: splitColor.withOpacity(0.1),
+                  color: primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -141,13 +145,13 @@ class WorkoutCard extends StatelessWidget {
                     Icon(
                       Icons.trending_up,
                       size: 16,
-                      color: splitColor,
+                      color: primaryColor,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Volumen: ${workout.totalVolume.toStringAsFixed(0)} kg',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: splitColor,
+                        color: primaryColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

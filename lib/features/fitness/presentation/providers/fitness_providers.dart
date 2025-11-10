@@ -94,15 +94,15 @@ Future<List<WorkoutEntity>> workoutsByDateRange(
   return await repository.getWorkoutsByDateRange(start, end);
 }
 
-/// Provider para obtener workouts por split
-@riverpod
-Future<List<WorkoutEntity>> workoutsBySplit(
-  WorkoutsBySplitRef ref,
-  WorkoutSplit split,
-) async {
-  final repository = ref.watch(fitnessRepositoryProvider);
-  return await repository.getWorkoutsBySplit(split);
-}
+/// Provider para obtener workouts por split (DEPRECATED - ahora se usa muscleGroups)
+// @riverpod
+// Future<List<WorkoutEntity>> workoutsBySplit(
+//   WorkoutsBySplitRef ref,
+//   WorkoutSplit split,
+// ) async {
+//   final repository = ref.watch(fitnessRepositoryProvider);
+//   return await repository.getWorkoutsBySplit(split);
+// }
 
 /// Provider para obtener un workout específico por ID
 @riverpod
@@ -182,4 +182,11 @@ Future<Map<String, double>> weeklyVolume(
 Future<List<SavedExerciseData>> savedExercises(SavedExercisesRef ref) async {
   final database = ref.watch(appDatabaseProvider);
   return await database.getAllSavedExercises();
+}
+
+/// Provider para obtener workouts guardados
+@riverpod
+Future<List<SavedWorkoutData>> savedWorkouts(SavedWorkoutsRef ref) async {
+  final database = ref.watch(appDatabaseProvider);
+  return await database.getAllSavedWorkouts();
 }

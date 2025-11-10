@@ -22,10 +22,10 @@ class GetWorkoutHistory {
     return await _repository.getWorkoutsByDateRange(start, end);
   }
 
-  /// Obtiene workouts por tipo de split
-  Future<List<WorkoutEntity>> bySplit(WorkoutSplit split) async {
-    return await _repository.getWorkoutsBySplit(split);
-  }
+  /// Obtiene workouts por tipo de split (DEPRECATED - ya no se usa)
+  // Future<List<WorkoutEntity>> bySplit(WorkoutSplit split) async {
+  //   return await _repository.getWorkoutsBySplit(split);
+  // }
 
   /// Obtiene los workouts de hoy
   Future<List<WorkoutEntity>> today() async {

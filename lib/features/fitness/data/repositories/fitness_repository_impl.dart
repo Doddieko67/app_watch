@@ -36,10 +36,10 @@ class FitnessRepositoryImpl implements FitnessRepository {
     return await _localDataSource.getWorkoutsByDateRange(start, end);
   }
 
-  @override
-  Future<List<WorkoutEntity>> getWorkoutsBySplit(WorkoutSplit split) async {
-    return await _localDataSource.getWorkoutsBySplit(split);
-  }
+  // @override
+  // Future<List<WorkoutEntity>> getWorkoutsBySplit(WorkoutSplit split) async {
+  //   return await _localDataSource.getWorkoutsBySplit(split);
+  // }
 
   @override
   Future<List<WorkoutEntity>> getTodayWorkouts() async {

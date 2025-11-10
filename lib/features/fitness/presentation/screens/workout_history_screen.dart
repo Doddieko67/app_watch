@@ -222,12 +222,12 @@ class _WorkoutCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: _getSplitColor(workout.split).withOpacity(0.2),
+                      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
-                      _getSplitIcon(workout.split),
-                      color: _getSplitColor(workout.split),
+                      Icons.fitness_center,
+                      color: Theme.of(context).colorScheme.primary,
                       size: 24,
                     ),
                   ),
@@ -237,16 +237,29 @@ class _WorkoutCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _getSplitName(workout.split),
+                          workout.name,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
-                        Text(
-                          DateFormat('HH:mm').format(workout.date),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        Row(
+                          children: [
+                            if (workout.muscleGroups.isNotEmpty)
+                              Text(
+                                workout.muscleGroups
+                                    .take(3)
+                                    .map((g) => g.emoji)
+                                    .join(' '),
+                                style: const TextStyle(fontSize: 12),
                               ),
+                            const SizedBox(width: 4),
+                            Text(
+                              DateFormat('HH:mm').format(workout.date),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -335,60 +348,4 @@ class _WorkoutCard extends StatelessWidget {
     );
   }
 
-  Color _getSplitColor(WorkoutSplit split) {
-    switch (split) {
-      case WorkoutSplit.push:
-        return Colors.orange;
-      case WorkoutSplit.pull:
-        return Colors.blue;
-      case WorkoutSplit.legs:
-        return Colors.green;
-      case WorkoutSplit.upperBody:
-        return Colors.purple;
-      case WorkoutSplit.lowerBody:
-        return Colors.teal;
-      case WorkoutSplit.fullBody:
-        return Colors.red;
-      case WorkoutSplit.custom:
-        return Colors.grey;
-    }
-  }
-
-  IconData _getSplitIcon(WorkoutSplit split) {
-    switch (split) {
-      case WorkoutSplit.push:
-        return Icons.accessibility_new;
-      case WorkoutSplit.pull:
-        return Icons.fitness_center;
-      case WorkoutSplit.legs:
-        return Icons.directions_run;
-      case WorkoutSplit.upperBody:
-        return Icons.emoji_people;
-      case WorkoutSplit.lowerBody:
-        return Icons.trending_down;
-      case WorkoutSplit.fullBody:
-        return Icons.person;
-      case WorkoutSplit.custom:
-        return Icons.star;
-    }
-  }
-
-  String _getSplitName(WorkoutSplit split) {
-    switch (split) {
-      case WorkoutSplit.push:
-        return 'Push';
-      case WorkoutSplit.pull:
-        return 'Pull';
-      case WorkoutSplit.legs:
-        return 'Legs';
-      case WorkoutSplit.upperBody:
-        return 'Upper Body';
-      case WorkoutSplit.lowerBody:
-        return 'Lower Body';
-      case WorkoutSplit.fullBody:
-        return 'Full Body';
-      case WorkoutSplit.custom:
-        return 'Personalizado';
-    }
-  }
 }

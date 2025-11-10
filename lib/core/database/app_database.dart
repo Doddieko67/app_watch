@@ -13,6 +13,7 @@ import 'tables/meals_table.dart';
 import 'tables/nutrition_goals_table.dart';
 import 'tables/reminders_table.dart';
 import 'tables/saved_exercises_table.dart';
+import 'tables/saved_workouts_table.dart';
 import 'tables/sleep_records_table.dart';
 import 'tables/sleep_schedules_table.dart';
 import 'tables/study_sessions_table.dart';
@@ -25,6 +26,7 @@ part 'app_database.g.dart';
   Workouts,
   Exercises,
   SavedExercises,
+  SavedWorkouts,
   Meals,
   FoodItems,
   NutritionGoals,
@@ -38,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -49,6 +51,19 @@ class AppDatabase extends _$AppDatabase {
           // Migración de v1 a v2: agregar tabla SavedExercises
           if (from == 1 && to == 2) {
             await m.createTable(savedExercises);
+          }
+          // Migración de v2 a v3: agregar SavedWorkouts y cambiar split a muscleGroups
+          if (from == 2 && to == 3) {
+            await m.createTable(savedWorkouts);
+            // Migrar columna split a muscleGroups en workouts
+            await m.addColumn(workouts, workouts.muscleGroups);
+            // Copiar datos de split a muscleGroups (convertir a JSON array)
+            await customStatement('''
+              UPDATE workouts
+              SET muscle_groups = '["' || split || '"]'
+              WHERE muscle_groups IS NULL OR muscle_groups = ''
+            ''');
+            // Nota: No eliminamos la columna 'split' por compatibilidad
           }
         },
       );
@@ -102,6 +117,22 @@ class AppDatabase extends _$AppDatabase {
       update(savedExercises).replace(exercise);
   Future<int> deleteSavedExercise(int id) =>
       (delete(savedExercises)..where((e) => e.id.equals(id))).go();
+
+  // SavedWorkouts
+  Future<List<SavedWorkoutData>> getAllSavedWorkouts() =>
+      (select(savedWorkouts)
+            ..where((w) => w.deletedAt.isNull())
+            ..orderBy([(w) => OrderingTerm.desc(w.lastUsed)]))
+          .get();
+  Future<SavedWorkoutData?> getSavedWorkoutByName(String name) =>
+      (select(savedWorkouts)..where((w) => w.name.equals(name)))
+          .getSingleOrNull();
+  Future<int> insertSavedWorkout(SavedWorkoutsCompanion workout) =>
+      into(savedWorkouts).insert(workout);
+  Future<bool> updateSavedWorkout(SavedWorkoutData workout) =>
+      update(savedWorkouts).replace(workout);
+  Future<int> deleteSavedWorkout(int id) =>
+      (delete(savedWorkouts)..where((w) => w.id.equals(id))).go();
 
   // Meals
   Future<List<Meal>> getAllMeals() => select(meals).get();

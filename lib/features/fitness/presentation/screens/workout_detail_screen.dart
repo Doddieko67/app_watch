@@ -1,10 +1,16 @@
+import 'dart:convert';
+
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/database/app_database.dart';
+import '../../../../core/providers/database_provider.dart';
 import '../../domain/entities/workout_entity.dart';
 import '../providers/fitness_providers.dart';
 import '../widgets/exercise_log_card.dart';
-import '../widgets/split_selector.dart';
+import '../widgets/muscle_group_selector.dart';
+import '../widgets/workout_autocomplete_field.dart';
 
 /// Pantalla para crear o editar un workout
 class WorkoutDetailScreen extends ConsumerStatefulWidget {
@@ -25,7 +31,7 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
   late final TextEditingController _notesController;
 
   late DateTime _selectedDate;
-  late WorkoutSplit _selectedSplit;
+  List<MuscleGroup> _selectedMuscleGroups = [];
   List<ExerciseEntity> _exercises = [];
   bool _isSaving = false;
 
@@ -38,7 +44,7 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
     );
     _notesController = TextEditingController(text: widget.workout?.notes ?? '');
     _selectedDate = widget.workout?.date ?? DateTime.now();
-    _selectedSplit = widget.workout?.split ?? WorkoutSplit.custom;
+    _selectedMuscleGroups = widget.workout?.muscleGroups.toList() ?? [];
     _exercises = widget.workout?.exercises.toList() ?? [];
   }
 
@@ -80,29 +86,40 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Nombre del workout
-            TextField(
+            // Nombre del workout con autocompletado
+            WorkoutAutocompleteField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nombre del Workout',
-                hintText: 'Ej: Push Day Morning',
-                prefixIcon: Icon(Icons.fitness_center),
-                border: OutlineInputBorder(),
-              ),
-              textCapitalization: TextCapitalization.words,
+              onWorkoutSelected: (savedWorkout) async {
+                // Cargar datos del workout guardado
+                setState(() {
+                  _nameController.text = savedWorkout.name;
+                  _selectedMuscleGroups = _decodeMuscleGroups(savedWorkout.muscleGroups);
+                  if (savedWorkout.avgDurationMinutes != null) {
+                    _durationController.text = savedWorkout.avgDurationMinutes.toString();
+                  }
+                  if (savedWorkout.notes != null) {
+                    _notesController.text = savedWorkout.notes!;
+                  }
+                });
+
+                // Actualizar contador de uso
+                final database = ref.read(appDatabaseProvider);
+                await database.updateSavedWorkout(
+                  savedWorkout.copyWith(
+                    usageCount: savedWorkout.usageCount + 1,
+                    lastUsed: DateTime.now(),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 24),
 
-            // Selector de split
-            SplitSelector(
-              selectedSplit: _selectedSplit,
-              onSplitChanged: (split) {
+            // Selector de grupos musculares
+            MuscleGroupSelector(
+              selectedGroups: _selectedMuscleGroups,
+              onChanged: (groups) {
                 setState(() {
-                  _selectedSplit = split;
-                  // Auto-generar nombre si está vacío
-                  if (_nameController.text.isEmpty) {
-                    _nameController.text = '${split.displayName} - ${_formatDate(_selectedDate)}';
-                  }
+                  _selectedMuscleGroups = groups;
                 });
               },
             ),
@@ -289,6 +306,15 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
       return;
     }
 
+    if (_selectedMuscleGroups.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor selecciona al menos un grupo muscular'),
+        ),
+      );
+      return;
+    }
+
     if (_exercises.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -303,12 +329,13 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
     try {
       final createWorkoutUseCase = ref.read(createWorkoutProvider);
       final logExerciseUseCase = ref.read(logExerciseProvider);
+      final database = ref.read(appDatabaseProvider);
 
       // Crear/actualizar el workout
       final workout = WorkoutEntity(
         id: widget.workout?.id ?? 0,
         name: _nameController.text.trim(),
-        split: _selectedSplit,
+        muscleGroups: _selectedMuscleGroups,
         date: _selectedDate,
         durationMinutes: _durationController.text.isEmpty
             ? null
@@ -368,6 +395,9 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
         }
       }
 
+      // Guardar o actualizar como workout template (SavedWorkout)
+      await _saveSavedWorkout(database);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -399,5 +429,64 @@ class _WorkoutDetailScreenState extends ConsumerState<WorkoutDetailScreen> {
       'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  /// Guarda o actualiza el workout como template (SavedWorkout)
+  Future<void> _saveSavedWorkout(AppDatabase database) async {
+    final workoutName = _nameController.text.trim();
+    final existing = await database.getSavedWorkoutByName(workoutName);
+
+    final muscleGroupsJson = _encodeMuscleGroups(_selectedMuscleGroups);
+    final duration = _durationController.text.isEmpty
+        ? null
+        : int.tryParse(_durationController.text);
+
+    if (existing != null) {
+      // Actualizar existente
+      await database.updateSavedWorkout(
+        existing.copyWith(
+          muscleGroups: muscleGroupsJson,
+          avgDurationMinutes: duration != null ? drift.Value(duration) : drift.Value(existing.avgDurationMinutes),
+          notes: drift.Value(
+            _notesController.text.trim().isEmpty
+                ? existing.notes
+                : _notesController.text.trim(),
+          ),
+          updatedAt: DateTime.now(),
+        ),
+      );
+    } else {
+      // Crear nuevo
+      await database.insertSavedWorkout(
+        SavedWorkoutsCompanion.insert(
+          name: workoutName,
+          muscleGroups: muscleGroupsJson,
+          avgDurationMinutes: drift.Value(duration),
+          notes: drift.Value(
+            _notesController.text.trim().isEmpty
+                ? null
+                : _notesController.text.trim(),
+          ),
+        ),
+      );
+    }
+  }
+
+  /// Decodifica muscleGroups desde JSON string a List<MuscleGroup>
+  List<MuscleGroup> _decodeMuscleGroups(String json) {
+    try {
+      final List<dynamic> decoded = jsonDecode(json);
+      return decoded
+          .map((value) => MuscleGroup.fromValue(value.toString()))
+          .toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Codifica List<MuscleGroup> a JSON string
+  String _encodeMuscleGroups(List<MuscleGroup> groups) {
+    final List<String> values = groups.map((g) => g.value).toList();
+    return jsonEncode(values);
   }
 }
