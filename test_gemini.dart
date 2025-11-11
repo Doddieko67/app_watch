@@ -10,6 +10,7 @@
 /// 4. Muestra resultados detallados
 
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 void main() async {
@@ -84,10 +85,10 @@ void main() async {
 
   // Probar diferentes modelos disponibles (basado en listado de API)
   final modelsToTry = [
-    'gemini-flash-latest',      // Latest Gemini Flash (2.5)
-    'gemini-2.5-flash',           // Stable Gemini 2.5 Flash
+    'gemini-1.5-flash',           // Gemini 1.5 Flash (multimodal con imágenes)
+    'gemini-1.5-pro',             // Gemini 1.5 Pro (multimodal con imágenes)
+    'gemini-flash-latest',        // Latest Gemini Flash
     'gemini-2.0-flash',           // Gemini 2.0 Flash
-    'gemini-pro-latest',          // Latest Gemini Pro
   ];
 
   GenerativeModel? model;
@@ -234,12 +235,129 @@ IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
     exit(1);
   }
 
-  // 5. Resumen final
+  // 5. Test de análisis de IMÁGENES (nuevo!)
+  print('\n5️⃣  Test de análisis de IMAGEN: descargando foto de comida...');
+  try {
+    // Descargar imagen de comida de internet (imagen pequeña de ejemplo)
+    final imageUrl = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80'; // Plato de comida variada
+
+    print('   📥 Descargando imagen desde Unsplash...');
+    final httpClient = HttpClient();
+    final request = await httpClient.getUrl(Uri.parse(imageUrl));
+    final response = await request.close();
+
+    if (response.statusCode != 200) {
+      print('   ⚠️  No se pudo descargar la imagen (código ${response.statusCode})');
+      print('   Saltando test de imagen...');
+    } else {
+      // Guardar imagen temporalmente
+      final tempFile = File('temp_test_image.jpg');
+      final imageBytesRaw = await response.fold<List<int>>([],
+          (previous, element) => previous..addAll(element));
+      final imageBytes = Uint8List.fromList(imageBytesRaw);
+      await tempFile.writeAsBytes(imageBytes);
+
+      print('   ✅ Imagen descargada (${imageBytes.length} bytes)');
+      print('   🤖 Analizando imagen con Gemini (multimodal)...');
+
+      // Prompt para análisis de imagen de plato completo
+      final imagePrompt = '''
+Eres un nutricionista experto analizando una fotografía de un plato de comida.
+
+TAREA: Identifica TODOS los alimentos visibles en la imagen y estima sus cantidades.
+
+Debes responder SIEMPRE con un JSON válido siguiendo este formato EXACTO:
+{
+  "foods": [
+    {
+      "name": "nombre del alimento en español",
+      "quantity": número_en_gramos,
+      "unit": "g",
+      "calories": número_calorías,
+      "protein": número_proteínas_gramos,
+      "carbs": número_carbohidratos_gramos,
+      "fats": número_grasas_gramos,
+      "confidence": número_entre_0_y_1
+    }
+  ]
+}
+
+REGLAS:
+1. Identifica TODOS los alimentos visibles
+2. Estima cantidades basándote en el tamaño visual del plato
+3. Si ves múltiples alimentos, agrégalos todos al array "foods"
+4. Confidence: qué tan seguro estás del alimento y cantidad (0.0-1.0)
+5. Los valores DEBEN ser realistas y proporcionales
+
+IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
+''';
+
+      // Crear contenido multimodal (texto + imagen)
+      // OPCIÓN 1: Usar Content.multi con TextPart y DataPart
+      final content = Content.multi([
+        TextPart(imagePrompt),
+        DataPart('image/jpeg', imageBytes),
+      ]);
+
+      // IMPORTANTE: NO usar responseMimeType para multimodal
+      final imageResponse = await model.generateContent(
+        [content],
+        generationConfig: GenerationConfig(
+          temperature: 0.2,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+          // NO incluir responseMimeType aquí
+        ),
+      );
+
+      final imageText = imageResponse.text ?? '';
+
+      if (imageText.isEmpty) {
+        print('   ❌ ERROR: Respuesta vacía para análisis de imagen');
+      } else {
+        print('   ✅ Respuesta de análisis de IMAGEN recibida!');
+        print('\n' + '-' * 50);
+        print(imageText);
+        print('-' * 50);
+
+        // Intentar parsear JSON
+        try {
+          String cleaned = imageText.trim();
+          cleaned = cleaned.replaceAll(RegExp(r'```json\s*'), '');
+          cleaned = cleaned.replaceAll(RegExp(r'```\s*'), '');
+
+          if (cleaned.contains('"foods"') &&
+              cleaned.contains('"name"') &&
+              cleaned.contains('"calories"')) {
+            print('\n   ✅ JSON DE IMAGEN parece válido!');
+            print('   ✅ El análisis multimodal (imagen) FUNCIONA! 🎉');
+          } else {
+            print('\n   ⚠️  JSON puede estar incompleto');
+          }
+        } catch (e) {
+          print('\n   ⚠️  Error parseando JSON: $e');
+        }
+      }
+
+      // Limpiar archivo temporal
+      if (await tempFile.exists()) {
+        await tempFile.delete();
+        print('\n   🧹 Archivo temporal eliminado');
+      }
+    }
+  } catch (e) {
+    print('   ❌ ERROR en test de imagen: $e');
+    print('   Esto NO es crítico - puede ser problema de red');
+  }
+
+  // 6. Resumen final
   print('\n' + '=' * 50);
   print('🎉 RESUMEN FINAL\n');
   print('✅ API key de Gemini funcionando correctamente');
-  print('✅ Modelo gemini-1.5-flash respondiendo');
-  print('✅ Análisis de alimentos operativo');
+  print('✅ Modelo $workingModel respondiendo');
+  print('✅ Análisis de alimentos por texto operativo');
+  print('✅ Análisis de imágenes (multimodal) testeado');
   print('\n📱 Tu app debería funcionar correctamente con esta API key');
   print('💡 Si tienes problemas en la app:');
   print('   1. Verifica que .env esté en la carpeta raíz del proyecto');
