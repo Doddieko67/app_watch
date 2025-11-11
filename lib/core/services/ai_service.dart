@@ -256,14 +256,12 @@ IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
       final imageBytes = await image.readAsBytes();
       final prompt = _buildFullPlatePrompt(context);
 
-      final content = [
-        Content.multi([
-          TextPart(prompt),
-          DataPart('image/jpeg', imageBytes),
-        ])
-      ];
+      final content = Content.multi([
+        TextPart(prompt),
+        DataPart('image/jpeg', imageBytes),
+      ]);
 
-      final response = await _geminiModel!.generateContent(content);
+      final response = await _geminiModel!.generateContent([content]);
       final text = response.text;
 
       if (text == null || text.isEmpty) {
@@ -308,14 +306,12 @@ IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
       final imageBytes = await image.readAsBytes();
       final prompt = _buildPortionEstimationPrompt(foodName);
 
-      final content = [
-        Content.multi([
-          TextPart(prompt),
-          DataPart('image/jpeg', imageBytes),
-        ])
-      ];
+      final content = Content.multi([
+        TextPart(prompt),
+        DataPart('image/jpeg', imageBytes),
+      ]);
 
-      final response = await _geminiModel!.generateContent(content);
+      final response = await _geminiModel!.generateContent([content]);
       final text = response.text;
 
       if (text == null || text.isEmpty) {
@@ -354,14 +350,12 @@ IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
       final imageBytes = await image.readAsBytes();
       final prompt = _buildNutritionLabelPrompt();
 
-      final content = [
-        Content.multi([
-          TextPart(prompt),
-          DataPart('image/jpeg', imageBytes),
-        ])
-      ];
+      final content = Content.multi([
+        TextPart(prompt),
+        DataPart('image/jpeg', imageBytes),
+      ]);
 
-      final response = await _geminiModel!.generateContent(content);
+      final response = await _geminiModel!.generateContent([content]);
       final text = response.text;
 
       if (text == null || text.isEmpty) {
