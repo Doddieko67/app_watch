@@ -42,9 +42,10 @@ La documentación completa está organizada en módulos en `.claude/contexts/`:
 
 4. **[Estrategia de IA](.claude/contexts/04_ai_strategy.md)**
    - Flujo de análisis de alimentos (Cache → Gemini → DB Local → Manual)
-   - Prompts optimizados para Gemini
-   - Base de datos local de 500 alimentos
+   - Prompts optimizados para Gemini (Gemini 2.5 Flash)
+   - Base de datos local de alimentos
    - Sistema de cache inteligente
+   - Ver también: [Fix de Gemini AI](.claude/contexts/13_nutrition_ai_fix.md)
 
 5. **[Notificaciones](.claude/contexts/05_notifications.md)**
    - 4 tipos de notificaciones (recordatorios, sueño, estudio, comidas)
@@ -96,6 +97,26 @@ La documentación completa está organizada en módulos en `.claude/contexts/`:
     - Permisos mínimos
     - Exportación con advertencias de privacidad
     - Checklist de seguridad
+
+### 📝 Mejoras y Cambios Recientes
+
+13. **[Fix de Gemini AI](.claude/contexts/13_nutrition_ai_fix.md)**
+    - Bug crítico de GenerationConfig resuelto
+    - Actualización a Gemini 2.5 Flash
+    - Análisis proporcional de alimentos
+    - Scripts de testing (test_gemini.dart)
+
+14. **[Mejoras del Módulo de Nutrición](.claude/contexts/14_nutrition_improvements.md)**
+    - Sistema de autocompletado de alimentos
+    - Agregar múltiples alimentos rápidamente
+    - Edición de alimentos individuales
+    - Alimentos clickeables con edición
+    - Métricas de mejora UX
+
+15. **[Changelog de Versiones](.claude/contexts/15_changelog.md)**
+    - Registro detallado de todas las fases completadas
+    - Historial de features implementados
+    - Roadmap de próximas versiones
 
 ---
 
@@ -205,263 +226,29 @@ app_watch/
 
 ## 🎯 Estado Actual
 
-### Fase Actual: **Fase 6.5 Completada ✅ - Listo para Fase 6.8 (Mejoras Funcionales)**
+### Fase Actual: **Fase 6.10 Completada ✅ - Módulo de Nutrición Mejorado**
 
-**Implementado:**
+**Resumen:**
+Todas las funcionalidades principales han sido implementadas. El módulo de nutrición ahora incluye análisis de IA totalmente funcional con Gemini 2.5 Flash, autocompletado de alimentos, edición granular de alimentos individuales, y un flujo optimizado para agregar múltiples alimentos.
 
-#### Fase 1 - Infraestructura Base
-- ✅ Proyecto Flutter creado y compilando
-- ✅ 13 tablas Drift con DAOs básicos (incluye SavedExercises, SavedWorkouts)
-- ✅ Riverpod configurado (database + theme + notification providers)
-- ✅ Material 3 Theme con colores personalizables
-- ✅ Navegación adaptativa (Bottom Nav + Rail) - Solo iconos, sin labels
-- ✅ Assets base (nutrition_database.json con 15 alimentos)
-- ✅ analysis_options.yaml con lints estrictos
-- ✅ Estructura completa de carpetas (Clean Architecture)
+**Para ver el estado completo y detallado de todas las fases:** Ver **[Changelog de Versiones](.claude/contexts/15_changelog.md)**
 
-#### Fase 2 - Módulo de Recordatorios
-- ✅ Domain Layer completo (entities, repositories, use cases)
-- ✅ Data Layer completo (local datasource, repository impl, mappers)
-- ✅ Presentation Layer completo (providers, screens, widgets)
-- ✅ Sistema de notificaciones locales integrado
-- ✅ CRUD completo con recurrencias (diaria/semanal/custom)
-- ✅ Prioridades, tags y filtros funcionales
-- ✅ Integrado a navegación principal
-- ✅ **Mejoras UX/UI implementadas (Fase 7.0):**
-  - Swipe actions con flutter_slidable (completar/eliminar)
-  - Estados de carga para checkbox y acciones async
-  - Búsqueda en tiempo real (título, descripción, tags)
-  - Ordenamiento flexible (fecha/prioridad/alfabético)
-  - Recurrencia personalizada completa (1-30 días) con Slider UI
-  - Feedback mejorado con próxima notificación calculada
-  - Mensajes de error humanizados y contextuales
-  - Jerarquía visual mejorada (títulos bold, espaciado, touch targets)
-  - Recordatorios vencidos destacados (borde rojo + background)
-  - Iconos de prioridad diferenciados semánticamente
-  - Integración completa con tema Material 3
-- ✅ 23 archivos creados (~3,000+ líneas de código)
+**Fases completadas brevemente:**
 
-#### Fase 3 - Módulo de Fitness Tracker
-- ✅ Domain Layer completo (WorkoutEntity, ExerciseEntity, MuscleGroup enum, 4 use cases)
-- ✅ Data Layer completo (mappers con JSON encoding, datasource, repository impl)
-- ✅ Presentation Layer completo (20+ providers, screens, widgets)
-- ✅ FitnessHomeScreen con estadísticas generales y menú de utilidades
-- ✅ WorkoutDetailScreen con autocompletado de templates y edición inteligente
-- ✅ CRUD de workouts y ejercicios con preservación de IDs
-- ✅ Sistema de Grupos Musculares (12 grupos: chest, back, shoulders, biceps, triceps, forearms, abs, quads, hamstrings, glutes, calves, cardio)
-- ✅ Selección múltiple de grupos musculares con emojis
-- ✅ SavedWorkouts: Templates reutilizables con ejercicios completos
-- ✅ WorkoutAutocompleteField: Carga automática de templates con ejercicios
-- ✅ ExerciseAutocompleteField: Autocompletado de ejercicios guardados
-- ✅ FitnessStatsScreen con 3 tabs (PRs, Frecuencia, Volumen semanal)
-- ✅ SavedExercisesListScreen: Gestión completa de ejercicios guardados
-- ✅ OneRMCalculator: Calculadora 1RM con fórmulas Epley y Brzycki
-- ✅ WorkoutHistoryScreen con calendario y filtrado por fecha
-- ✅ Cálculo de volumen, PRs, ejercicios frecuentes (con filtro de soft-delete)
-- ✅ Integrado a navegación principal
-- ✅ 23 archivos creados (~3,500+ líneas de código)
+- ✅ **Fase 1:** Infraestructura Base (13 tablas Drift, Riverpod, Material 3, Clean Architecture)
+- ✅ **Fase 2:** Módulo de Recordatorios (CRUD completo, notificaciones, recurrencias, swipe actions, búsqueda)
+- ✅ **Fase 3:** Módulo de Fitness (Workouts, ejercicios, templates, grupos musculares, estadísticas, calendario)
+- ✅ **Fase 4:** Módulo de Nutrición Básico (Comidas, análisis IA, objetivos, resumen diario)
+- ✅ **Fase 5:** Módulo de Sueño y Estudio (Horarios, registro, cronómetro, estadísticas)
+- ✅ **Fase 6:** Settings y Exportación (Temas, API keys, import/export, onboarding)
+- ✅ **Fase 6.5:** Dashboard y Gráficas (4 summary cards, charts con fl_chart, calendario)
+- ✅ **Fase 6.8:** Mejoras UX Fitness/Nutrition (Templates, autocompletado, optimizaciones)
+- ✅ **Fase 6.9:** Calendario de Recordatorios y Localizaciones (Historial, fecha inicio, español)
+- ✅ **Fase 6.10:** Mejoras Nutrición (Fix Gemini AI, autocompletado, edición granular, múltiples alimentos)
 
-#### Fase 4 - Módulo de Nutrición (BÁSICO)
-- ✅ Domain Layer completo (MealEntity, FoodItemEntity, NutritionGoalsEntity, 6 use cases)
-- ✅ Data Layer completo (models, mappers, datasource, repository impl)
-- ✅ AI Service con flujo de fallback preparado (Cache → Gemini → DB Local → Manual)
-- ✅ LocalNutritionDatabase con búsqueda fuzzy (Levenshtein)
-- ✅ Base de datos local con 15 alimentos de ejemplo
-- ✅ Presentation Layer básico (providers, NutritionHomeScreen, LogMealScreen)
-- ✅ CRUD básico de comidas y objetivos nutricionales
-- ✅ Resumen nutricional diario con progress indicators
-- ✅ Integrado a navegación principal
-- ✅ 20+ archivos creados (~2,500+ líneas de código)
-- ✅ APK debug generado exitosamente
-- ✅ 0 errores de compilación críticos
+**Total:** ~133 archivos, ~22,000+ líneas de código, Schema v5, 25+ commits
 
-#### Fase 5 - Módulo de Sueño y Estudio
-- ✅ Domain Layer completo (SleepRecordEntity, StudySessionEntity, SleepScheduleEntity)
-- ✅ Repository interface con métodos para estadísticas (SleepStats, StudyStats)
-- ✅ 5 use cases (ConfigureSleepSchedule, LogSleepRecord, LogStudySession, CalculateOptimalStudyTime, GetSleepStats)
-- ✅ Data Layer completo (models, mappers, datasource, repository impl)
-- ✅ SleepStudyLocalDataSource con CRUD completo y cálculo de estadísticas
-- ✅ Presentation Layer (13+ providers, SleepStudyHomeScreen, SleepConfigScreen)
-- ✅ Configuración de horario de sueño con notificaciones
-- ✅ Registro de sueño planificado vs real con métricas
-- ✅ Sistema de sesiones de estudio con cronómetro
-- ✅ Cálculo de hora óptima de estudio (2.5h después de despertar)
-- ✅ Estadísticas semanales de sueño y estudio
-- ✅ Integrado a navegación principal
-- ✅ 16 archivos creados (~2,400+ líneas de código)
-- ✅ APK debug generado exitosamente
-- ✅ 0 errores de compilación
-
-#### Fase 6 - Settings, Onboarding y Exportación
-- ✅ Domain Layer completo (AppSettingsEntity, repository, 3 use cases)
-- ✅ Data Layer completo (models, mappers, datasource, repository impl)
-- ✅ Core Services (ExportImportService, SecureStorageService)
-- ✅ SettingsScreen completo con todas las secciones:
-  - Configuración de tema (light/dark/system)
-  - Selector de color primario personalizable
-  - Gestión segura de API key de Gemini (flutter_secure_storage)
-  - Configuración de auto-backup
-  - Exportación/Importación de datos JSON
-  - Gestión de permisos y notificaciones
-- ✅ OnboardingScreen de 3 pantallas con introducción a la app
-- ✅ AboutScreen con información de versión y enlaces
-- ✅ 5 widgets especializados (ThemeModeSelector, ColorPicker, ApiKeyConfig, etc.)
-- ✅ Sistema de exportación completo con compartir vía Share API
-- ✅ Sistema de importación con validación de datos
-- ✅ Integrado a navegación principal
-- ✅ 24 archivos creados (~3,400+ líneas de código)
-- ✅ APK debug generado exitosamente
-- ✅ 0 errores de compilación
-
-#### Fase 6.5 - Completando Funcionalidades Pre-Release
-- ✅ Home Dashboard completo con 4 summary cards:
-  - RemindersSummaryCard (recordatorios de hoy + pendientes + próximos 2)
-  - FitnessSummaryCard (workouts de hoy + stats generales)
-  - NutritionSummaryCard (calorías y macros del día con progress)
-  - SleepStudySummaryCard (calidad de sueño + minutos estudiados)
-- ✅ MealDetailScreen con visualización completa de comidas:
-  - Breakdown nutricional detallado (calorías, proteína, carbos, grasas)
-  - Lista de alimentos con cantidades
-  - Funcionalidad de eliminar comida
-  - Navegación desde NutritionHomeScreen
-- ✅ LogSleepRecordScreen - Formulario completo de registro de sueño:
-  - Selectores de fecha y hora (dormir/despertar)
-  - Sistema de calificación con estrellas (1-5)
-  - Validación de datos (despertar después de dormir)
-  - Action provider para crear y registrar en un solo paso
-  - Muestra horario planificado vs real
-- ✅ StudySessionScreen - Sesión de estudio con cronómetro:
-  - Timer con play/pause/reset (formato HH:MM:SS o MM:SS)
-  - Campos de materia y notas opcionales
-  - Validación de duración mínima (60 segundos)
-  - Diálogo de confirmación con resumen de tiempo
-  - Integración con LogStudySession use case
-  - Navegación para iniciar o continuar sesión
-- ✅ NutritionChartsScreen - Gráficas de nutrición (fl_chart):
-  - LineChart de calorías semanales con gradiente
-  - PieChart de distribución de macros (% proteína/carbos/grasas)
-  - BarChart de comparación de comidas por tipo
-  - Empty states y manejo de errores
-  - Navegación desde NutritionHomeScreen (botón insights)
-- ✅ SleepStudyChartsScreen - Gráficas de sueño y estudio:
-  - TabBar con 2 tabs (Sueño / Estudio)
-  - Sleep: LineChart horas (planeado vs real), BarChart calidad (color-coded)
-  - Study: BarChart tiempo diario, PieChart distribución por materia
-  - Tarjetas de estadísticas semanales (promedio, calidad, sesiones, etc.)
-  - Navegación desde SleepStudyHomeScreen (botón insights)
-- ✅ WorkoutHistoryScreen - Historial con calendario:
-  - Integración con table_calendar (vista mes/semana/2 semanas)
-  - Marcadores en días con entrenamientos
-  - Lista de workouts filtrada por fecha seleccionada
-  - Cards con muscle groups (emojis), duración, ejercicios, volumen
-  - Navegación a WorkoutDetailScreen para editar
-  - Navegación desde FitnessHomeScreen (botón history)
-- ✅ NavigationService - Infraestructura de navegación global:
-  - Global navigator key para acceso desde servicios
-  - Parsing de payloads de notificaciones ("type:id")
-  - Base preparada para deep linking futuro
-  - Manejo de taps en notificaciones con debug logs
-- ✅ Correcciones y ajustes de propiedades de entidades
-- ✅ 11 archivos nuevos creados (~3,500+ líneas de código)
-- ✅ 7 commits exitosos con APK debug generado en cada uno
-- ✅ 0 errores de compilación
-
-#### Fase 6.8 - Mejoras Funcionales UX (COMPLETADA ✅)
-- ✅ **FITNESS - Sistema de Templates Completo:**
-  - Tabla SavedWorkouts para guardar plantillas de entrenamientos
-  - WorkoutAutocompleteField con carga de templates
-  - Replicación completa de ejercicios al seleccionar template
-  - Sistema de Grupos Musculares (reemplaza Splits)
-  - MuscleGroupSelector con 12 grupos y emojis
-  - ExerciseAutocompleteField para ejercicios guardados
-  - Edición inteligente de ejercicios (preserva IDs, no destructiva)
-  - FitnessStatsScreen con 3 tabs (PRs, Frecuencia, Volumen)
-  - SavedExercisesListScreen con CRUD completo
-  - OneRMCalculator profesional (Epley + Brzycki)
-  - Contador de uso de templates
-- ✅ **NUTRITION - Optimizaciones:**
-  - Eliminado loading innecesario al cambiar de día
-  - FoodAutocompleteField para alimentos guardados
-  - Sistema de alimentos frecuentes
-- ✅ **NAVIGATION - Simplificación:**
-  - Barra de navegación solo con iconos (sin labels)
-  - Iconos más grandes para mejor UX táctil
-- ✅ 10 archivos nuevos creados (~2,000+ líneas de código)
-- ✅ Schema v2 → v4 (migraciones de SavedExercises y SavedWorkouts)
-- ✅ 3 commits exitosos con APK debug generado
-- ✅ 0 errores de compilación
-
-#### Fase 6.9 - Calendario de Recordatorios y Localizaciones (COMPLETADA ✅)
-- ✅ **ReminderHistoryScreen - Calendario con filtros:**
-  - Calendario mensual con table_calendar
-  - Marcadores visuales por día con recordatorios
-  - Búsqueda flotante en AppBar (toggle search mode)
-  - Filtrado de marcadores por nombre de recordatorio
-  - Color fuerte (opacidad 1.0) para completados
-  - Color débil (opacidad 0.3) para pendientes
-  - Lista de recordatorios filtrada por fecha seleccionada
-  - Navegación rápida a "hoy"
-  - Cache optimizado para mes visible
-- ✅ **Sistema de fecha de inicio para recurrencia:**
-  - Campo startDate en ReminderEntity y tabla Reminders
-  - Selector de fecha en ReminderDetailScreen
-  - Lógica de cálculo de próxima ocurrencia respeta startDate
-  - Validación: primera ocurrencia no antes de startDate
-  - Aplicable a todos los tipos de recurrencia (diaria/semanal/custom)
-- ✅ **Localizaciones de la app:**
-  - Integración de flutter_localizations
-  - Español (es_ES) como locale por defecto
-  - GlobalMaterialLocalizations, GlobalWidgetsLocalizations, GlobalCupertinoLocalizations
-  - DatePicker y TimePicker funcionan correctamente en español
-  - Actualización de intl a 0.20.2
-- ✅ **Mejoras de UX:**
-  - resizeToAvoidBottomInset: false para evitar overflow del teclado
-  - Búsqueda con clear button automático
-  - Experiencia fluida al filtrar recordatorios
-- ✅ Database migration v4 → v5 (columna start_date)
-- ✅ 3 commits exitosos con APK debug generado
-- ✅ 0 errores de compilación
-
-#### Fase 6.10 - Mejoras del Módulo de Nutrición (COMPLETADA ✅)
-- ✅ **Fix crítico de Gemini AI:**
-  - Corregido bug de GenerationConfig override que removía responseMimeType
-  - Ahora "pay de limón" y cualquier alimento funciona correctamente
-  - Análisis proporcional de cantidades (100g, 150g, 1 rebanada, etc.)
-  - Test script creado (test_gemini.dart) para verificar API key
-  - Modelo actualizado a gemini-flash-latest (Gemini 2.5)
-  - Documentación completa en NUTRITION_AI_FIX.md
-- ✅ **Sistema de autocompletado mejorado:**
-  - FoodAutocompleteField con sugerencias de 50 alimentos recientes
-  - Búsqueda en tiempo real mientras escribes
-  - Información nutricional resumida en cada sugerencia
-  - Badge de fuente (Cache/IA/DB/Manual) visible
-  - Integrado con recentFoodsProvider
-- ✅ **Agregar múltiples alimentos rápidamente:**
-  - Botón "Guardar + Otro" en AddFoodItemScreen
-  - Limpia formulario automáticamente para agregar otro
-  - Botón "Guardar" tradicional (cierra pantalla)
-  - Feedback visual: "✓ Alimento agregado"
-  - Reduce clics en 33% y pantallas en 67%
-- ✅ **Edición de alimentos individuales:**
-  - Nueva pantalla EditFoodItemScreen (~400 líneas)
-  - Editar nombre, cantidad, calorías, proteína, carbos, grasas
-  - Botón de eliminar con confirmación
-  - Muestra badge de fuente y fecha de registro
-  - Recalcula totales de comida automáticamente
-  - Función helper para convertir String → FoodAnalysisSource enum
-- ✅ **Alimentos clickeables en MealDetailScreen:**
-  - InkWell con efecto ripple en cada alimento
-  - Icono de edición (✏️) visible
-  - Tap en alimento → Abre EditFoodItemScreen
-  - Método _buildFoodItemCard() con funcionalidad de edición
-  - Invalidación automática de providers al regresar
-- ✅ 1 archivo nuevo (~400 líneas)
-- ✅ 2 archivos modificados (AddFoodItemScreen, MealDetailScreen)
-- ✅ Documentación completa en NUTRITION_IMPROVEMENTS.md
-- ✅ APK debug generado exitosamente
-- ✅ 0 errores de compilación
-
-**Total archivos:** ~133 archivos (~22,000+ líneas de código)
+📊 **Ver detalles completos:** [Changelog de Versiones](.claude/contexts/15_changelog.md)
 
 ### Próximos Pasos
 
