@@ -275,11 +275,12 @@ Investigación completa del bug de análisis de imágenes en Gemini. Se identifi
 - Pendiente: Manejo robusto de errores
 - Pendiente: Optimización y limpieza de base de datos
 
-**Fase 7.1: Migración a firebase_ai** (Planificado - No bloqueante)
+**Fase 6.12: Migración a firebase_ai** (Planificado - Mejora UX)
 - Setup de Firebase (30-45 min)
 - Migrar AiService a firebase_ai (1-1.5 horas)
 - Testing exhaustivo de análisis de imágenes (30-45 min)
 - Cleanup y documentación (30 min)
+- **Categoría:** Mejora funcional/UX (Fase 6, no Fase 7)
 - Ver: [Plan de Migración](.claude/contexts/17_firebase_ai_migration_plan.md)
 
 **Fase 7.5: Preparación para Release** (Segunda mitad Semana 7)

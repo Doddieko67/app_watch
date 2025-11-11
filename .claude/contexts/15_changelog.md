@@ -339,26 +339,6 @@ Este archivo documenta todas las fases de desarrollo completadas, features imple
 
 ## 🚀 Próximas Fases
 
-### Fase 7.0 - Pulido Técnico (En Progreso)
-
-**Estado:** Parcialmente completado
-**Tareas pendientes:**
-- [ ] Animaciones con flutter_animate en más secciones
-- [ ] Optimización de performance (DB, paginación, lazy loading)
-- [ ] Manejo robusto de errores
-- [ ] Optimización y limpieza de base de datos
-- [ ] Mejoras UX de Recordatorios ✅ (completadas)
-
-**Tareas completadas:**
-- ✅ Swipe actions con flutter_slidable
-- ✅ Estados de carga para acciones async
-- ✅ Búsqueda en tiempo real
-- ✅ Ordenamiento flexible
-- ✅ Recurrencia personalizada (1-30 días)
-- ✅ Feedback mejorado
-- ✅ Mensajes de error humanizados
-
----
 
 ### Fase 7.5 - Preparación para Release
 
@@ -373,13 +353,14 @@ Este archivo documenta todas las fases de desarrollo completadas, features imple
 
 ---
 
-### Fase 7.1 - Migración a firebase_ai (Planificado)
+### Fase 6.12 - Migración a firebase_ai (Planificado)
 
 **Fecha estimada:** Cuando se disponga de 2-3 horas
-**Estado:** Planificado (no bloqueante para v1.0)
+**Estado:** Planificado (mejora UX, no bloqueante para v1.0)
+**Categoría:** Mejora funcional y UX (Fase 6)
 
 **Objetivo:**
-Migrar de `google_generative_ai` a `firebase_ai` para resolver el bug de análisis de imágenes.
+Migrar de `google_generative_ai` a `firebase_ai` para habilitar análisis de imágenes.
 
 **Tareas:**
 - [ ] Setup de Firebase (30-45 min)
@@ -389,11 +370,26 @@ Migrar de `google_generative_ai` a `firebase_ai` para resolver el bug de anális
 
 **Resultado esperado:**
 - ✅ Análisis de imágenes funcionando completamente
+- ✅ Mejora UX: usuarios pueden usar cámara para analizar comida
 - ✅ Bug "Unhandled format for Content" resuelto
 - ✅ Acceso a modelos más recientes (gemini-2.5-flash)
 
 **Referencias:**
 - Plan completo: `.claude/contexts/17_firebase_ai_migration_plan.md`
+
+---
+
+### Fase 7.0 - Pulido Técnico (En Progreso)
+
+**Estado:** Parcialmente completado
+**Tareas pendientes:**
+- [ ] Animaciones con flutter_animate en más secciones
+- [ ] Optimización de performance (DB, paginación, lazy loading)
+- [ ] Manejo robusto de errores
+- [ ] Optimización y limpieza de base de datos
+
+**Tareas completadas:**
+- ✅ Mejoras UX de Recordatorios (swipe actions, búsqueda, ordenamiento)
 
 ---
 
