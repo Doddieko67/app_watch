@@ -4,6 +4,7 @@ import '../../domain/entities/meal_entity.dart';
 import 'food_item_model.dart';
 
 /// Mapper para convertir entre Meal (Drift) y MealEntity (Domain)
+/// Actualizado para v6: sin campo mealType
 class MealModel {
   /// Convierte de Meal (Drift) a MealEntity (Domain)
   static MealEntity toEntity(
@@ -13,7 +14,6 @@ class MealModel {
     return MealEntity(
       id: data.id,
       date: data.date,
-      mealType: data.mealType,
       totalCalories: data.totalCalories,
       totalProtein: data.totalProtein,
       totalCarbs: data.totalCarbs,
@@ -33,7 +33,6 @@ class MealModel {
     return MealsCompanion.insert(
       id: isUpdate ? Value(entity.id) : const Value.absent(),
       date: entity.date,
-      mealType: entity.mealType,
       totalCalories: entity.totalCalories,
       totalProtein: entity.totalProtein,
       totalCarbs: entity.totalCarbs,

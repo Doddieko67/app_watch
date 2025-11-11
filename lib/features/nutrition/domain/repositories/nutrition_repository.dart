@@ -10,7 +10,6 @@ abstract class INutritionRepository {
   /// Crea una nueva comida
   Future<MealEntity> createMeal({
     required DateTime date,
-    required String mealType,
     String? notes,
   });
 

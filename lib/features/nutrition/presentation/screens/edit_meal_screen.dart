@@ -23,14 +23,12 @@ class _EditMealScreenState extends ConsumerState<EditMealScreen> {
 
   late DateTime _selectedDate;
   late TimeOfDay _selectedTime;
-  late String _selectedMealType;
 
   @override
   void initState() {
     super.initState();
     _selectedDate = widget.meal.date;
     _selectedTime = TimeOfDay.fromDateTime(widget.meal.date);
-    _selectedMealType = widget.meal.mealType;
     _notesController.text = widget.meal.notes ?? '';
   }
 
@@ -86,7 +84,6 @@ class _EditMealScreenState extends ConsumerState<EditMealScreen> {
       // Crear meal actualizado
       final updatedMeal = widget.meal.copyWith(
         date: dateTime,
-        mealType: _selectedMealType,
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
         updatedAt: DateTime.now(),
       );
@@ -131,56 +128,6 @@ class _EditMealScreenState extends ConsumerState<EditMealScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // Tipo de comida
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Tipo de comida',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      value: _selectedMealType,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.restaurant_menu),
-                      ),
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'breakfast',
-                          child: Text('🌅 Desayuno'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'lunch',
-                          child: Text('🌞 Almuerzo'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'dinner',
-                          child: Text('🌙 Cena'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'snack',
-                          child: Text('🍎 Snack'),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _selectedMealType = value;
-                          });
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
             const SizedBox(height: 16),
 
             // Fecha y hora

@@ -219,7 +219,6 @@ class ExportImportService {
   Map<String, dynamic> _mealToJson(Meal m) {
     return {
       'date': m.date.toIso8601String(),
-      'mealType': m.mealType,
       'totalCalories': m.totalCalories,
       'totalProtein': m.totalProtein,
       'totalCarbs': m.totalCarbs,
@@ -304,7 +303,6 @@ class ExportImportService {
   MealsCompanion _jsonToMealCompanion(Map<String, dynamic> json) {
     return MealsCompanion.insert(
       date: DateTime.parse(json['date'] as String),
-      mealType: json['mealType'] as String,
       totalCalories: json['totalCalories'] as double,
       totalProtein: json['totalProtein'] as double,
       totalCarbs: json['totalCarbs'] as double,

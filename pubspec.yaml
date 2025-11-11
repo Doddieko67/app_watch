@@ -36,7 +36,7 @@ dependencies:
 
   # IA
   google_generative_ai: ^0.4.0
-  image_picker: ^1.0.0
+  image_picker: ^1.2.0
 
   # UI/UX
   fl_chart: ^0.66.0

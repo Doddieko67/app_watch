@@ -333,11 +333,13 @@ class _MealCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final timeString = '${meal.date.hour.toString().padLeft(2, '0')}:${meal.date.minute.toString().padLeft(2, '0')}';
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: ListTile(
-        leading: Icon(_getMealIcon(meal.mealTypeEnum)),
-        title: Text(meal.mealTypeEnum.displayName),
+        leading: const Icon(Icons.restaurant),
+        title: Text(timeString, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(
           '${meal.totalCalories.toStringAsFixed(0)} kcal • '
           '${meal.foodItems.length} alimentos',
@@ -353,18 +355,5 @@ class _MealCard extends StatelessWidget {
         },
       ),
     );
-  }
-
-  IconData _getMealIcon(MealType type) {
-    switch (type) {
-      case MealType.breakfast:
-        return Icons.breakfast_dining;
-      case MealType.lunch:
-        return Icons.lunch_dining;
-      case MealType.dinner:
-        return Icons.dinner_dining;
-      case MealType.snack:
-        return Icons.cookie;
-    }
   }
 }

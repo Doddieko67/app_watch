@@ -122,12 +122,12 @@ class MealDetailScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: _getMealTypeColor(meal.mealType).withOpacity(0.2),
+                        color: Theme.of(context).colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
-                        _getMealTypeIcon(meal.mealType),
-                        color: _getMealTypeColor(meal.mealType),
+                        Icons.restaurant,
+                        color: Theme.of(context).colorScheme.primary,
                         size: 32,
                       ),
                     ),
@@ -137,7 +137,7 @@ class MealDetailScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _getMealTypeName(meal.mealType),
+                            'Comida',
                             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -146,7 +146,7 @@ class MealDetailScreen extends ConsumerWidget {
                           Row(
                             children: [
                               Icon(
-                                Icons.calendar_today,
+                                Icons.access_time,
                                 size: 16,
                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
@@ -417,50 +417,6 @@ class MealDetailScreen extends ConsumerWidget {
     );
   }
 
-  Color _getMealTypeColor(String mealType) {
-    switch (mealType.toLowerCase()) {
-      case 'breakfast':
-        return Colors.orange;
-      case 'lunch':
-        return Colors.green;
-      case 'dinner':
-        return Colors.blue;
-      case 'snack':
-        return Colors.purple;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  IconData _getMealTypeIcon(String mealType) {
-    switch (mealType.toLowerCase()) {
-      case 'breakfast':
-        return Icons.free_breakfast;
-      case 'lunch':
-        return Icons.lunch_dining;
-      case 'dinner':
-        return Icons.dinner_dining;
-      case 'snack':
-        return Icons.cookie;
-      default:
-        return Icons.restaurant;
-    }
-  }
-
-  String _getMealTypeName(String mealType) {
-    switch (mealType.toLowerCase()) {
-      case 'breakfast':
-        return 'Desayuno';
-      case 'lunch':
-        return 'Almuerzo';
-      case 'dinner':
-        return 'Cena';
-      case 'snack':
-        return 'Snack';
-      default:
-        return mealType;
-    }
-  }
 
   Future<void> _deleteMeal(BuildContext context, WidgetRef ref) async {
     final confirm = await showDialog<bool>(

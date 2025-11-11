@@ -3,18 +3,8 @@ import 'food_item_entity.dart';
 
 part 'meal_entity.freezed.dart';
 
-/// Tipo de comida
-enum MealType {
-  breakfast('Desayuno'),
-  lunch('Almuerzo'),
-  dinner('Cena'),
-  snack('Snack');
-
-  const MealType(this.displayName);
-  final String displayName;
-}
-
-/// Entidad que representa una comida (desayuno, almuerzo, cena, snack)
+/// Entidad que representa una comida registrada en un día específico
+/// Sin tipos de comida - solo fecha/hora y alimentos
 @freezed
 class MealEntity with _$MealEntity {
   const factory MealEntity({
@@ -23,9 +13,6 @@ class MealEntity with _$MealEntity {
 
     /// Fecha y hora de la comida
     required DateTime date,
-
-    /// Tipo de comida (breakfast, lunch, dinner, snack)
-    required String mealType,
 
     /// Total de calorías calculadas
     required double totalCalories,
@@ -39,7 +26,7 @@ class MealEntity with _$MealEntity {
     /// Total de grasas calculadas
     required double totalFats,
 
-    /// Notas adicionales
+    /// Notas adicionales (opcional)
     String? notes,
 
     /// Items de comida asociados (lazy loading)
@@ -54,22 +41,4 @@ class MealEntity with _$MealEntity {
     /// Fecha de eliminación (soft delete)
     DateTime? deletedAt,
   }) = _MealEntity;
-
-  const MealEntity._();
-
-  /// Convierte el string de mealType a enum
-  MealType get mealTypeEnum {
-    switch (mealType) {
-      case 'breakfast':
-        return MealType.breakfast;
-      case 'lunch':
-        return MealType.lunch;
-      case 'dinner':
-        return MealType.dinner;
-      case 'snack':
-        return MealType.snack;
-      default:
-        return MealType.snack;
-    }
-  }
 }

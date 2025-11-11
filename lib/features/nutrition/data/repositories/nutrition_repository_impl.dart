@@ -18,12 +18,10 @@ class NutritionRepositoryImpl implements INutritionRepository {
   @override
   Future<MealEntity> createMeal({
     required DateTime date,
-    required String mealType,
     String? notes,
   }) {
     return _localDataSource.createMeal(
       date: date,
-      mealType: mealType,
       notes: notes,
     );
   }

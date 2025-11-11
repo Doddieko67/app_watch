@@ -18,12 +18,10 @@ class NutritionLocalDataSource {
 
   Future<MealEntity> createMeal({
     required DateTime date,
-    required String mealType,
     String? notes,
   }) async {
     final companion = MealsCompanion.insert(
       date: date,
-      mealType: mealType,
       totalCalories: 0,
       totalProtein: 0,
       totalCarbs: 0,

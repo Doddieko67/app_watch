@@ -40,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -88,6 +88,39 @@ class AppDatabase extends _$AppDatabase {
             if (!hasStartDate) {
               await m.addColumn(reminders, reminders.startDate);
             }
+          }
+          // Migración de v5 a v6: eliminar columna meal_type de Meals
+          if (from == 5 && to == 6) {
+            // SQLite no soporta DROP COLUMN directamente, necesitamos recrear la tabla
+            await customStatement('''
+              CREATE TABLE meals_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date INTEGER NOT NULL,
+                total_calories REAL NOT NULL,
+                total_protein REAL NOT NULL,
+                total_carbs REAL NOT NULL,
+                total_fats REAL NOT NULL,
+                notes TEXT,
+                created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+                updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+                deleted_at INTEGER,
+                sync_status INTEGER NOT NULL DEFAULT 0
+              );
+            ''');
+
+            // Copiar datos (sin meal_type)
+            await customStatement('''
+              INSERT INTO meals_new (id, date, total_calories, total_protein, total_carbs, total_fats, notes, created_at, updated_at, deleted_at, sync_status)
+              SELECT id, date, total_calories, total_protein, total_carbs, total_fats, notes, created_at, updated_at, deleted_at, sync_status
+              FROM meals;
+            ''');
+
+            // Eliminar tabla vieja y renombrar
+            await customStatement('DROP TABLE meals;');
+            await customStatement('ALTER TABLE meals_new RENAME TO meals;');
+
+            // Recrear índice
+            await customStatement('CREATE INDEX meals_date_idx ON meals(date);');
           }
         },
       );
