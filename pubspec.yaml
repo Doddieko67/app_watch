@@ -35,7 +35,7 @@ dependencies:
   timezone: ^0.9.0
 
   # IA
-  google_generative_ai: ^0.4.0
+  google_generative_ai: ^0.4.7
   image_picker: ^1.2.0
 
   # UI/UX

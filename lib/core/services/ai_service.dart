@@ -261,7 +261,18 @@ IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
         DataPart('image/jpeg', imageBytes),
       ]);
 
-      final response = await _geminiModel!.generateContent([content]);
+      // IMPORTANTE: Para multimodal (imágenes), NO usar responseMimeType en GenerationConfig
+      // porque puede causar errores. En su lugar, estructurar output mediante el prompt.
+      final response = await _geminiModel!.generateContent(
+        [content],
+        generationConfig: GenerationConfig(
+          temperature: 0.2,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+          // NO incluir responseMimeType aquí
+        ),
+      );
       final text = response.text;
 
       if (text == null || text.isEmpty) {
@@ -311,7 +322,15 @@ IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
         DataPart('image/jpeg', imageBytes),
       ]);
 
-      final response = await _geminiModel!.generateContent([content]);
+      final response = await _geminiModel!.generateContent(
+        [content],
+        generationConfig: GenerationConfig(
+          temperature: 0.2,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        ),
+      );
       final text = response.text;
 
       if (text == null || text.isEmpty) {
@@ -355,7 +374,15 @@ IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
         DataPart('image/jpeg', imageBytes),
       ]);
 
-      final response = await _geminiModel!.generateContent([content]);
+      final response = await _geminiModel!.generateContent(
+        [content],
+        generationConfig: GenerationConfig(
+          temperature: 0.2,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        ),
+      );
       final text = response.text;
 
       if (text == null || text.isEmpty) {
