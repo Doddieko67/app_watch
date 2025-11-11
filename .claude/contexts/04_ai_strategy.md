@@ -602,5 +602,58 @@ FoodAnalysisSource _convertToFoodAnalysisSource(String source) {
 
 ---
 
-**Última actualización:** 2025-11-10
-**Documentación completa:** Ver `NUTRITION_IMPROVEMENTS.md` y `NUTRITION_AI_FIX.md`
+## ⚠️ Limitación Conocida: Análisis de Imágenes
+
+### Estado Actual (2025-11-11)
+
+El análisis de alimentos **por texto funciona perfectamente**, pero el **análisis de imágenes está temporalmente bloqueado** por un bug conocido del SDK `google_generative_ai`.
+
+| Funcionalidad | Estado |
+|---|---|
+| Análisis de texto ("200g pollo") | ✅ Funciona perfectamente |
+| Cache inteligente | ✅ Funciona |
+| DB local de alimentos | ✅ Funciona |
+| **Análisis de imágenes** | ⚠️ Bloqueado por bug del SDK |
+
+### Bug del SDK
+
+**Error:**
+```
+Error: Unhandled format for Content: {role: model}
+```
+
+**Causa raíz:** El SDK `google_generative_ai` (v0.4.7) no maneja correctamente las respuestas multimodales de Gemini cuando se usan imágenes.
+
+- ❌ Issues abiertos en GitHub (#233, #224) sin solución
+- ❌ Repositorio marcado como "deprecated"
+- ✅ Nuestro código sigue el patrón oficial correctamente
+- ✅ El problema es del SDK, no de nuestra implementación
+
+### Plan de Solución
+
+**Migración a `firebase_ai` (v3.5.0):**
+- ✅ SDK oficial más nuevo (actualizado hace 8 días)
+- ✅ Soporta análisis de imágenes con `InlineDataPart`
+- ✅ Acceso a modelos más recientes (`gemini-2.5-flash`)
+- ⏱️ Estimado: 2-3 horas de migración
+
+**Ver plan completo:** [17. Plan de Migración a firebase_ai](17_firebase_ai_migration_plan.md)
+
+### Impacto en Usuarios
+
+**Para v1.0:** La app es 100% funcional sin análisis de imágenes porque:
+- ✅ Los usuarios pueden escribir "ensalada con pollo 250g" y obtener análisis completo
+- ✅ El sistema de cache hace que búsquedas repetidas sean instantáneas
+- ✅ La DB local de 1000+ alimentos funciona offline
+- ✅ La entrada manual siempre está disponible
+
+**Para v1.1+:** Después de migrar a `firebase_ai`, el análisis de imágenes estará habilitado.
+
+---
+
+**Última actualización:** 2025-11-11
+**Documentación relacionada:**
+- [13. Fix de Gemini AI](13_nutrition_ai_fix.md) - Fixes previos
+- [14. Mejoras de Nutrición](14_nutrition_improvements.md) - Features implementados
+- [16. Limitación de Imágenes](16_gemini_image_limitation.md) - Investigación detallada
+- [17. Plan de Migración](17_firebase_ai_migration_plan.md) - Próximos pasos

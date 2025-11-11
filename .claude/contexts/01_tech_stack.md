@@ -32,8 +32,8 @@ dependencies:
   timezone: ^0.9.0
 
   # IA
-  google_generative_ai: ^0.4.0
-  image_picker: ^1.0.0
+  google_generative_ai: ^0.4.7  # Actual (deprecado), migrar a firebase_ai
+  image_picker: ^1.1.2
 
   # UI/UX
   fl_chart: ^0.66.0
@@ -100,7 +100,28 @@ flutter build ios --release
 - [Riverpod Documentation](https://riverpod.dev/)
 - [Material 3 Design](https://m3.material.io/)
 - [Gemini API Documentation](https://ai.google.dev/docs)
+- [google_generative_ai Package](https://pub.dev/packages/google_generative_ai) (actual)
+- [firebase_ai Package](https://pub.dev/packages/firebase_ai) (migración futura)
 - [Flutter Local Notifications](https://pub.dev/packages/flutter_local_notifications)
 - [FL Chart Documentation](https://pub.dev/packages/fl_chart)
 - [Table Calendar](https://pub.dev/packages/table_calendar)
 - [Flutter Animate](https://pub.dev/packages/flutter_animate)
+
+---
+
+## 📝 Notas de Actualización
+
+### SDK de IA (2025-11-11)
+
+**Estado Actual:**
+- Usando `google_generative_ai` v0.4.7
+- ✅ Análisis de texto funciona perfectamente
+- ⚠️ Análisis de imágenes bloqueado por bug del SDK
+
+**Próxima Migración:**
+- Migrar a `firebase_ai` v3.5.0 (SDK oficial más nuevo)
+- Resolverá bug de imágenes
+- Acceso a modelos más recientes (gemini-2.5-flash)
+- Ver: [Plan de Migración](./17_firebase_ai_migration_plan.md)
+
+**Última actualización:** 2025-11-11
