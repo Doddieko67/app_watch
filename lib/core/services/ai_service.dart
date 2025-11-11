@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../../features/nutrition/domain/entities/food_analysis_result.dart';
@@ -234,6 +235,261 @@ IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
     } catch (_) {
       return false;
     }
+  }
+
+  /// Analiza una imagen de un plato completo con múltiples alimentos
+  ///
+  /// Contexto opcional: usuario puede agregar texto como "200g de arroz" o "con salsa"
+  Future<List<FoodAnalysisResult>> analyzeFullPlate({
+    required File image,
+    String? context,
+  }) async {
+    if (_geminiModel == null) {
+      throw Exception('Gemini model not configured');
+    }
+
+    if (!await _isOnline()) {
+      throw Exception('Sin conexión a internet. El análisis de imágenes requiere conexión.');
+    }
+
+    try {
+      final imageBytes = await image.readAsBytes();
+      final prompt = _buildFullPlatePrompt(context);
+
+      final content = [
+        Content.multi([
+          TextPart(prompt),
+          DataPart('image/jpeg', imageBytes),
+        ])
+      ];
+
+      final response = await _geminiModel!.generateContent(content);
+      final text = response.text;
+
+      if (text == null || text.isEmpty) {
+        throw Exception('Empty response from Gemini');
+      }
+
+      // Parsear respuesta JSON que contiene un array de alimentos
+      final jsonResponse = _extractJson(text);
+      final foodsJson = jsonResponse['foods'] as List<dynamic>;
+
+      return foodsJson.map((foodJson) {
+        final data = FoodData.fromJson(foodJson as Map<String, dynamic>);
+        final confidence = foodJson['confidence'] as num? ?? 0.8;
+
+        return FoodAnalysisResult(
+          data: data,
+          source: FoodAnalysisSource.gemini,
+          confidence: confidence.toDouble(),
+        );
+      }).toList();
+    } catch (e) {
+      throw Exception('Error al analizar imagen del plato: $e');
+    }
+  }
+
+  /// Analiza una imagen para estimar porciones visualmente
+  ///
+  /// Detecta el alimento y estima la cantidad basándose en tamaño visual
+  Future<FoodAnalysisResult> analyzePortionSize({
+    required File image,
+    String? foodName,
+  }) async {
+    if (_geminiModel == null) {
+      throw Exception('Gemini model not configured');
+    }
+
+    if (!await _isOnline()) {
+      throw Exception('Sin conexión a internet. El análisis de imágenes requiere conexión.');
+    }
+
+    try {
+      final imageBytes = await image.readAsBytes();
+      final prompt = _buildPortionEstimationPrompt(foodName);
+
+      final content = [
+        Content.multi([
+          TextPart(prompt),
+          DataPart('image/jpeg', imageBytes),
+        ])
+      ];
+
+      final response = await _geminiModel!.generateContent(content);
+      final text = response.text;
+
+      if (text == null || text.isEmpty) {
+        throw Exception('Empty response from Gemini');
+      }
+
+      final jsonResponse = _extractJson(text);
+      final data = FoodData.fromJson(jsonResponse);
+      final confidence = jsonResponse['confidence'] as num? ?? 0.7;
+
+      return FoodAnalysisResult(
+        data: data,
+        source: FoodAnalysisSource.gemini,
+        confidence: confidence.toDouble(),
+      );
+    } catch (e) {
+      throw Exception('Error al estimar porción: $e');
+    }
+  }
+
+  /// Lee y analiza una etiqueta nutricional de un producto
+  ///
+  /// Extrae información nutricional de la tabla de valores nutricionales
+  Future<FoodAnalysisResult> analyzeNutritionLabel({
+    required File image,
+  }) async {
+    if (_geminiModel == null) {
+      throw Exception('Gemini model not configured');
+    }
+
+    if (!await _isOnline()) {
+      throw Exception('Sin conexión a internet. El análisis de imágenes requiere conexión.');
+    }
+
+    try {
+      final imageBytes = await image.readAsBytes();
+      final prompt = _buildNutritionLabelPrompt();
+
+      final content = [
+        Content.multi([
+          TextPart(prompt),
+          DataPart('image/jpeg', imageBytes),
+        ])
+      ];
+
+      final response = await _geminiModel!.generateContent(content);
+      final text = response.text;
+
+      if (text == null || text.isEmpty) {
+        throw Exception('Empty response from Gemini');
+      }
+
+      final jsonResponse = _extractJson(text);
+      final data = FoodData.fromJson(jsonResponse);
+
+      return FoodAnalysisResult(
+        data: data,
+        source: FoodAnalysisSource.gemini,
+        confidence: 1.0, // Alta confianza porque lee datos exactos
+      );
+    } catch (e) {
+      throw Exception('Error al leer etiqueta nutricional: $e');
+    }
+  }
+
+  /// Construye el prompt para análisis de plato completo
+  String _buildFullPlatePrompt(String? context) {
+    final contextText = context != null ? '\nContexto adicional: $context' : '';
+
+    return '''
+Eres un nutricionista experto analizando una fotografía de un plato de comida.
+
+TAREA: Identifica TODOS los alimentos visibles en la imagen y estima sus cantidades.$contextText
+
+Debes responder SIEMPRE con un JSON válido siguiendo este formato EXACTO:
+
+{
+  "foods": [
+    {
+      "name": "nombre del alimento en español",
+      "quantity": número_en_gramos,
+      "unit": "g",
+      "calories": número_calorías,
+      "protein": número_proteínas_gramos,
+      "carbs": número_carbohidratos_gramos,
+      "fats": número_grasas_gramos,
+      "confidence": número_entre_0_y_1
+    }
+  ]
+}
+
+REGLAS:
+1. Identifica cada alimento por separado (arroz, pollo, vegetales, etc.)
+2. Estima cantidades en gramos basándote en el tamaño visual
+3. Referencias comunes: plato estándar = 25cm, puño = 100g, palma = 120g
+4. Si hay varios tipos de alimentos, crea un objeto para cada uno
+5. Confidence: 0.9 si es claro, 0.7 si hay incertidumbre, 0.5 si es muy difícil de ver
+6. Los valores nutricionales deben ser proporcionales a la cantidad estimada
+
+IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
+''';
+  }
+
+  /// Construye el prompt para estimación de porciones
+  String _buildPortionEstimationPrompt(String? foodName) {
+    final foodHint = foodName != null
+        ? 'El usuario indica que el alimento es: "$foodName".'
+        : 'Identifica qué alimento es.';
+
+    return '''
+Eres un nutricionista experto estimando el tamaño de una porción de comida.
+
+TAREA: $foodHint
+Estima la cantidad en gramos basándote en el tamaño visual de la porción.
+
+Debes responder SIEMPRE con un JSON válido siguiendo este formato EXACTO:
+
+{
+  "name": "nombre del alimento en español",
+  "quantity": número_en_gramos,
+  "unit": "g",
+  "calories": número_calorías,
+  "protein": número_proteínas_gramos,
+  "carbs": número_carbohidratos_gramos,
+  "fats": número_grasas_gramos,
+  "confidence": número_entre_0_y_1
+}
+
+REGLAS PARA ESTIMAR TAMAÑO:
+1. Usa referencias visuales: plato (25cm), taza (240ml), puño (100g), palma (120g)
+2. Si hay objetos de referencia (cubiertos, monedas), úsalos para escala
+3. Considera densidad: 100ml agua = 100g, pero 100ml arroz cocido = 130g
+4. Ejemplos comunes:
+   - Pechuga de pollo mediana: 150-200g
+   - Porción de arroz cocido: 150-200g
+   - Manzana mediana: 180g
+   - Plátano mediano: 120g
+5. Confidence: 0.8 si hay buenas referencias, 0.6 si es estimación visual sin contexto
+
+IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
+''';
+  }
+
+  /// Construye el prompt para lectura de etiqueta nutricional
+  String _buildNutritionLabelPrompt() {
+    return '''
+Eres un experto en nutrición leyendo una etiqueta nutricional de un producto.
+
+TAREA: Extrae la información nutricional de la tabla de valores nutricionales visible en la imagen.
+
+Debes responder SIEMPRE con un JSON válido siguiendo este formato EXACTO:
+
+{
+  "name": "nombre del producto",
+  "quantity": tamaño_de_porción_en_gramos,
+  "unit": "g",
+  "calories": número_calorías_por_porción,
+  "protein": número_proteínas_gramos,
+  "carbs": número_carbohidratos_gramos,
+  "fats": número_grasas_gramos,
+  "confidence": 1.0
+}
+
+REGLAS IMPORTANTES:
+1. Lee EXACTAMENTE los valores de la etiqueta, no estimes
+2. Si la etiqueta muestra "por 100g", usa 100 como quantity
+3. Si muestra "por porción (30g)", usa 30 como quantity
+4. Busca términos: "Calorías", "Energía", "Proteínas", "Carbohidratos", "Grasas totales"
+5. Convierte unidades si es necesario: kcal a cal, kJ a cal (1 kJ = 0.239 cal)
+6. Si la etiqueta muestra "Carbohidratos totales" y "Azúcares", usa el total
+7. Confidence siempre 1.0 porque son datos exactos de la etiqueta
+
+IMPORTANTE: Tu respuesta DEBE ser SOLO el JSON, sin markdown ni explicaciones.
+''';
   }
 
   /// Verifica si Gemini está configurado
