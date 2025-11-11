@@ -23,14 +23,14 @@ class AiService {
   /// Configura el modelo de Gemini con API key
   void configureGemini(String apiKey) {
     _geminiModel = GenerativeModel(
-      model: 'gemini-flash-latest', // Usa la versión más reciente de Gemini Flash (2.5)
+      model: 'gemini-flash-latest', // Modelo más reciente disponible
       apiKey: apiKey,
       generationConfig: GenerationConfig(
         temperature: 0.2, // Temperatura moderada para respuestas más creativas pero consistentes
         topK: 40,
         topP: 0.95,
         maxOutputTokens: 1024,
-        responseMimeType: 'application/json', // Forzar respuesta JSON
+        responseMimeType: 'application/json', // Forzar respuesta JSON (solo para texto)
       ),
       safetySettings: [
         SafetySetting(
