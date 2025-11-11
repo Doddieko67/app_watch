@@ -392,6 +392,48 @@ App con todas las mejoras funcionales implementadas, lista para entrar a Fase 7 
 
 ---
 
+## Fase 6.11: Investigación y Documentación de IA ✅ COMPLETADO (2025-11-11)
+
+### Objetivos
+Investigar y documentar bug de análisis de imágenes, crear plan de migración a firebase_ai.
+
+### Tareas Completadas
+
+#### Investigación del Bug ✅
+- [x] Probar análisis de imágenes con test_gemini.dart
+- [x] Identificar error: "Unhandled format for Content: {role: model}"
+- [x] Verificar que análisis de texto funciona perfectamente
+- [x] Investigar issues en GitHub del SDK (deprecated repo)
+- [x] Buscar SDKs alternativos (firebase_ai encontrado)
+- [x] Comparar google_generative_ai vs firebase_ai
+
+#### Documentación Creada ✅
+- [x] `.claude/contexts/16_gemini_image_limitation.md`
+  - Documentación completa del bug
+  - Investigación detallada
+  - Causa raíz identificada
+  - Plan de acción futuro
+- [x] `.claude/contexts/17_firebase_ai_migration_plan.md`
+  - Comparación de SDKs
+  - Plan de 4 fases (2-3 horas)
+  - Checklist completa de migración
+  - Decisión: cuándo migrar
+
+#### Sincronización de Documentos ✅
+- [x] Actualizar `04_ai_strategy.md` con limitación actual
+- [x] Actualizar `01_tech_stack.md` con versiones correctas
+- [x] Agregar referencias cruzadas entre documentos
+
+### Entregable
+Documentación completa del bug y plan claro de migración a firebase_ai para resolver el análisis de imágenes.
+
+**Commits:** 3 commits (2025-11-11)
+- fix(nutrition): resolve Gemini multimodal Content format error
+- docs(nutrition): document Gemini image analysis SDK limitation
+- docs: update AI strategy and create firebase_ai migration plan
+
+---
+
 ## Fase 7.0: Pulido Técnico (Primera mitad Semana 7)
 
 ### Objetivos
@@ -502,6 +544,65 @@ Testing completo, documentación final y preparación para publicación en store
 
 ### Entregable
 App completamente probada, documentada y lista para publicar en Play Store / App Store.
+
+---
+
+## Fase 7.1: Migración a firebase_ai (Futuro - Planificado)
+
+### Objetivos
+Migrar de `google_generative_ai` a `firebase_ai` para habilitar análisis de imágenes de alimentos.
+
+### Pre-requisitos
+- Fase 7.0 completada (optimización técnica)
+- Reservar 2-3 horas de trabajo ininterrumpido
+- Cuenta de Google/Firebase lista
+
+### Tareas
+
+#### Fase 1: Setup de Firebase (30-45 min)
+- [ ] Instalar FlutterFire CLI
+- [ ] Ejecutar `flutterfire configure`
+- [ ] Agregar dependencias (firebase_core, firebase_ai)
+- [ ] Habilitar Gemini API en Firebase Console
+- [ ] Actualizar main.dart con inicialización Firebase
+- [ ] Compilar y verificar sin errores
+
+#### Fase 2: Migrar AiService (1-1.5 horas)
+- [ ] Crear branch `feature/migrate-firebase-ai`
+- [ ] Actualizar imports (firebase_ai en lugar de google_generative_ai)
+- [ ] Modificar `configureGemini()` (sin API key parameter)
+- [ ] Cambiar `DataPart` → `InlineDataPart`
+- [ ] Actualizar 3 métodos de análisis de imágenes
+- [ ] Remover/actualizar UI de API Key en Settings
+- [ ] Verificar compilación sin errores
+
+#### Fase 3: Testing Exhaustivo (30-45 min)
+- [ ] Actualizar test_gemini.dart
+- [ ] Probar análisis de texto (debe funcionar)
+- [ ] Probar análisis de imágenes (debe funcionar ✅)
+- [ ] Verificar cache sigue funcionando
+- [ ] Probar fallback a DB local
+- [ ] Build APK y probar en dispositivo
+- [ ] Tests manuales de todos los modos (Plato/Porción/Etiqueta)
+- [ ] Verificar no hay regresiones
+
+#### Fase 4: Cleanup y Documentación (30 min)
+- [ ] Remover dependencia `google_generative_ai`
+- [ ] Actualizar documentación (5 archivos .md)
+- [ ] Crear commit detallado
+- [ ] Merge a main
+- [ ] Deploy nuevo APK
+
+### Entregable
+Análisis de imágenes funcionando completamente. Bug de "Unhandled format for Content" resuelto.
+
+**Referencias:**
+- [17. Plan Completo de Migración](./17_firebase_ai_migration_plan.md)
+- [16. Documentación del Bug](./16_gemini_image_limitation.md)
+
+**Tiempo estimado:** 2-3 horas
+**Prioridad:** Media (no bloqueante para v1.0)
+**Decisión:** Ejecutar cuando se disponga del tiempo dedicado
 
 ---
 

@@ -118,6 +118,16 @@ La documentación completa está organizada en módulos en `.claude/contexts/`:
     - Historial de features implementados
     - Roadmap de próximas versiones
 
+16. **[Limitación de Imágenes en Gemini](.claude/contexts/16_gemini_image_limitation.md)**
+    - Bug conocido en análisis de imágenes
+    - Investigación completa del problema
+    - Estado actual y plan de acción
+
+17. **[Plan de Migración a firebase_ai](.claude/contexts/17_firebase_ai_migration_plan.md)**
+    - Comparación detallada de SDKs
+    - Plan de migración en 4 fases (2-3 horas)
+    - Checklist completa y análisis de riesgos
+
 ---
 
 ## 🚀 Quick Start
@@ -226,10 +236,15 @@ app_watch/
 
 ## 🎯 Estado Actual
 
-### Fase Actual: **Fase 6.10 Completada ✅ - Módulo de Nutrición Mejorado**
+### Fase Actual: **Fase 6.11 Completada ✅ - Investigación y Documentación de IA**
 
 **Resumen:**
-Todas las funcionalidades principales han sido implementadas. El módulo de nutrición ahora incluye análisis de IA totalmente funcional con Gemini 2.5 Flash, autocompletado de alimentos, edición granular de alimentos individuales, y un flujo optimizado para agregar múltiples alimentos.
+Investigación completa del bug de análisis de imágenes en Gemini. Se identificó la causa raíz (SDK deprecated), se documentó exhaustivamente el problema, y se creó un plan detallado de migración a `firebase_ai` para resolverlo en el futuro.
+
+**Estado del análisis de IA:**
+- ✅ Análisis de texto: Funciona perfectamente
+- ⚠️ Análisis de imágenes: Bloqueado por bug del SDK (documentado)
+- ✅ Plan de migración: Listo para ejecutar cuando se disponga de tiempo
 
 **Para ver el estado completo y detallado de todas las fases:** Ver **[Changelog de Versiones](.claude/contexts/15_changelog.md)**
 
@@ -245,19 +260,27 @@ Todas las funcionalidades principales han sido implementadas. El módulo de nutr
 - ✅ **Fase 6.8:** Mejoras UX Fitness/Nutrition (Templates, autocompletado, optimizaciones)
 - ✅ **Fase 6.9:** Calendario de Recordatorios y Localizaciones (Historial, fecha inicio, español)
 - ✅ **Fase 6.10:** Mejoras Nutrición (Fix Gemini AI, autocompletado, edición granular, múltiples alimentos)
+- ✅ **Fase 6.11:** Investigación y Documentación de IA (Bug de imágenes, plan de migración a firebase_ai)
 
-**Total:** ~133 archivos, ~22,000+ líneas de código, Schema v5, 25+ commits
+**Total:** ~135 archivos, ~22,500+ líneas de código, Schema v6, 28+ commits
 
 📊 **Ver detalles completos:** [Changelog de Versiones](.claude/contexts/15_changelog.md)
 
 ### Próximos Pasos
 
-**Fase 7.0: Pulido Técnico** (ACTUAL - Parcialmente completado)
+**Fase 7.0: Pulido Técnico** (Parcialmente completado)
 - ✅ Mejoras UX de Recordatorios completadas (swipe actions, búsqueda, ordenamiento, recurrencia custom)
 - Pendiente: Animaciones con flutter_animate en otras secciones
 - Pendiente: Optimización de performance (DB, paginación, lazy loading)
 - Pendiente: Manejo robusto de errores
 - Pendiente: Optimización y limpieza de base de datos
+
+**Fase 7.1: Migración a firebase_ai** (Planificado - No bloqueante)
+- Setup de Firebase (30-45 min)
+- Migrar AiService a firebase_ai (1-1.5 horas)
+- Testing exhaustivo de análisis de imágenes (30-45 min)
+- Cleanup y documentación (30 min)
+- Ver: [Plan de Migración](.claude/contexts/17_firebase_ai_migration_plan.md)
 
 **Fase 7.5: Preparación para Release** (Segunda mitad Semana 7)
 - Testing completo (unit, widget, integration - 80%+ coverage)
@@ -362,5 +385,5 @@ Ver [Roadmap](.claude/contexts/09_implementation_plan.md#post-release-roadmap-fu
 
 ---
 
-**Última actualización:** 2025-11-10
-**Versión de documentación:** 6.10.0 (Fase 6.10 completada - Mejoras del módulo de Nutrición con IA funcional, autocompletado y edición granular)
+**Última actualización:** 2025-11-11
+**Versión de documentación:** 6.11.0 (Fase 6.11 completada - Investigación del bug de imágenes y plan de migración a firebase_ai)

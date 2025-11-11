@@ -4,9 +4,9 @@
 
 Este archivo documenta todas las fases de desarrollo completadas, features implementados, y el roadmap futuro del proyecto App Watch.
 
-**Estado Actual:** Fase 6.10 Completada ✅
-**Última actualización:** 2025-11-10
-**Total de archivos:** ~133 archivos (~22,000+ líneas de código)
+**Estado Actual:** Fase 6.11 Completada ✅
+**Última actualización:** 2025-11-11
+**Total de archivos:** ~135 archivos (~22,500+ líneas de código)
 
 ---
 
@@ -284,6 +284,59 @@ Este archivo documenta todas las fases de desarrollo completadas, features imple
 
 ---
 
+### Fase 6.11 - Investigación y Documentación de IA ✅
+
+**Fecha:** 2025-11-11
+**Commits:** 3 commits
+
+**Implementado:**
+
+**🔍 Investigación del Bug de Imágenes:**
+- ✅ Identificado bug en `google_generative_ai` (v0.4.7)
+- ✅ Error: "Unhandled format for Content: {role: model}"
+- ✅ Verificado que análisis de texto funciona perfectamente
+- ✅ Test script actualizado (test_gemini.dart) con prueba de imágenes
+- ✅ Investigación en GitHub issues (#233, #224)
+- ✅ SDK marcado como "deprecated" sin solución
+- ✅ Encontrado SDK alternativo: `firebase_ai` v3.5.0
+
+**📝 Documentación Creada:**
+- ✅ `.claude/contexts/16_gemini_image_limitation.md`
+  * Documentación completa del bug (causa raíz, investigación, referencias)
+  * Impacto en usuarios (v1.0 es funcional sin imágenes)
+  * Plan de acción futuro
+- ✅ `.claude/contexts/17_firebase_ai_migration_plan.md`
+  * Comparación detallada de SDKs
+  * Plan de migración en 4 fases (2-3 horas)
+  * Checklist completa de tareas
+  * Análisis de riesgos y mitigaciones
+  * Decisión: cuándo ejecutar la migración
+
+**🔄 Sincronización de Documentación:**
+- ✅ Actualizado `04_ai_strategy.md` con sección de limitación
+- ✅ Actualizado `01_tech_stack.md` con versiones correctas
+- ✅ Actualizado `09_implementation_plan.md` (Fase 6.11 + Fase 7.1)
+- ✅ Actualizado `15_changelog.md` (este archivo)
+- ✅ Actualizado `CLAUDE.md` con nuevas referencias
+- ✅ Referencias cruzadas entre todos los documentos
+
+**Archivos nuevos:** 2 documentos .md
+**Archivos modificados:** 6 documentos .md, test_gemini.dart
+**Líneas de código (docs):** +950
+
+**Commits:**
+1. `fix(nutrition): resolve Gemini multimodal Content format error`
+2. `docs(nutrition): document Gemini image analysis SDK limitation`
+3. `docs: update AI strategy and create firebase_ai migration plan`
+
+**Estado Final:**
+- ✅ Análisis de texto: Funciona perfectamente
+- ⚠️ Análisis de imágenes: Bloqueado (bug documentado)
+- ✅ Plan de solución: Documentado y listo para ejecutar
+- ✅ App 100% funcional para v1.0 (sin imágenes)
+
+---
+
 ## 🚀 Próximas Fases
 
 ### Fase 7.0 - Pulido Técnico (En Progreso)
@@ -317,6 +370,30 @@ Este archivo documenta todas las fases de desarrollo completadas, features imple
 - [ ] Preparación para stores (screenshots, descripciones)
 - [ ] Performance profiling y optimización
 - [ ] Accessibility testing
+
+---
+
+### Fase 7.1 - Migración a firebase_ai (Planificado)
+
+**Fecha estimada:** Cuando se disponga de 2-3 horas
+**Estado:** Planificado (no bloqueante para v1.0)
+
+**Objetivo:**
+Migrar de `google_generative_ai` a `firebase_ai` para resolver el bug de análisis de imágenes.
+
+**Tareas:**
+- [ ] Setup de Firebase (30-45 min)
+- [ ] Migrar AiService (1-1.5 horas)
+- [ ] Testing exhaustivo (30-45 min)
+- [ ] Cleanup y documentación (30 min)
+
+**Resultado esperado:**
+- ✅ Análisis de imágenes funcionando completamente
+- ✅ Bug "Unhandled format for Content" resuelto
+- ✅ Acceso a modelos más recientes (gemini-2.5-flash)
+
+**Referencias:**
+- Plan completo: `.claude/contexts/17_firebase_ai_migration_plan.md`
 
 ---
 
